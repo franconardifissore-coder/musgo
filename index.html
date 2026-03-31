@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mis Plantas</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sage: #7a9e7e;
+    --sage-light: #a8c5ac;
+    --sage-dark: #4a6b4e;
+    --cream: #f5f0e8;
+    --warm: #e8dfc8;
+    --earth: #8b6f47;
+    --earth-light: #c4a882;
+    --terracotta: #c4714a;
+    --sky: #7bb3c9;
+    --rain: #5a8fa3;
+    --text: #2d3a2e;
+    --text-light: #6b7c6c;
+    --white: #fffef9;
+    --shadow: rgba(45,58,46,0.12);
+    --card-bg: rgba(255,254,249,0.9);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background-color: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+    background-image: 
+      radial-gradient(ellipse at 10% 20%, rgba(122,158,126,0.15) 0%, transparent 50%),
+      radial-gradient(ellipse at 90% 80%, rgba(196,113,74,0.1) 0%, transparent 50%),
+      url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%237a9e7e' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  /* HEADER */
+  header {
+    padding: 24px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(245,240,232,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(122,158,126,0.2);
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo-icon {
+    width: 36px;
+    height: 36px;
+    background: var(--sage);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
+
+  .logo h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    color: var(--sage-dark);
+    letter-spacing: -0.02em;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .weather-widget {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--card-bg);
+    border: 1px solid rgba(122,158,126,0.25);
+    border-radius: 40px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.85rem;
+    color: var(--text-light);
+  }
+
+  .weather-widget:hover { border-color: var(--sage); transform: translateY(-1px); }
+  .weather-widget .temp { font-weight: 500; color: var(--text); }
+  .weather-widget .rain-badge {
+    background: var(--rain);
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+
+  /* MAIN LAYOUT */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 24px;
+  }
+
+  /* STATS BAR */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .stat-card {
+    background: var(--card-bg);
+    border: 1px solid rgba(122,158,126,0.2);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    transition: transform 0.2s;
+  }
+
+  .stat-card:hover { transform: translateY(-2px); }
+  .stat-card .stat-label { font-size: 0.75rem; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.08em; }
+  .stat-card .stat-value { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--sage-dark); }
+  .stat-card .stat-sub { font-size: 0.8rem; color: var(--text-light); }
+  .stat-card.alert .stat-value { color: var(--terracotta); }
+
+  /* SECTIONS */
+  .section-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .tab {
+    padding: 8px 20px;
+    border-radius: 40px;
+    border: 1.5px solid rgba(122,158,126,0.3);
+    background: transparent;
+    color: var(--text-light);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .tab:hover { border-color: var(--sage); color: var(--sage-dark); }
+  .tab.active { background: var(--sage); border-color: var(--sage); color: white; }
+  .tab.all { background: var(--sage-dark); border-color: var(--sage-dark); color: white; }
+
+  .btn-add-section {
+    padding: 8px 16px;
+    border-radius: 40px;
+    border: 1.5px dashed var(--sage-light);
+    background: transparent;
+    color: var(--sage);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .btn-add-section:hover { border-color: var(--sage); background: rgba(122,158,126,0.08); }
+
+  /* PLANTS GRID */
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: var(--text);
+  }
+
+  .section-title span {
+    font-style: italic;
+    color: var(--sage);
+  }
+
+  .btn-primary {
+    background: var(--sage);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 40px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-primary:hover { background: var(--sage-dark); transform: translateY(-1px); }
+
+  .plants-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+  }
+
+  /* PLANT CARD */
+  .plant-card {
+    background: var(--card-bg);
+    border: 1px solid rgba(122,158,126,0.2);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.25s;
+    position: relative;
+  }
+
+  .plant-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px var(--shadow); }
+
+  .plant-card.needs-water { border-color: var(--terracotta); }
+  .plant-card.needs-water::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--terracotta);
+  }
+
+  .plant-card.watered-today { border-color: var(--sage); }
+  .plant-card.watered-today::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--sage);
+  }
+
+  .plant-emoji-area {
+    background: linear-gradient(135deg, rgba(122,158,126,0.12), rgba(168,197,172,0.2));
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 56px;
+    position: relative;
+  }
+
+  .plant-section-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255,255,255,0.85);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 0.7rem;
+    color: var(--text-light);
+    font-weight: 500;
+  }
+
+  .water-status {
+    position: absolute;
+    bottom: 8px;
+    left: 10px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+
+  .water-status.ok { background: rgba(122,158,126,0.2); color: var(--sage-dark); }
+  .water-status.warn { background: rgba(196,113,74,0.15); color: var(--terracotta); }
+  .water-status.rain { background: rgba(90,143,163,0.15); color: var(--rain); }
+
+  .plant-info {
+    padding: 16px;
+  }
+
+  .plant-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+
+  .plant-species {
+    font-size: 0.78rem;
+    color: var(--text-light);
+    font-style: italic;
+    margin-bottom: 12px;
+  }
+
+  .plant-meta {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+
+  .meta-tag {
+    font-size: 0.72rem;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: rgba(122,158,126,0.1);
+    color: var(--sage-dark);
+  }
+
+  .meta-tag.freq { background: rgba(139,111,71,0.1); color: var(--earth); }
+
+  .last-watered {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .last-watered .days-ago {
+    font-weight: 600;
+    color: var(--terracotta);
+  }
+
+  .last-watered .days-ago.ok { color: var(--sage-dark); }
+
+  .plant-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .btn-water {
+    flex: 1;
+    background: var(--sage);
+    color: white;
+    border: none;
+    padding: 9px;
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .btn-water:hover { background: var(--sage-dark); }
+  .btn-water.watered { background: rgba(122,158,126,0.15); color: var(--sage-dark); cursor: default; }
+
+  .btn-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: 1px solid rgba(122,158,126,0.25);
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    transition: all 0.2s;
+  }
+
+  .btn-icon:hover { background: rgba(122,158,126,0.1); border-color: var(--sage); }
+  .btn-icon.delete:hover { background: rgba(196,113,74,0.1); border-color: var(--terracotta); }
+
+  /* ADD PLANT CARD */
+  .add-plant-card {
+    background: transparent;
+    border: 2px dashed rgba(122,158,126,0.35);
+    border-radius: 20px;
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--sage);
+  }
+
+  .add-plant-card:hover { border-color: var(--sage); background: rgba(122,158,126,0.05); }
+  .add-plant-card .add-icon { font-size: 2rem; }
+  .add-plant-card span { font-size: 0.875rem; font-weight: 500; }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(45,58,46,0.5);
+    backdrop-filter: blur(6px);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.25s;
+  }
+
+  .modal-overlay.open { opacity: 1; visibility: visible; }
+
+  .modal {
+    background: var(--white);
+    border-radius: 24px;
+    padding: 32px;
+    width: 100%;
+    max-width: 480px;
+    max-height: 90vh;
+    overflow-y: auto;
+    transform: translateY(20px);
+    transition: transform 0.25s;
+  }
+
+  .modal-overlay.open .modal { transform: translateY(0); }
+
+  .modal h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    color: var(--sage-dark);
+    margin-bottom: 8px;
+  }
+
+  .modal-sub {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    margin-bottom: 24px;
+  }
+
+  .form-group {
+    margin-bottom: 18px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+  }
+
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid rgba(122,158,126,0.3);
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    color: var(--text);
+    background: var(--cream);
+    transition: border-color 0.2s;
+    outline: none;
+  }
+
+  .form-group input:focus, .form-group select:focus { border-color: var(--sage); }
+
+  .emoji-picker {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+  }
+
+  .emoji-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    border: 1.5px solid transparent;
+    background: rgba(122,158,126,0.08);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .emoji-btn:hover, .emoji-btn.selected { border-color: var(--sage); background: rgba(122,158,126,0.18); transform: scale(1.1); }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 24px;
+  }
+
+  .btn-cancel {
+    flex: 1;
+    padding: 11px;
+    border-radius: 12px;
+    border: 1.5px solid rgba(122,158,126,0.3);
+    background: transparent;
+    color: var(--text-light);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-cancel:hover { border-color: var(--sage); color: var(--text); }
+
+  .btn-save {
+    flex: 2;
+    padding: 11px;
+    border-radius: 12px;
+    border: none;
+    background: var(--sage);
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-save:hover { background: var(--sage-dark); }
+
+  /* WEATHER MODAL */
+  .weather-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 16px 0;
+  }
+
+  .weather-info-item {
+    background: rgba(122,158,126,0.08);
+    border-radius: 12px;
+    padding: 14px;
+    text-align: center;
+  }
+
+  .weather-info-item .wi-icon { font-size: 1.8rem; margin-bottom: 4px; }
+  .weather-info-item .wi-value { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--sage-dark); }
+  .weather-info-item .wi-label { font-size: 0.75rem; color: var(--text-light); }
+
+  .rain-toggle-area {
+    background: rgba(90,143,163,0.1);
+    border: 1.5px solid rgba(90,143,163,0.3);
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+  }
+
+  .rain-toggle-area .rt-info { font-size: 0.875rem; color: var(--text); }
+  .rain-toggle-area .rt-sub { font-size: 0.78rem; color: var(--text-light); margin-top: 2px; }
+
+  .toggle {
+    width: 48px;
+    height: 26px;
+    background: rgba(122,158,126,0.3);
+    border-radius: 13px;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.2s;
+    border: none;
+    flex-shrink: 0;
+  }
+
+  .toggle.on { background: var(--rain); }
+  .toggle::after {
+    content: '';
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    transition: left 0.2s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  }
+
+  .toggle.on::after { left: 25px; }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--sage-dark);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 40px;
+    font-size: 0.875rem;
+    z-index: 300;
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-light);
+  }
+
+  .empty-state .es-icon { font-size: 3rem; margin-bottom: 12px; }
+  .empty-state h3 { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--text); margin-bottom: 8px; }
+  .empty-state p { font-size: 0.875rem; }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    header { padding: 16px 20px; }
+    .container { padding: 20px 16px; }
+    .stats-bar { grid-template-columns: repeat(2, 1fr); }
+    .logo h1 { font-size: 1.2rem; }
+  }
+
+  @media (max-width: 480px) {
+    .stats-bar { grid-template-columns: 1fr 1fr; }
+    .plants-grid { grid-template-columns: 1fr; }
+    .weather-widget .rain-badge { display: none; }
+  }
+
+  /* Animations */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .plant-card { animation: fadeIn 0.3s ease both; }
+
+  .delete-confirm {
+    font-size: 0.85rem;
+    color: var(--terracotta);
+    margin-bottom: 16px;
+    padding: 12px;
+    background: rgba(196,113,74,0.08);
+    border-radius: 10px;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">🌿</div>
+    <h1>Mis Plantas</h1>
+  </div>
+  <div class="header-right">
+    <div class="weather-widget" id="weatherWidget" onclick="openWeatherModal()">
+      <span id="weatherIcon">⛅</span>
+      <span class="temp" id="weatherTemp">--°C</span>
+      <span id="weatherDesc" style="color:var(--text-light); font-size:0.8rem;">Cargando...</span>
+      <span class="rain-badge" id="rainBadge" style="display:none">🌧 Lluvia</span>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- STATS -->
+  <div class="stats-bar" id="statsBar"></div>
+
+  <!-- TABS -->
+  <div class="section-tabs" id="sectionTabs"></div>
+
+  <!-- SECTION HEADER -->
+  <div class="section-header">
+    <h2 class="section-title">
+      <span id="activeSectionName">Todas las plantas</span>
+    </h2>
+    <button class="btn-primary" onclick="openAddPlantModal()">
+      <span>＋</span> Nueva planta
+    </button>
+  </div>
+
+  <!-- PLANTS GRID -->
+  <div class="plants-grid" id="plantsGrid"></div>
+
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- MODAL ADD/EDIT PLANT -->
+<div class="modal-overlay" id="plantModal">
+  <div class="modal">
+    <h2 id="modalTitle">Nueva planta</h2>
+    <p class="modal-sub" id="modalSub">Añade una planta a tu colección</p>
+
+    <div class="form-group">
+      <label>Icono</label>
+      <div class="emoji-picker" id="emojiPicker"></div>
+    </div>
+
+    <div class="form-group">
+      <label>Nombre *</label>
+      <input type="text" id="plantName" placeholder="Ej: Monstera del salón">
+    </div>
+
+    <div class="form-group">
+      <label>Especie (opcional)</label>
+      <input type="text" id="plantSpecies" placeholder="Ej: Monstera deliciosa">
+    </div>
+
+    <div class="form-group">
+      <label>Sección *</label>
+      <select id="plantSection"></select>
+    </div>
+
+    <div class="form-group">
+      <label>Frecuencia de riego</label>
+      <select id="plantFreq">
+        <option value="1">Cada día</option>
+        <option value="2">Cada 2 días</option>
+        <option value="3" selected>Cada 3 días</option>
+        <option value="5">Cada 5 días</option>
+        <option value="7">Cada semana</option>
+        <option value="14">Cada 2 semanas</option>
+        <option value="30">Cada mes</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Luz</label>
+      <select id="plantLight">
+        <option value="☀️ Sol directo">☀️ Sol directo</option>
+        <option value="⛅ Luz indirecta" selected>⛅ Luz indirecta</option>
+        <option value="🌥️ Sombra parcial">🌥️ Sombra parcial</option>
+        <option value="🌑 Poca luz">🌑 Poca luz</option>
+      </select>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closePlantModal()">Cancelar</button>
+      <button class="btn-save" onclick="savePlant()">Guardar planta</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ADD SECTION -->
+<div class="modal-overlay" id="sectionModal">
+  <div class="modal">
+    <h2>Nueva sección</h2>
+    <p class="modal-sub">Define un espacio de tu casa</p>
+
+    <div class="form-group">
+      <label>Icono de la sección</label>
+      <div class="emoji-picker" id="sectionEmojiPicker"></div>
+    </div>
+
+    <div class="form-group">
+      <label>Nombre *</label>
+      <input type="text" id="sectionName" placeholder="Ej: Balcón, Salón, Habitación...">
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeSectionModal()">Cancelar</button>
+      <button class="btn-save" onclick="saveSection()">Crear sección</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL WEATHER -->
+<div class="modal-overlay" id="weatherModal">
+  <div class="modal">
+    <h2>🌤 Tiempo en tu zona</h2>
+    <p class="modal-sub" id="weatherModalLocation">Cargando datos meteorológicos...</p>
+
+    <div class="weather-info-grid" id="weatherInfoGrid"></div>
+
+    <div class="rain-toggle-area">
+      <div>
+        <div class="rt-info">¿Ha llovido hoy?</div>
+        <div class="rt-sub">Si ha llovido, las plantas de exterior no necesitan riego</div>
+      </div>
+      <button class="toggle" id="rainToggle" onclick="toggleRain()"></button>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeWeatherModal()">Cerrar</button>
+      <button class="btn-save" onclick="markAllOutdoorWatered(); closeWeatherModal();">Marcar ext. como regadas</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DELETE CONFIRM -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal">
+    <h2>Eliminar planta</h2>
+    <p class="modal-sub">¿Seguro que quieres eliminar esta planta?</p>
+    <div class="delete-confirm" id="deleteConfirmName"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeDeleteModal()">Cancelar</button>
+      <button class="btn-save" style="background:var(--terracotta)" onclick="confirmDelete()">Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== STATE =====
+let state = {
+  sections: [
+    { id: 's1', name: 'Balcón', icon: '🌺', outdoor: true },
+    { id: 's2', name: 'Salón', icon: '🛋️', outdoor: false },
+    { id: 's3', name: 'Habitación', icon: '🛏️', outdoor: false },
+  ],
+  plants: [
+    { id: 'p1', name: 'Monstera', species: 'Monstera deliciosa', emoji: '🌿', section: 's2', freq: 7, light: '⛅ Luz indirecta', lastWatered: daysAgo(1) },
+    { id: 'p2', name: 'Cactus del balcón', species: 'Cereus peruvianus', emoji: '🌵', section: 's1', freq: 14, light: '☀️ Sol directo', lastWatered: daysAgo(5) },
+    { id: 'p3', name: 'Lavanda', species: 'Lavandula angustifolia', emoji: '💜', section: 's1', freq: 3, light: '☀️ Sol directo', lastWatered: daysAgo(4) },
+    { id: 'p4', name: 'Potus', species: 'Epipremnum aureum', emoji: '🍃', section: 's3', freq: 5, light: '🌥️ Sombra parcial', lastWatered: daysAgo(2) },
+    { id: 'p5', name: 'Helecho', species: 'Nephrolepis exaltata', emoji: '🌱', section: 's2', freq: 2, light: '🌥️ Sombra parcial', lastWatered: daysAgo(3) },
+  ],
+  activeSection: 'all',
+  rainToday: false,
+  weather: null,
+  editingPlantId: null,
+  deletingPlantId: null,
+  selectedEmoji: '🌿',
+  selectedSectionEmoji: '🪴',
+};
+
+function daysAgo(n) {
+  const d = new Date();
+  d.setDate(d.getDate() - n);
+  return d.toISOString().split('T')[0];
+}
+
+function today() {
+  return new Date().toISOString().split('T')[0];
+}
+
+function daysBetween(dateStr) {
+  const then = new Date(dateStr);
+  const now = new Date();
+  then.setHours(0,0,0,0);
+  now.setHours(0,0,0,0);
+  return Math.floor((now - then) / 86400000);
+}
+
+// ===== WEATHER =====
+async function fetchWeather() {
+  try {
+    // Using Open-Meteo (free, no API key)
+    const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=41.6488&longitude=-0.8891&current=temperature_2m,precipitation,weathercode,relative_humidity_2m,wind_speed_10m&timezone=Europe/Madrid');
+    const data = await res.json();
+    const c = data.current;
+    state.weather = {
+      temp: Math.round(c.temperature_2m),
+      humidity: c.relative_humidity_2m,
+      wind: Math.round(c.wind_speed_10m),
+      precip: c.precipitation,
+      code: c.weathercode
+    };
+    const icon = weatherIcon(c.weathercode);
+    const desc = weatherDesc(c.weathercode);
+    document.getElementById('weatherIcon').textContent = icon;
+    document.getElementById('weatherTemp').textContent = state.weather.temp + '°C';
+    document.getElementById('weatherDesc').textContent = desc;
+
+    // Auto-detect rain
+    if (c.precipitation > 0.5 || [51,53,55,61,63,65,80,81,82].includes(c.weathercode)) {
+      if (!state.rainToday) {
+        state.rainToday = true;
+        document.getElementById('rainBadge').style.display = 'inline';
+        document.getElementById('rainToggle').classList.add('on');
+        showToast('🌧 Lluvia detectada hoy — plantas de exterior al día');
+      }
+    }
+    renderWeatherModal();
+    saveState();
+  } catch(e) { /* silently fail */ }
+}
+
+function weatherIcon(code) {
+  if (code === 0) return '☀️';
+  if (code <= 2) return '⛅';
+  if (code <= 3) return '☁️';
+  if (code <= 49) return '🌫️';
+  if (code <= 59) return '🌦️';
+  if (code <= 69) return '🌧️';
+  if (code <= 79) return '❄️';
+  if (code <= 82) return '🌧️';
+  if (code <= 99) return '⛈️';
+  return '🌤️';
+}
+
+function weatherDesc(code) {
+  if (code === 0) return 'Despejado';
+  if (code <= 2) return 'Parcialmente nublado';
+  if (code <= 3) return 'Nublado';
+  if (code <= 49) return 'Niebla';
+  if (code <= 59) return 'Llovizna';
+  if (code <= 69) return 'Lluvia';
+  if (code <= 79) return 'Nieve';
+  if (code <= 82) return 'Chubascos';
+  if (code <= 99) return 'Tormenta';
+  return 'Variable';
+}
+
+function renderWeatherModal() {
+  if (!state.weather) return;
+  const w = state.weather;
+  document.getElementById('weatherModalLocation').textContent = 'Zaragoza, Aragón — Hoy';
+  document.getElementById('weatherInfoGrid').innerHTML = `
+    <div class="weather-info-item">
+      <div class="wi-icon">${weatherIcon(w.code)}</div>
+      <div class="wi-value">${w.temp}°C</div>
+      <div class="wi-label">Temperatura</div>
+    </div>
+    <div class="weather-info-item">
+      <div class="wi-icon">💧</div>
+      <div class="wi-value">${w.humidity}%</div>
+      <div class="wi-label">Humedad</div>
+    </div>
+    <div class="weather-info-item">
+      <div class="wi-icon">🌧</div>
+      <div class="wi-value">${w.precip}mm</div>
+      <div class="wi-label">Precipitación</div>
+    </div>
+    <div class="weather-info-item">
+      <div class="wi-icon">💨</div>
+      <div class="wi-value">${w.wind}km/h</div>
+      <div class="wi-label">Viento</div>
+    </div>
+  `;
+}
+
+// ===== STORAGE =====
+function saveState() {
+  try {
+    localStorage.setItem('misplantas_v2', JSON.stringify({
+      sections: state.sections,
+      plants: state.plants,
+      rainToday: state.rainToday,
+    }));
+  } catch(e) {}
+}
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem('misplantas_v2');
+    if (saved) {
+      const d = JSON.parse(saved);
+      state.sections = d.sections || state.sections;
+      state.plants = d.plants || state.plants;
+      // Reset rain each day
+      const lastDate = localStorage.getItem('misplantas_lastdate');
+      const td = today();
+      if (lastDate === td) {
+        state.rainToday = d.rainToday || false;
+      } else {
+        state.rainToday = false;
+        localStorage.setItem('misplantas_lastdate', td);
+      }
+    }
+  } catch(e) {}
+}
+
+// ===== RENDER =====
+function getFilteredPlants() {
+  if (state.activeSection === 'all') return state.plants;
+  return state.plants.filter(p => p.section === state.activeSection);
+}
+
+function needsWater(plant) {
+  const days = daysBetween(plant.lastWatered);
+  const section = state.sections.find(s => s.id === plant.section);
+  if (state.rainToday && section && section.outdoor) return false;
+  return days >= plant.freq;
+}
+
+function wateredToday(plant) {
+  return plant.lastWatered === today();
+}
+
+function renderStats() {
+  const plants = state.plants;
+  const needWater = plants.filter(p => needsWater(p)).length;
+  const wateredTodayCount = plants.filter(p => wateredToday(p)).length;
+  const totalSections = state.sections.length;
+
+  document.getElementById('statsBar').innerHTML = `
+    <div class="stat-card ${needWater > 0 ? 'alert' : ''}">
+      <div class="stat-label">Necesitan agua</div>
+      <div class="stat-value">${needWater}</div>
+      <div class="stat-sub">${needWater === 0 ? 'Todo al día ✓' : 'plantas esperan'}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Regadas hoy</div>
+      <div class="stat-value">${wateredTodayCount}</div>
+      <div class="stat-sub">de ${plants.length} total</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total plantas</div>
+      <div class="stat-value">${plants.length}</div>
+      <div class="stat-sub">en ${totalSections} secciones</div>
+    </div>
+    <div class="stat-card" style="${state.rainToday ? 'border-color:var(--rain)' : ''}">
+      <div class="stat-label">Lluvia hoy</div>
+      <div class="stat-value" style="font-size:1.5rem; margin-top:4px">${state.rainToday ? '🌧' : '☀️'}</div>
+      <div class="stat-sub">${state.rainToday ? 'Ha llovido' : 'Sin lluvia'}</div>
+    </div>
+  `;
+}
+
+function renderTabs() {
+  const all = { id: 'all', name: 'Todas', icon: '🌿' };
+  const tabs = [all, ...state.sections];
+  const container = document.getElementById('sectionTabs');
+
+  container.innerHTML = tabs.map(s => {
+    const isActive = state.activeSection === s.id;
+    const cls = isActive ? (s.id === 'all' ? 'tab all' : 'tab active') : 'tab';
+    return `<button class="${cls}" onclick="setSection('${s.id}')">${s.icon} ${s.name}</button>`;
+  }).join('');
+
+  container.innerHTML += `<button class="btn-add-section" onclick="openSectionModal()">＋ Añadir sección</button>`;
+}
+
+function renderPlants() {
+  const plants = getFilteredPlants();
+  const section = state.sections.find(s => s.id === state.activeSection);
+  document.getElementById('activeSectionName').textContent =
+    state.activeSection === 'all' ? 'Todas las plantas' : (section ? section.icon + ' ' + section.name : '');
+
+  const grid = document.getElementById('plantsGrid');
+
+  if (plants.length === 0) {
+    grid.innerHTML = `
+      <div style="grid-column:1/-1">
+        <div class="empty-state">
+          <div class="es-icon">🪴</div>
+          <h3>Sin plantas aquí todavía</h3>
+          <p>Añade tu primera planta a esta sección</p>
+        </div>
+      </div>
+      <div class="add-plant-card" onclick="openAddPlantModal()">
+        <div class="add-icon">＋</div>
+        <span>Añadir planta</span>
+      </div>
+    `;
+    return;
+  }
+
+  const cards = plants.map(p => {
+    const sec = state.sections.find(s => s.id === p.section);
+    const days = daysBetween(p.lastWatered);
+    const wToday = wateredToday(p);
+    const nWater = needsWater(p);
+    const rainProtected = state.rainToday && sec && sec.outdoor;
+
+    let statusClass = 'ok', statusText = 'Al día';
+    if (rainProtected) { statusClass = 'rain'; statusText = '🌧 Lluvia'; }
+    else if (nWater) { statusClass = 'warn'; statusText = '💧 Necesita agua'; }
+    else if (wToday) { statusClass = 'ok'; statusText = '✓ Regada hoy'; }
+
+    const cardClass = nWater && !rainProtected ? 'plant-card needs-water' : wToday ? 'plant-card watered-today' : 'plant-card';
+    const daysText = days === 0 ? 'Hoy' : days === 1 ? 'Ayer' : `Hace ${days} días`;
+    const daysClass = days <= 1 ? 'days-ago ok' : nWater ? 'days-ago' : 'days-ago ok';
+
+    const btnWater = wToday
+      ? `<button class="btn-water watered" disabled>✓ Regada hoy</button>`
+      : `<button class="btn-water" onclick="waterPlant('${p.id}')">💧 Regar ahora</button>`;
+
+    return `
+      <div class="${cardClass}" style="animation-delay:${Math.random()*0.1}s">
+        <div class="plant-emoji-area">
+          ${p.emoji}
+          <span class="plant-section-badge">${sec ? sec.icon + ' ' + sec.name : ''}</span>
+          <span class="water-status ${statusClass}">${statusText}</span>
+        </div>
+        <div class="plant-info">
+          <div class="plant-name">${p.name}</div>
+          <div class="plant-species">${p.species || ''}</div>
+          <div class="plant-meta">
+            <span class="meta-tag">${p.light}</span>
+            <span class="meta-tag freq">c/${p.freq}d</span>
+          </div>
+          <div class="last-watered">
+            <span>Último riego:</span>
+            <span class="${daysClass}">${daysText}</span>
+          </div>
+          <div class="plant-actions">
+            ${btnWater}
+            <button class="btn-icon" onclick="openEditPlant('${p.id}')" title="Editar">✏️</button>
+            <button class="btn-icon delete" onclick="openDeleteModal('${p.id}')" title="Eliminar">🗑️</button>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  // Add card at the end
+  cards.push(`
+    <div class="add-plant-card" onclick="openAddPlantModal()">
+      <div class="add-icon">＋</div>
+      <span>Añadir planta</span>
+    </div>
+  `);
+
+  grid.innerHTML = cards.join('');
+}
+
+function render() {
+  renderStats();
+  renderTabs();
+  renderPlants();
+}
+
+// ===== ACTIONS =====
+function setSection(id) {
+  state.activeSection = id;
+  render();
+}
+
+function waterPlant(id) {
+  const p = state.plants.find(x => x.id === id);
+  if (!p) return;
+  p.lastWatered = today();
+  saveState();
+  render();
+  showToast(`💧 ${p.name} regada`);
+}
+
+function toggleRain() {
+  state.rainToday = !state.rainToday;
+  const btn = document.getElementById('rainToggle');
+  btn.classList.toggle('on', state.rainToday);
+  const badge = document.getElementById('rainBadge');
+  badge.style.display = state.rainToday ? 'inline' : 'none';
+  saveState();
+  render();
+  showToast(state.rainToday ? '🌧 Lluvia marcada — exterior al día' : '☀️ Sin lluvia hoy');
+}
+
+function markAllOutdoorWatered() {
+  const outdoorSections = state.sections.filter(s => s.outdoor).map(s => s.id);
+  state.plants.forEach(p => {
+    if (outdoorSections.includes(p.section)) p.lastWatered = today();
+  });
+  saveState();
+  render();
+  showToast('🌧 Plantas de exterior marcadas como regadas');
+}
+
+// ===== EMOJIS =====
+const plantEmojis = ['🌿','🌱','🌵','🌴','🌳','🌲','🍀','🍃','🌾','🌺','🌸','🌼','🌻','🌹','🌷','💐','🍁','🎋','🎍','🪴','🌿','🌾','🍂','🪻','💜','🍄'];
+const sectionEmojis = ['🌺','🛋️','🛏️','🚿','🍳','🪴','🌿','🏡','🌞','💻','📚','🎭'];
+
+function renderEmojiPicker(containerId, emojis, selectedEmoji, onSelect) {
+  document.getElementById(containerId).innerHTML = emojis.map(e =>
+    `<button class="emoji-btn ${e === selectedEmoji ? 'selected' : ''}" onclick="${onSelect}('${e}')">${e}</button>`
+  ).join('');
+}
+
+function selectPlantEmoji(e) {
+  state.selectedEmoji = e;
+  renderEmojiPicker('emojiPicker', plantEmojis, e, 'selectPlantEmoji');
+}
+
+function selectSectionEmoji(e) {
+  state.selectedSectionEmoji = e;
+  renderEmojiPicker('sectionEmojiPicker', sectionEmojis, e, 'selectSectionEmoji');
+}
+
+// ===== MODALS =====
+function openAddPlantModal() {
+  state.editingPlantId = null;
+  state.selectedEmoji = '🌿';
+  document.getElementById('modalTitle').textContent = 'Nueva planta';
+  document.getElementById('modalSub').textContent = 'Añade una planta a tu colección';
+  document.getElementById('plantName').value = '';
+  document.getElementById('plantSpecies').value = '';
+  document.getElementById('plantFreq').value = '3';
+  document.getElementById('plantLight').value = '⛅ Luz indirecta';
+
+  renderEmojiPicker('emojiPicker', plantEmojis, state.selectedEmoji, 'selectPlantEmoji');
+
+  const sel = document.getElementById('plantSection');
+  sel.innerHTML = state.sections.map(s =>
+    `<option value="${s.id}">${s.icon} ${s.name}</option>`
+  ).join('');
+  if (state.activeSection !== 'all') sel.value = state.activeSection;
+
+  document.getElementById('plantModal').classList.add('open');
+}
+
+function openEditPlant(id) {
+  const p = state.plants.find(x => x.id === id);
+  if (!p) return;
+  state.editingPlantId = id;
+  state.selectedEmoji = p.emoji;
+  document.getElementById('modalTitle').textContent = 'Editar planta';
+  document.getElementById('modalSub').textContent = p.name;
+  document.getElementById('plantName').value = p.name;
+  document.getElementById('plantSpecies').value = p.species || '';
+  document.getElementById('plantFreq').value = p.freq;
+  document.getElementById('plantLight').value = p.light;
+
+  renderEmojiPicker('emojiPicker', plantEmojis, p.emoji, 'selectPlantEmoji');
+
+  const sel = document.getElementById('plantSection');
+  sel.innerHTML = state.sections.map(s =>
+    `<option value="${s.id}">${s.icon} ${s.name}</option>`
+  ).join('');
+  sel.value = p.section;
+
+  document.getElementById('plantModal').classList.add('open');
+}
+
+function closePlantModal() {
+  document.getElementById('plantModal').classList.remove('open');
+}
+
+function savePlant() {
+  const name = document.getElementById('plantName').value.trim();
+  if (!name) { showToast('⚠️ El nombre es obligatorio'); return; }
+  const section = document.getElementById('plantSection').value;
+  if (!section) { showToast('⚠️ Elige una sección'); return; }
+
+  if (state.editingPlantId) {
+    const p = state.plants.find(x => x.id === state.editingPlantId);
+    p.name = name;
+    p.species = document.getElementById('plantSpecies').value.trim();
+    p.section = section;
+    p.freq = parseInt(document.getElementById('plantFreq').value);
+    p.light = document.getElementById('plantLight').value;
+    p.emoji = state.selectedEmoji;
+    showToast(`✏️ ${name} actualizada`);
+  } else {
+    state.plants.push({
+      id: 'p' + Date.now(),
+      name,
+      species: document.getElementById('plantSpecies').value.trim(),
+      emoji: state.selectedEmoji,
+      section,
+      freq: parseInt(document.getElementById('plantFreq').value),
+      light: document.getElementById('plantLight').value,
+      lastWatered: daysAgo(99),
+    });
+    showToast(`🌱 ${name} añadida`);
+  }
+
+  saveState();
+  closePlantModal();
+  render();
+}
+
+function openDeleteModal(id) {
+  state.deletingPlantId = id;
+  const p = state.plants.find(x => x.id === id);
+  document.getElementById('deleteConfirmName').textContent = p ? `${p.emoji} ${p.name}` : '';
+  document.getElementById('deleteModal').classList.add('open');
+}
+
+function closeDeleteModal() {
+  document.getElementById('deleteModal').classList.remove('open');
+}
+
+function confirmDelete() {
+  if (!state.deletingPlantId) return;
+  const p = state.plants.find(x => x.id === state.deletingPlantId);
+  state.plants = state.plants.filter(x => x.id !== state.deletingPlantId);
+  saveState();
+  closeDeleteModal();
+  render();
+  if (p) showToast(`🗑️ ${p.name} eliminada`);
+}
+
+function openSectionModal() {
+  state.selectedSectionEmoji = '🪴';
+  document.getElementById('sectionName').value = '';
+  renderEmojiPicker('sectionEmojiPicker', sectionEmojis, '🪴', 'selectSectionEmoji');
+  document.getElementById('sectionModal').classList.add('open');
+}
+
+function closeSectionModal() {
+  document.getElementById('sectionModal').classList.remove('open');
+}
+
+function saveSection() {
+  const name = document.getElementById('sectionName').value.trim();
+  if (!name) { showToast('⚠️ El nombre es obligatorio'); return; }
+  state.sections.push({
+    id: 's' + Date.now(),
+    name,
+    icon: state.selectedSectionEmoji,
+    outdoor: ['balcón','terraza','jardín','exterior','patio'].some(w => name.toLowerCase().includes(w)),
+  });
+  saveState();
+  closeSectionModal();
+  render();
+  showToast(`📍 Sección "${name}" creada`);
+}
+
+function openWeatherModal() {
+  renderWeatherModal();
+  const btn = document.getElementById('rainToggle');
+  btn.classList.toggle('on', state.rainToday);
+  document.getElementById('weatherModal').classList.add('open');
+}
+
+function closeWeatherModal() {
+  document.getElementById('weatherModal').classList.remove('open');
+}
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => {
+    if (e.target === el) el.classList.remove('open');
+  });
+});
+
+// ===== TOAST =====
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ===== INIT =====
+loadState();
+render();
+fetchWeather();
+// Refresh weather every 10 min
+setInterval(fetchWeather, 600000);
+</script>
+</body>
+</html>
