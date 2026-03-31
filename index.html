@@ -187,6 +187,8 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+    gap: 12px;
+    flex-wrap: wrap;
   }
 
   .section-title {
@@ -217,6 +219,34 @@
   }
 
   .btn-primary:hover { background: var(--sage-dark); transform: translateY(-1px); }
+
+  .section-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--sage-dark);
+    border: 1.5px solid rgba(122,158,126,0.35);
+    padding: 10px 18px;
+    border-radius: 40px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--sage);
+    background: rgba(122,158,126,0.08);
+    transform: translateY(-1px);
+  }
 
   .plants-grid {
     display: grid;
@@ -262,6 +292,12 @@
     justify-content: center;
     font-size: 56px;
     position: relative;
+  }
+
+  .plant-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   .plant-section-badge {
@@ -324,6 +360,7 @@
   }
 
   .meta-tag.freq { background: rgba(139,111,71,0.1); color: var(--earth); }
+  .meta-tag.identify { background: rgba(90,143,163,0.12); color: var(--rain); }
 
   .last-watered {
     font-size: 0.8rem;
@@ -536,6 +573,125 @@
   }
 
   .btn-save:hover { background: var(--sage-dark); }
+
+  .form-note {
+    margin: -6px 0 18px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: rgba(90,143,163,0.1);
+    color: var(--text);
+    font-size: 0.82rem;
+    line-height: 1.45;
+  }
+
+  .form-note strong { color: var(--rain); }
+
+  .identify-upload {
+    border: 1.5px dashed rgba(122,158,126,0.35);
+    border-radius: 16px;
+    padding: 18px;
+    background: rgba(122,158,126,0.05);
+  }
+
+  .identify-preview {
+    width: 100%;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-top: 14px;
+    background: rgba(122,158,126,0.08);
+    border: 1px solid rgba(122,158,126,0.16);
+  }
+
+  .identify-preview img {
+    display: block;
+    width: 100%;
+    max-height: 260px;
+    object-fit: cover;
+  }
+
+  .identify-state {
+    margin-top: 16px;
+    padding: 14px;
+    border-radius: 14px;
+    font-size: 0.86rem;
+    line-height: 1.45;
+  }
+
+  .identify-state.loading {
+    background: rgba(122,158,126,0.08);
+    color: var(--sage-dark);
+  }
+
+  .identify-state.best-match {
+    background: rgba(122,158,126,0.08);
+    color: var(--text);
+  }
+
+  .identify-state.error {
+    background: rgba(196,113,74,0.1);
+    color: var(--terracotta);
+  }
+
+  .identify-state.empty {
+    background: rgba(139,111,71,0.08);
+    color: var(--earth);
+  }
+
+  .identify-results {
+    display: grid;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .identify-result {
+    border: 1.5px solid rgba(122,158,126,0.24);
+    border-radius: 16px;
+    background: var(--card-bg);
+    padding: 14px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .identify-result:hover,
+  .identify-result.selected {
+    border-color: var(--sage);
+    box-shadow: 0 8px 24px rgba(45,58,46,0.08);
+    transform: translateY(-1px);
+  }
+
+  .identify-result-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .identify-result-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: var(--text);
+  }
+
+  .identify-result-score {
+    font-size: 0.78rem;
+    color: var(--rain);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .identify-result-sub {
+    margin-top: 6px;
+    font-size: 0.8rem;
+    color: var(--text-light);
+  }
+
+  .identify-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+  }
 
   /* WEATHER MODAL */
   .weather-info-grid {
@@ -919,9 +1075,14 @@
     <h2 class="section-title">
       <span id="activeSectionName">Todas las plantas</span>
     </h2>
-    <button class="btn-primary" onclick="openAddPlantModal()">
-      <span>＋</span> Nueva planta
-    </button>
+    <div class="section-actions">
+      <button class="btn-secondary" onclick="openPhotoIdentifyModal()">
+        <span>📷</span> Identificar planta por foto
+      </button>
+      <button class="btn-primary" onclick="openAddPlantModal()">
+        <span>＋</span> Añadir planta
+      </button>
+    </div>
   </div>
   <div class="plants-grid" id="plantsGrid"></div>
 </div>
@@ -934,6 +1095,7 @@
   <div class="modal">
     <h2 id="modalTitle">Nueva planta</h2>
     <p class="modal-sub" id="modalSub">Añade una planta a tu colección</p>
+    <div class="form-note" id="identifiedPlantNote" style="display:none"></div>
     <div class="form-group">
       <label>Icono</label>
       <div class="emoji-picker" id="emojiPicker"></div>
@@ -974,6 +1136,33 @@
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closePlantModal()">Cancelar</button>
       <button class="btn-save" onclick="savePlant()">Guardar planta</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PHOTO IDENTIFICATION -->
+<div class="modal-overlay" id="identifyModal">
+  <div class="modal">
+    <h2>📷 Identificar planta por foto</h2>
+    <p class="modal-sub">Sube una foto o toma una nueva para sugerir especies antes de crear la ficha.</p>
+    <div class="identify-upload">
+      <div class="form-group" style="margin-bottom:0">
+        <label>Foto de la planta</label>
+        <input type="file" id="identifyImageInput" accept="image/*" capture="environment" onchange="handleIdentificationFileChange(event)">
+      </div>
+      <div class="identify-preview" id="identifyPreview" style="display:none"></div>
+    </div>
+    <div class="identify-state loading" id="identifyLoading" style="display:none">Analizando planta...</div>
+    <div class="identify-state error" id="identifyError" style="display:none"></div>
+    <div class="identify-state empty" id="identifyEmpty" style="display:none"></div>
+    <div class="identify-state best-match" id="identifyBestMatch" style="display:none"></div>
+    <div class="identify-results" id="identifyResults" style="display:none"></div>
+    <div class="identify-actions">
+      <button class="btn-cancel" type="button" onclick="createPlantManuallyFromIdentification()">Crear planta manualmente</button>
+      <button class="btn-save" type="button" id="analyzePlantButton" onclick="analyzePlantPhoto()">Analizar planta</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closePhotoIdentifyModal()">Cerrar</button>
     </div>
   </div>
 </div>
@@ -1083,6 +1272,7 @@
   </div>
 </div>
 
+<script src="./lib/identify-plant.js"></script>
 <script>
 // ===== STATE =====
 let state = {
@@ -1115,6 +1305,18 @@ let state = {
   deletingPlantId: null,
   selectedEmoji: '🌿',
   selectedSectionEmoji: '🪴',
+  identifiedPlantDraft: null,
+  identification: {
+    file: null,
+    preview: '',
+    bestMatch: '',
+    results: [],
+    selectedIndex: null,
+    loading: false,
+    error: '',
+    emptyMessage: '',
+    remainingRequests: null,
+  },
   // Calendar state
   calPlantId: null,
   calYear: new Date().getFullYear(),
@@ -1186,6 +1388,48 @@ function buildWeatherAdvice(weather) {
     return 'Es un día fresco. El sustrato tardará más en secarse, así que mejor evitar riegos de más.';
   }
   return 'No se detecta lluvia relevante hoy. Puedes seguir el calendario habitual de riego.';
+}
+
+function confidenceToPercent(confidence) {
+  const numericConfidence = Number(confidence || 0);
+  return Math.round(numericConfidence <= 1 ? numericConfidence * 100 : numericConfidence);
+}
+
+function escapeHtml(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function resetIdentificationState() {
+  state.identification = {
+    file: null,
+    preview: '',
+    bestMatch: '',
+    results: [],
+    selectedIndex: null,
+    loading: false,
+    error: '',
+    emptyMessage: '',
+    remainingRequests: null,
+  };
+}
+
+function fileToDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(new Error('file_read_failed'));
+    reader.readAsDataURL(file);
+  });
+}
+
+function getPersistableImagePreview(dataUrl) {
+  if (!dataUrl || dataUrl.length > 350000) return '';
+  return dataUrl;
 }
 
 // ===== WEATHER =====
@@ -1442,6 +1686,13 @@ function wateredToday(plant) {
   return (plant.waterLog || []).includes(today());
 }
 
+function renderPlantVisual(plant) {
+  if (plant.imagePreview) {
+    return `<img class="plant-photo" src="${plant.imagePreview}" alt="${escapeHtml(plant.name || plant.species || 'Planta')}">`;
+  }
+  return escapeHtml(plant.emoji || '🪴');
+}
+
 function renderStats() {
   const plants = state.plants;
   const needWater = plants.filter(p => needsWater(p)).length;
@@ -1530,7 +1781,7 @@ function renderPlants() {
     return `
       <div class="${cardClass}">
         <div class="plant-emoji-area">
-          ${p.emoji}
+          ${renderPlantVisual(p)}
           <span class="plant-section-badge">${sec ? sec.icon + ' ' + sec.name : ''}</span>
           <span class="water-status ${statusClass}">${statusText}</span>
         </div>
@@ -1540,6 +1791,7 @@ function renderPlants() {
           <div class="plant-meta">
             <span class="meta-tag">${p.light}</span>
             <span class="meta-tag freq">c/${p.freq}d</span>
+            ${p.identificationConfidence ? `<span class="meta-tag identify">IA ${confidenceToPercent(p.identificationConfidence)}%</span>` : ''}
           </div>
           <div class="last-watered">
             <span>Último riego:</span>
@@ -1831,16 +2083,163 @@ function selectSectionEmoji(e) {
   renderEmojiPicker('sectionEmojiPicker', sectionEmojis, e, 'selectSectionEmoji');
 }
 
+function renderIdentificationModal() {
+  const preview = document.getElementById('identifyPreview');
+  const loading = document.getElementById('identifyLoading');
+  const error = document.getElementById('identifyError');
+  const empty = document.getElementById('identifyEmpty');
+  const bestMatch = document.getElementById('identifyBestMatch');
+  const results = document.getElementById('identifyResults');
+  const analyzeButton = document.getElementById('analyzePlantButton');
+
+  preview.style.display = state.identification.preview ? 'block' : 'none';
+  preview.innerHTML = state.identification.preview
+    ? `<img src="${state.identification.preview}" alt="Preview de la planta">`
+    : '';
+
+  loading.style.display = state.identification.loading ? 'block' : 'none';
+  error.style.display = state.identification.error ? 'block' : 'none';
+  error.textContent = state.identification.error;
+
+  empty.style.display = state.identification.emptyMessage ? 'block' : 'none';
+  empty.textContent = state.identification.emptyMessage;
+
+  bestMatch.style.display = state.identification.bestMatch ? 'block' : 'none';
+  bestMatch.innerHTML = state.identification.bestMatch
+    ? `<strong>Mejor coincidencia:</strong> ${escapeHtml(state.identification.bestMatch)}${state.identification.remainingRequests !== null ? `<br><span style="font-size:0.78rem;color:var(--text-light)">Quedan ${state.identification.remainingRequests} identificaciones.</span>` : ''}`
+    : '';
+
+  results.style.display = state.identification.results.length ? 'grid' : 'none';
+  results.innerHTML = state.identification.results.map((result, index) => `
+    <button type="button" class="identify-result ${state.identification.selectedIndex === index ? 'selected' : ''}" onclick="selectIdentificationResult(${index})">
+      <div class="identify-result-top">
+        <div class="identify-result-name">${escapeHtml(result.scientificName)}</div>
+        <div class="identify-result-score">${confidenceToPercent(result.confidence)}% confianza</div>
+      </div>
+      <div class="identify-result-sub">${result.commonNames && result.commonNames.length ? escapeHtml(result.commonNames.join(', ')) : 'Elige la opción correcta o crea la planta manualmente.'}</div>
+    </button>
+  `).join('');
+
+  analyzeButton.disabled = state.identification.loading || !state.identification.file;
+  analyzeButton.textContent = state.identification.loading ? 'Analizando planta...' : 'Analizar planta';
+}
+
+function openPhotoIdentifyModal() {
+  resetIdentificationState();
+  renderIdentificationModal();
+  document.getElementById('identifyImageInput').value = '';
+  document.getElementById('identifyModal').classList.add('open');
+}
+
+function closePhotoIdentifyModal() {
+  document.getElementById('identifyModal').classList.remove('open');
+}
+
+async function handleIdentificationFileChange(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+
+  state.identification.file = file;
+  state.identification.bestMatch = '';
+  state.identification.results = [];
+  state.identification.selectedIndex = null;
+  state.identification.error = '';
+  state.identification.emptyMessage = '';
+  state.identification.remainingRequests = null;
+
+  try {
+    state.identification.preview = await fileToDataUrl(file);
+  } catch (e) {
+    state.identification.preview = '';
+    state.identification.error = 'No pudimos preparar la imagen. Prueba con otra foto.';
+  }
+
+  renderIdentificationModal();
+}
+
+async function analyzePlantPhoto() {
+  if (!state.identification.file) {
+    state.identification.error = 'Selecciona una imagen antes de analizar.';
+    renderIdentificationModal();
+    return;
+  }
+
+  if (!window.plantIdentificationClient || typeof window.plantIdentificationClient.identifyPlantFromImage !== 'function') {
+    state.identification.error = 'La integración de identificación no está disponible en este momento.';
+    renderIdentificationModal();
+    return;
+  }
+
+  state.identification.loading = true;
+  state.identification.bestMatch = '';
+  state.identification.error = '';
+  state.identification.emptyMessage = '';
+  state.identification.results = [];
+  state.identification.selectedIndex = null;
+  state.identification.remainingRequests = null;
+  renderIdentificationModal();
+
+  try {
+    const response = await window.plantIdentificationClient.identifyPlantFromImage(state.identification.file);
+    const usefulResults = response.results.filter(result => result.confidence >= 15);
+    state.identification.bestMatch = response.bestMatch || '';
+    state.identification.remainingRequests = response.remainingIdentificationRequests;
+    state.identification.results = usefulResults;
+    if (!usefulResults.length) {
+      state.identification.emptyMessage = 'No pudimos identificarla con suficiente confianza. Puedes volver a intentarlo o crear la planta manualmente.';
+    }
+  } catch (e) {
+    state.identification.error = 'No pudimos analizar la foto. Revisa tu conexión, inténtalo de nuevo o crea la planta manualmente.';
+  } finally {
+    state.identification.loading = false;
+    renderIdentificationModal();
+  }
+}
+
+function selectIdentificationResult(index) {
+  state.identification.selectedIndex = index;
+  renderIdentificationModal();
+
+  const result = state.identification.results[index];
+  if (!result) return;
+
+  state.identifiedPlantDraft = {
+    species: result.scientificName,
+    name: '',
+    imagePreview: getPersistableImagePreview(state.identification.preview),
+    identifiedSpecies: result.scientificName,
+    identificationConfidence: result.confidence / 100,
+    identifiedAt: new Date().toISOString(),
+  };
+
+  closePhotoIdentifyModal();
+  openAddPlantModal(state.identifiedPlantDraft);
+}
+
+function createPlantManuallyFromIdentification() {
+  closePhotoIdentifyModal();
+  openAddPlantModal();
+}
+
 // ===== MODALS =====
-function openAddPlantModal() {
+function openAddPlantModal(prefill = null) {
   state.editingPlantId = null;
   state.selectedEmoji = '🌿';
+  state.identifiedPlantDraft = prefill;
   document.getElementById('modalTitle').textContent = 'Nueva planta';
   document.getElementById('modalSub').textContent = 'Añade una planta a tu colección';
-  document.getElementById('plantName').value = '';
-  document.getElementById('plantSpecies').value = '';
+  document.getElementById('plantName').value = prefill?.name || '';
+  document.getElementById('plantSpecies').value = prefill?.species || '';
   document.getElementById('plantFreq').value = '3';
   document.getElementById('plantLight').value = '⛅ Luz indirecta';
+  const identifiedNote = document.getElementById('identifiedPlantNote');
+  if (prefill?.identifiedSpecies) {
+    identifiedNote.style.display = 'block';
+    identifiedNote.innerHTML = `<strong>Especie sugerida:</strong> ${escapeHtml(prefill.identifiedSpecies)} con ${confidenceToPercent(prefill.identificationConfidence)}% de confianza. Puedes editarla antes de guardar.`;
+  } else {
+    identifiedNote.style.display = 'none';
+    identifiedNote.textContent = '';
+  }
   renderEmojiPicker('emojiPicker', plantEmojis, state.selectedEmoji, 'selectPlantEmoji');
   const sel = document.getElementById('plantSection');
   sel.innerHTML = state.sections.map(s => `<option value="${s.id}">${s.icon} ${s.name}</option>`).join('');
@@ -1851,6 +2250,7 @@ function openAddPlantModal() {
 function openEditPlant(id) {
   const p = state.plants.find(x => x.id === id);
   if (!p) return;
+  state.identifiedPlantDraft = null;
   state.editingPlantId = id;
   state.selectedEmoji = p.emoji;
   document.getElementById('modalTitle').textContent = 'Editar planta';
@@ -1859,6 +2259,7 @@ function openEditPlant(id) {
   document.getElementById('plantSpecies').value = p.species || '';
   document.getElementById('plantFreq').value = p.freq;
   document.getElementById('plantLight').value = p.light;
+  document.getElementById('identifiedPlantNote').style.display = 'none';
   renderEmojiPicker('emojiPicker', plantEmojis, p.emoji, 'selectPlantEmoji');
   const sel = document.getElementById('plantSection');
   sel.innerHTML = state.sections.map(s => `<option value="${s.id}">${s.icon} ${s.name}</option>`).join('');
@@ -1867,6 +2268,7 @@ function openEditPlant(id) {
 }
 
 function closePlantModal() {
+  if (!state.editingPlantId) state.identifiedPlantDraft = null;
   document.getElementById('plantModal').classList.remove('open');
 }
 
@@ -1887,6 +2289,7 @@ function savePlant() {
     showToast(`✏️ ${name} actualizada`);
   } else {
     state.plants.push({
+      ...(state.identifiedPlantDraft || {}),
       id: 'p' + Date.now(),
       name,
       species: document.getElementById('plantSpecies').value.trim(),
@@ -1899,6 +2302,7 @@ function savePlant() {
     showToast(`🌱 ${name} añadida`);
   }
 
+  state.identifiedPlantDraft = null;
   saveState();
   closePlantModal();
   render();
