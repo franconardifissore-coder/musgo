@@ -545,6 +545,38 @@
     margin: 16px 0;
   }
 
+  .weather-location-controls {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    align-items: end;
+    margin-top: 12px;
+  }
+
+  .weather-location-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+
+  .weather-note {
+    margin-top: 14px;
+    padding: 14px;
+    border-radius: 14px;
+    background: rgba(122,158,126,0.08);
+    border: 1px solid rgba(122,158,126,0.16);
+    color: var(--text);
+    font-size: 0.85rem;
+    line-height: 1.45;
+  }
+
+  .weather-note strong {
+    color: var(--sage-dark);
+    display: block;
+    margin-bottom: 4px;
+  }
+
   .weather-info-item {
     background: rgba(122,158,126,0.08);
     border-radius: 12px;
@@ -842,6 +874,7 @@
     .plants-grid { grid-template-columns: 1fr; }
     .weather-widget .rain-badge { display: none; }
     .modal { padding: 24px 18px; }
+    .weather-location-controls { grid-template-columns: 1fr; }
   }
 
   @keyframes fadeIn {
@@ -970,7 +1003,18 @@
   <div class="modal">
     <h2>🌤 Tiempo en tu zona</h2>
     <p class="modal-sub" id="weatherModalLocation">Cargando datos meteorológicos...</p>
+    <div class="weather-location-controls">
+      <div class="form-group" style="margin-bottom:0">
+        <label>Ubicación</label>
+        <input type="text" id="weatherLocationInput" placeholder="Ej: Madrid, ES">
+      </div>
+      <button class="btn-save" type="button" onclick="saveWeatherLocation()">Actualizar</button>
+    </div>
+    <div class="weather-location-actions">
+      <button class="btn-cancel" type="button" onclick="useBrowserLocation()">Usar mi ubicación</button>
+    </div>
     <div class="weather-info-grid" id="weatherInfoGrid"></div>
+    <div class="weather-note" id="weatherNote"></div>
     <div class="rain-toggle-area">
       <div>
         <div class="rt-info">¿Ha llovido hoy?</div>
@@ -1056,9 +1100,17 @@ let state = {
   ],
   // rainLog: array of date strings where it rained
   rainLog: [],
+  rainLogManual: [],
+  rainLogWeather: [],
   activeSection: 'all',
   rainToday: false,
   weather: null,
+  weatherLocation: {
+    label: 'Zaragoza, Aragón',
+    latitude: 41.6488,
+    longitude: -0.8891,
+    timezone: 'Europe/Madrid'
+  },
   editingPlantId: null,
   deletingPlantId: null,
   selectedEmoji: '🌿',
@@ -1093,38 +1145,155 @@ function lastWatered(plant) {
   return plant.waterLog.slice().sort().reverse()[0];
 }
 
+function uniqueDates(dates) {
+  return Array.from(new Set((dates || []).filter(Boolean))).sort();
+}
+
+function syncRainState() {
+  state.rainLog = uniqueDates([...(state.rainLogManual || []), ...(state.rainLogWeather || [])]);
+  state.rainToday = state.rainLog.includes(today());
+}
+
+function setRainForDate(dateStr, isRainy, source) {
+  const key = source === 'weather' ? 'rainLogWeather' : 'rainLogManual';
+  const current = new Set(state[key] || []);
+  if (isRainy) current.add(dateStr);
+  else current.delete(dateStr);
+  state[key] = Array.from(current).sort();
+  syncRainState();
+}
+
+function formatLocationLabel(result) {
+  return [result.name, result.admin1, result.country].filter(Boolean).join(', ');
+}
+
+function formatWeatherLocationLabel() {
+  return state.weatherLocation?.label || 'Ubicación sin definir';
+}
+
+function buildWeatherAdvice(weather) {
+  if (!weather) return '';
+  if (state.rainToday) {
+    return 'Se ha registrado lluvia hoy. Las plantas de exterior aparecen protegidas en su calendario y no contarán como pendientes de riego.';
+  }
+  if (weather.precipProb >= 60) {
+    return 'Hay bastante probabilidad de lluvia hoy. Antes de regar las plantas de exterior, conviene revisar si finalmente ha llovido.';
+  }
+  if (weather.maxTemp >= 28 && weather.wind >= 20) {
+    return 'Se espera calor y algo de viento hoy. Las macetas exteriores pueden secarse antes de lo habitual.';
+  }
+  if (weather.maxTemp <= 10) {
+    return 'Es un día fresco. El sustrato tardará más en secarse, así que mejor evitar riegos de más.';
+  }
+  return 'No se detecta lluvia relevante hoy. Puedes seguir el calendario habitual de riego.';
+}
+
 // ===== WEATHER =====
 async function fetchWeather() {
   try {
-    const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=41.6488&longitude=-0.8891&current=temperature_2m,precipitation,weathercode,relative_humidity_2m,wind_speed_10m&timezone=Europe/Madrid');
+    const location = state.weatherLocation;
+    const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${location.latitude}&longitude=${location.longitude}&current=temperature_2m,precipitation,weathercode,relative_humidity_2m,wind_speed_10m&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,uv_index_max&forecast_days=1&timezone=${encodeURIComponent(location.timezone || 'auto')}`);
     const data = await res.json();
     const c = data.current;
+    const d = data.daily || {};
     state.weather = {
       temp: Math.round(c.temperature_2m),
       humidity: c.relative_humidity_2m,
       wind: Math.round(c.wind_speed_10m),
       precip: c.precipitation,
-      code: c.weathercode
+      code: c.weathercode,
+      maxTemp: Math.round((d.temperature_2m_max || [c.temperature_2m])[0]),
+      minTemp: Math.round((d.temperature_2m_min || [c.temperature_2m])[0]),
+      precipSum: Number(((d.precipitation_sum || [c.precipitation || 0])[0] || 0).toFixed(1)),
+      precipProb: (d.precipitation_probability_max || [0])[0] || 0,
+      dailyCode: (d.weathercode || [c.weathercode])[0],
+      uvMax: (d.uv_index_max || [0])[0] || 0
     };
     document.getElementById('weatherIcon').textContent = weatherIcon(c.weathercode);
     document.getElementById('weatherTemp').textContent = state.weather.temp + '°C';
     document.getElementById('weatherDesc').textContent = weatherDesc(c.weathercode);
 
-    if (c.precipitation > 0.5 || [51,53,55,61,63,65,80,81,82].includes(c.weathercode)) {
-      if (!state.rainToday) {
-        state.rainToday = true;
-        // Add today to rainLog
-        if (!state.rainLog.includes(today())) {
-          state.rainLog.push(today());
-        }
-        document.getElementById('rainBadge').style.display = 'inline';
-        document.getElementById('rainToggle').classList.add('on');
-        showToast('🌧 Lluvia detectada hoy — plantas de exterior al día');
-      }
+    const rainyToday =
+      state.weather.precipSum > 1 ||
+      state.weather.precipProb >= 60 ||
+      c.precipitation > 0.5 ||
+      [51,53,55,61,63,65,80,81,82].includes(c.weathercode) ||
+      [51,53,55,61,63,65,80,81,82].includes(state.weather.dailyCode);
+    const rainWasToday = state.rainToday;
+
+    setRainForDate(today(), rainyToday, 'weather');
+
+    if (rainyToday && !rainWasToday) {
+      showToast('🌧 Lluvia detectada hoy — plantas de exterior al día');
+    } else if (!rainyToday && rainWasToday && !(state.rainLogManual || []).includes(today())) {
+      showToast('☀️ Hoy ya no figura lluvia en esta ubicación');
     }
+
     renderWeatherModal();
+    render();
     saveState();
-  } catch(e) {}
+  } catch(e) {
+    document.getElementById('weatherDesc').textContent = 'Sin conexión';
+    renderWeatherModal();
+  }
+}
+
+async function findLocation(query) {
+  const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=1&language=es&format=json`);
+  const data = await res.json();
+  if (!data.results || !data.results.length) {
+    throw new Error('location_not_found');
+  }
+  const match = data.results[0];
+  state.weatherLocation = {
+    label: formatLocationLabel(match),
+    latitude: match.latitude,
+    longitude: match.longitude,
+    timezone: match.timezone || 'auto'
+  };
+}
+
+async function saveWeatherLocation() {
+  const input = document.getElementById('weatherLocationInput');
+  const query = input.value.trim();
+  if (!query) {
+    showToast('⚠️ Escribe una ciudad o dirección');
+    return;
+  }
+  try {
+    await findLocation(query);
+    input.value = state.weatherLocation.label;
+    saveState();
+    await fetchWeather();
+    showToast(`📍 Ubicación actualizada: ${state.weatherLocation.label}`);
+  } catch (e) {
+    showToast('⚠️ No he encontrado esa ubicación');
+  }
+}
+
+function useBrowserLocation() {
+  if (!navigator.geolocation) {
+    showToast('⚠️ Este navegador no permite geolocalización');
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(async position => {
+    state.weatherLocation = {
+      label: `Tu ubicación actual (${position.coords.latitude.toFixed(2)}, ${position.coords.longitude.toFixed(2)})`,
+      latitude: position.coords.latitude,
+      longitude: position.coords.longitude,
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'auto'
+    };
+    document.getElementById('weatherLocationInput').value = state.weatherLocation.label;
+    saveState();
+    await fetchWeather();
+    showToast('📍 Ubicación obtenida del dispositivo');
+  }, () => {
+    showToast('⚠️ No he podido obtener tu ubicación');
+  }, {
+    enableHighAccuracy: true,
+    timeout: 8000
+  });
 }
 
 function weatherIcon(code) {
@@ -1154,14 +1323,45 @@ function weatherDesc(code) {
 }
 
 function renderWeatherModal() {
-  if (!state.weather) return;
+  const locationLabel = formatWeatherLocationLabel();
+  document.getElementById('weatherModalLocation').textContent = `${locationLabel} — Hoy`;
+  document.getElementById('weatherLocationInput').value = locationLabel;
+
+  if (!state.weather) {
+    document.getElementById('weatherInfoGrid').innerHTML = `
+      <div class="weather-info-item" style="grid-column:1/-1">
+        <div class="wi-icon">🌤</div>
+        <div class="wi-value" style="font-size:1rem">Sin datos todavía</div>
+        <div class="wi-label">Actualiza la ubicación para cargar el tiempo del día</div>
+      </div>
+    `;
+    document.getElementById('weatherNote').innerHTML = `<strong>Riego de hoy</strong>Sin datos meteorológicos cargados todavía para esta ubicación.`;
+    document.getElementById('rainToggle').classList.toggle('on', state.rainToday);
+    document.getElementById('rainBadge').style.display = state.rainToday ? 'inline' : 'none';
+    return;
+  }
+
   const w = state.weather;
-  document.getElementById('weatherModalLocation').textContent = 'Zaragoza, Aragón — Hoy';
   document.getElementById('weatherInfoGrid').innerHTML = `
     <div class="weather-info-item">
       <div class="wi-icon">${weatherIcon(w.code)}</div>
       <div class="wi-value">${w.temp}°C</div>
-      <div class="wi-label">Temperatura</div>
+      <div class="wi-label">Ahora</div>
+    </div>
+    <div class="weather-info-item">
+      <div class="wi-icon">🌡️</div>
+      <div class="wi-value">${w.minTemp}° / ${w.maxTemp}°</div>
+      <div class="wi-label">Mín / Máx hoy</div>
+    </div>
+    <div class="weather-info-item">
+      <div class="wi-icon">🌧</div>
+      <div class="wi-value">${w.precipProb}%</div>
+      <div class="wi-label">Prob. lluvia</div>
+    </div>
+    <div class="weather-info-item">
+      <div class="wi-icon">💦</div>
+      <div class="wi-value">${w.precipSum}mm</div>
+      <div class="wi-label">Lluvia esperada</div>
     </div>
     <div class="weather-info-item">
       <div class="wi-icon">💧</div>
@@ -1169,16 +1369,17 @@ function renderWeatherModal() {
       <div class="wi-label">Humedad</div>
     </div>
     <div class="weather-info-item">
-      <div class="wi-icon">🌧</div>
-      <div class="wi-value">${w.precip}mm</div>
-      <div class="wi-label">Precipitación</div>
-    </div>
-    <div class="weather-info-item">
       <div class="wi-icon">💨</div>
       <div class="wi-value">${w.wind}km/h</div>
       <div class="wi-label">Viento</div>
     </div>
   `;
+  document.getElementById('weatherNote').innerHTML = `
+    <strong>Riego de hoy</strong>
+    ${buildWeatherAdvice(w)}
+  `;
+  document.getElementById('rainToggle').classList.toggle('on', state.rainToday);
+  document.getElementById('rainBadge').style.display = state.rainToday ? 'inline' : 'none';
 }
 
 // ===== STORAGE =====
@@ -1187,8 +1388,10 @@ function saveState() {
     localStorage.setItem('musgo_v1', JSON.stringify({
       sections: state.sections,
       plants: state.plants,
-      rainToday: state.rainToday,
       rainLog: state.rainLog,
+      rainLogManual: state.rainLogManual,
+      rainLogWeather: state.rainLogWeather,
+      weatherLocation: state.weatherLocation,
     }));
   } catch(e) {}
 }
@@ -1202,7 +1405,9 @@ function loadState() {
     if (raw) {
       const d = JSON.parse(raw);
       state.sections = d.sections || state.sections;
-      state.rainLog = d.rainLog || [];
+      state.rainLogManual = uniqueDates(d.rainLogManual || d.rainLog || []);
+      state.rainLogWeather = uniqueDates(d.rainLogWeather || []);
+      state.weatherLocation = d.weatherLocation || state.weatherLocation;
       // Migrate old plants (lastWatered string → waterLog array)
       if (d.plants) {
         state.plants = d.plants.map(p => {
@@ -1213,15 +1418,8 @@ function loadState() {
           return p;
         });
       }
-      const lastDate = localStorage.getItem('musgo_lastdate');
-      const td = today();
-      if (lastDate === td) {
-        state.rainToday = d.rainToday || false;
-      } else {
-        state.rainToday = false;
-        localStorage.setItem('musgo_lastdate', td);
-      }
     }
+    syncRainState();
   } catch(e) {}
 }
 
@@ -1429,7 +1627,7 @@ function renderCalendar() {
   }).map(d => new Date(d).getDate()));
 
   // Build set of rain days this month
-  const rainSet = new Set((state.rainLog || []).filter(d => {
+  const rainSet = new Set(((sec && sec.outdoor) ? state.rainLog : []).filter(d => {
     const dt = new Date(d);
     return dt.getFullYear() === year && dt.getMonth() === month;
   }).map(d => new Date(d).getDate()));
@@ -1591,15 +1789,9 @@ function waterPlant(id) {
 }
 
 function toggleRain() {
-  state.rainToday = !state.rainToday;
   const td = today();
-  if (state.rainToday) {
-    if (!state.rainLog.includes(td)) state.rainLog.push(td);
-  } else {
-    state.rainLog = state.rainLog.filter(d => d !== td);
-  }
-  document.getElementById('rainToggle').classList.toggle('on', state.rainToday);
-  document.getElementById('rainBadge').style.display = state.rainToday ? 'inline' : 'none';
+  setRainForDate(td, !state.rainToday, 'manual');
+  renderWeatherModal();
   saveState();
   render();
   showToast(state.rainToday ? '🌧 Lluvia marcada — exterior al día' : '☀️ Sin lluvia hoy');
@@ -1761,7 +1953,6 @@ function saveSection() {
 
 function openWeatherModal() {
   renderWeatherModal();
-  document.getElementById('rainToggle').classList.toggle('on', state.rainToday);
   document.getElementById('weatherModal').classList.add('open');
 }
 
@@ -1788,6 +1979,7 @@ function showToast(msg) {
 // ===== INIT =====
 loadState();
 render();
+renderWeatherModal();
 fetchWeather();
 setInterval(fetchWeather, 600000);
 </script>
