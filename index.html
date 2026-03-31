@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mis Plantas</title>
+<title>Musgo</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -598,6 +598,207 @@
 
   .toggle.on::after { left: 25px; }
 
+  /* ===== CALENDAR MODAL ===== */
+  .modal.modal-calendar {
+    max-width: 520px;
+  }
+
+  .cal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .cal-nav {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .cal-nav-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(122,158,126,0.3);
+    background: transparent;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    color: var(--text);
+  }
+
+  .cal-nav-btn:hover { border-color: var(--sage); background: rgba(122,158,126,0.1); }
+
+  .cal-month-label {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--sage-dark);
+    min-width: 140px;
+    text-align: center;
+  }
+
+  .cal-plant-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 12px 14px;
+    background: rgba(122,158,126,0.08);
+    border-radius: 12px;
+  }
+
+  .cal-plant-emoji { font-size: 1.8rem; }
+  .cal-plant-name { font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--text); }
+  .cal-plant-species { font-size: 0.78rem; color: var(--text-light); font-style: italic; }
+
+  .cal-legend {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .cal-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    color: var(--text-light);
+  }
+
+  .cal-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .cal-dot.watered { background: var(--sage); }
+  .cal-dot.rain { background: var(--rain); }
+  .cal-dot.missed { background: var(--terracotta); }
+  .cal-dot.future { background: rgba(122,158,126,0.25); }
+
+  .cal-grid {
+    width: 100%;
+  }
+
+  .cal-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 6px;
+  }
+
+  .cal-weekday {
+    text-align: center;
+    font-size: 0.7rem;
+    color: var(--text-light);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 4px 0;
+  }
+
+  .cal-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+  }
+
+  .cal-day {
+    aspect-ratio: 1;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.82rem;
+    color: var(--text);
+    position: relative;
+    cursor: default;
+    transition: all 0.15s;
+    border: 1.5px solid transparent;
+    gap: 2px;
+  }
+
+  .cal-day.empty { background: transparent; }
+
+  .cal-day.today {
+    border-color: var(--sage);
+    font-weight: 600;
+  }
+
+  .cal-day.watered {
+    background: rgba(122,158,126,0.18);
+    color: var(--sage-dark);
+    font-weight: 500;
+  }
+
+  .cal-day.rain-day {
+    background: rgba(90,143,163,0.15);
+    color: var(--rain);
+    font-weight: 500;
+  }
+
+  .cal-day.watered.rain-day {
+    background: linear-gradient(135deg, rgba(122,158,126,0.2), rgba(90,143,163,0.2));
+  }
+
+  .cal-day.missed {
+    background: rgba(196,113,74,0.1);
+    color: var(--terracotta);
+  }
+
+  .cal-day.future-water {
+    background: rgba(122,158,126,0.06);
+    border: 1.5px dashed rgba(122,158,126,0.3);
+    color: var(--text-light);
+  }
+
+  .cal-day.past-nodata {
+    color: var(--text-light);
+    opacity: 0.5;
+  }
+
+  .cal-day-num {
+    font-size: 0.82rem;
+    line-height: 1;
+  }
+
+  .cal-day-icons {
+    display: flex;
+    gap: 1px;
+    font-size: 0.55rem;
+    line-height: 1;
+  }
+
+  .cal-day.clickable-past { cursor: pointer; }
+  .cal-day.clickable-past:hover { border-color: var(--sage); transform: scale(1.06); }
+
+  .cal-summary {
+    margin-top: 16px;
+    padding: 12px 14px;
+    background: rgba(122,158,126,0.06);
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-around;
+    text-align: center;
+  }
+
+  .cal-sum-item .cs-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: var(--sage-dark);
+  }
+
+  .cal-sum-item .cs-label {
+    font-size: 0.72rem;
+    color: var(--text-light);
+  }
+
   /* TOAST */
   .toast {
     position: fixed;
@@ -640,9 +841,9 @@
     .stats-bar { grid-template-columns: 1fr 1fr; }
     .plants-grid { grid-template-columns: 1fr; }
     .weather-widget .rain-badge { display: none; }
+    .modal { padding: 24px 18px; }
   }
 
-  /* Animations */
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(12px); }
     to { opacity: 1; transform: translateY(0); }
@@ -666,7 +867,7 @@
 <header>
   <div class="logo">
     <div class="logo-icon">🌿</div>
-    <h1>Mis Plantas</h1>
+    <h1>Musgo</h1>
   </div>
   <div class="header-right">
     <div class="weather-widget" id="weatherWidget" onclick="openWeatherModal()">
@@ -679,14 +880,8 @@
 </header>
 
 <div class="container">
-
-  <!-- STATS -->
   <div class="stats-bar" id="statsBar"></div>
-
-  <!-- TABS -->
   <div class="section-tabs" id="sectionTabs"></div>
-
-  <!-- SECTION HEADER -->
   <div class="section-header">
     <h2 class="section-title">
       <span id="activeSectionName">Todas las plantas</span>
@@ -695,10 +890,7 @@
       <span>＋</span> Nueva planta
     </button>
   </div>
-
-  <!-- PLANTS GRID -->
   <div class="plants-grid" id="plantsGrid"></div>
-
 </div>
 
 <!-- TOAST -->
@@ -709,27 +901,22 @@
   <div class="modal">
     <h2 id="modalTitle">Nueva planta</h2>
     <p class="modal-sub" id="modalSub">Añade una planta a tu colección</p>
-
     <div class="form-group">
       <label>Icono</label>
       <div class="emoji-picker" id="emojiPicker"></div>
     </div>
-
     <div class="form-group">
       <label>Nombre *</label>
       <input type="text" id="plantName" placeholder="Ej: Monstera del salón">
     </div>
-
     <div class="form-group">
       <label>Especie (opcional)</label>
       <input type="text" id="plantSpecies" placeholder="Ej: Monstera deliciosa">
     </div>
-
     <div class="form-group">
       <label>Sección *</label>
       <select id="plantSection"></select>
     </div>
-
     <div class="form-group">
       <label>Frecuencia de riego</label>
       <select id="plantFreq">
@@ -742,7 +929,6 @@
         <option value="30">Cada mes</option>
       </select>
     </div>
-
     <div class="form-group">
       <label>Luz</label>
       <select id="plantLight">
@@ -752,7 +938,6 @@
         <option value="🌑 Poca luz">🌑 Poca luz</option>
       </select>
     </div>
-
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closePlantModal()">Cancelar</button>
       <button class="btn-save" onclick="savePlant()">Guardar planta</button>
@@ -765,17 +950,14 @@
   <div class="modal">
     <h2>Nueva sección</h2>
     <p class="modal-sub">Define un espacio de tu casa</p>
-
     <div class="form-group">
       <label>Icono de la sección</label>
       <div class="emoji-picker" id="sectionEmojiPicker"></div>
     </div>
-
     <div class="form-group">
       <label>Nombre *</label>
       <input type="text" id="sectionName" placeholder="Ej: Balcón, Salón, Habitación...">
     </div>
-
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeSectionModal()">Cancelar</button>
       <button class="btn-save" onclick="saveSection()">Crear sección</button>
@@ -788,9 +970,7 @@
   <div class="modal">
     <h2>🌤 Tiempo en tu zona</h2>
     <p class="modal-sub" id="weatherModalLocation">Cargando datos meteorológicos...</p>
-
     <div class="weather-info-grid" id="weatherInfoGrid"></div>
-
     <div class="rain-toggle-area">
       <div>
         <div class="rt-info">¿Ha llovido hoy?</div>
@@ -798,7 +978,6 @@
       </div>
       <button class="toggle" id="rainToggle" onclick="toggleRain()"></button>
     </div>
-
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeWeatherModal()">Cerrar</button>
       <button class="btn-save" onclick="markAllOutdoorWatered(); closeWeatherModal();">Marcar ext. como regadas</button>
@@ -819,6 +998,47 @@
   </div>
 </div>
 
+<!-- MODAL CALENDAR -->
+<div class="modal-overlay" id="calendarModal">
+  <div class="modal modal-calendar">
+    <div class="cal-plant-info" id="calPlantInfo"></div>
+
+    <div class="cal-header">
+      <div class="cal-nav">
+        <button class="cal-nav-btn" onclick="calPrevMonth()">‹</button>
+        <div class="cal-month-label" id="calMonthLabel"></div>
+        <button class="cal-nav-btn" onclick="calNextMonth()">›</button>
+      </div>
+    </div>
+
+    <div class="cal-legend">
+      <div class="cal-legend-item"><div class="cal-dot watered"></div> Regada</div>
+      <div class="cal-legend-item"><div class="cal-dot rain"></div> Lluvia</div>
+      <div class="cal-legend-item"><div class="cal-dot missed"></div> Sin regar (toca)</div>
+      <div class="cal-legend-item"><div class="cal-dot future"></div> Próximo riego</div>
+    </div>
+
+    <div class="cal-grid">
+      <div class="cal-weekdays">
+        <div class="cal-weekday">L</div>
+        <div class="cal-weekday">M</div>
+        <div class="cal-weekday">X</div>
+        <div class="cal-weekday">J</div>
+        <div class="cal-weekday">V</div>
+        <div class="cal-weekday">S</div>
+        <div class="cal-weekday">D</div>
+      </div>
+      <div class="cal-days" id="calDays"></div>
+    </div>
+
+    <div class="cal-summary" id="calSummary"></div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeCalendarModal()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ===== STATE =====
 let state = {
@@ -828,12 +1048,14 @@ let state = {
     { id: 's3', name: 'Habitación', icon: '🛏️', outdoor: false },
   ],
   plants: [
-    { id: 'p1', name: 'Monstera', species: 'Monstera deliciosa', emoji: '🌿', section: 's2', freq: 7, light: '⛅ Luz indirecta', lastWatered: daysAgo(1) },
-    { id: 'p2', name: 'Cactus del balcón', species: 'Cereus peruvianus', emoji: '🌵', section: 's1', freq: 14, light: '☀️ Sol directo', lastWatered: daysAgo(5) },
-    { id: 'p3', name: 'Lavanda', species: 'Lavandula angustifolia', emoji: '💜', section: 's1', freq: 3, light: '☀️ Sol directo', lastWatered: daysAgo(4) },
-    { id: 'p4', name: 'Potus', species: 'Epipremnum aureum', emoji: '🍃', section: 's3', freq: 5, light: '🌥️ Sombra parcial', lastWatered: daysAgo(2) },
-    { id: 'p5', name: 'Helecho', species: 'Nephrolepis exaltata', emoji: '🌱', section: 's2', freq: 2, light: '🌥️ Sombra parcial', lastWatered: daysAgo(3) },
+    { id: 'p1', name: 'Monstera', species: 'Monstera deliciosa', emoji: '🌿', section: 's2', freq: 7, light: '⛅ Luz indirecta', waterLog: [daysAgo(1), daysAgo(8), daysAgo(15)] },
+    { id: 'p2', name: 'Cactus del balcón', species: 'Cereus peruvianus', emoji: '🌵', section: 's1', freq: 14, light: '☀️ Sol directo', waterLog: [daysAgo(5), daysAgo(19)] },
+    { id: 'p3', name: 'Lavanda', species: 'Lavandula angustifolia', emoji: '💜', section: 's1', freq: 3, light: '☀️ Sol directo', waterLog: [daysAgo(4), daysAgo(7), daysAgo(10)] },
+    { id: 'p4', name: 'Potus', species: 'Epipremnum aureum', emoji: '🍃', section: 's3', freq: 5, light: '🌥️ Sombra parcial', waterLog: [daysAgo(2), daysAgo(7), daysAgo(12)] },
+    { id: 'p5', name: 'Helecho', species: 'Nephrolepis exaltata', emoji: '🌱', section: 's2', freq: 2, light: '🌥️ Sombra parcial', waterLog: [daysAgo(3), daysAgo(5), daysAgo(7)] },
   ],
+  // rainLog: array of date strings where it rained
+  rainLog: [],
   activeSection: 'all',
   rainToday: false,
   weather: null,
@@ -841,6 +1063,10 @@ let state = {
   deletingPlantId: null,
   selectedEmoji: '🌿',
   selectedSectionEmoji: '🪴',
+  // Calendar state
+  calPlantId: null,
+  calYear: new Date().getFullYear(),
+  calMonth: new Date().getMonth(),
 };
 
 function daysAgo(n) {
@@ -861,10 +1087,15 @@ function daysBetween(dateStr) {
   return Math.floor((now - then) / 86400000);
 }
 
+// Get last watered from log
+function lastWatered(plant) {
+  if (!plant.waterLog || plant.waterLog.length === 0) return null;
+  return plant.waterLog.slice().sort().reverse()[0];
+}
+
 // ===== WEATHER =====
 async function fetchWeather() {
   try {
-    // Using Open-Meteo (free, no API key)
     const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=41.6488&longitude=-0.8891&current=temperature_2m,precipitation,weathercode,relative_humidity_2m,wind_speed_10m&timezone=Europe/Madrid');
     const data = await res.json();
     const c = data.current;
@@ -875,16 +1106,17 @@ async function fetchWeather() {
       precip: c.precipitation,
       code: c.weathercode
     };
-    const icon = weatherIcon(c.weathercode);
-    const desc = weatherDesc(c.weathercode);
-    document.getElementById('weatherIcon').textContent = icon;
+    document.getElementById('weatherIcon').textContent = weatherIcon(c.weathercode);
     document.getElementById('weatherTemp').textContent = state.weather.temp + '°C';
-    document.getElementById('weatherDesc').textContent = desc;
+    document.getElementById('weatherDesc').textContent = weatherDesc(c.weathercode);
 
-    // Auto-detect rain
     if (c.precipitation > 0.5 || [51,53,55,61,63,65,80,81,82].includes(c.weathercode)) {
       if (!state.rainToday) {
         state.rainToday = true;
+        // Add today to rainLog
+        if (!state.rainLog.includes(today())) {
+          state.rainLog.push(today());
+        }
         document.getElementById('rainBadge').style.display = 'inline';
         document.getElementById('rainToggle').classList.add('on');
         showToast('🌧 Lluvia detectada hoy — plantas de exterior al día');
@@ -892,7 +1124,7 @@ async function fetchWeather() {
     }
     renderWeatherModal();
     saveState();
-  } catch(e) { /* silently fail */ }
+  } catch(e) {}
 }
 
 function weatherIcon(code) {
@@ -952,29 +1184,42 @@ function renderWeatherModal() {
 // ===== STORAGE =====
 function saveState() {
   try {
-    localStorage.setItem('misplantas_v2', JSON.stringify({
+    localStorage.setItem('musgo_v1', JSON.stringify({
       sections: state.sections,
       plants: state.plants,
       rainToday: state.rainToday,
+      rainLog: state.rainLog,
     }));
   } catch(e) {}
 }
 
 function loadState() {
   try {
-    const saved = localStorage.getItem('misplantas_v2');
-    if (saved) {
-      const d = JSON.parse(saved);
+    const saved = localStorage.getItem('musgo_v1');
+    // Also try to migrate from old key
+    const oldSaved = !saved ? localStorage.getItem('misplantas_v2') : null;
+    const raw = saved || oldSaved;
+    if (raw) {
+      const d = JSON.parse(raw);
       state.sections = d.sections || state.sections;
-      state.plants = d.plants || state.plants;
-      // Reset rain each day
-      const lastDate = localStorage.getItem('misplantas_lastdate');
+      state.rainLog = d.rainLog || [];
+      // Migrate old plants (lastWatered string → waterLog array)
+      if (d.plants) {
+        state.plants = d.plants.map(p => {
+          if (!p.waterLog) {
+            p.waterLog = p.lastWatered ? [p.lastWatered] : [];
+            delete p.lastWatered;
+          }
+          return p;
+        });
+      }
+      const lastDate = localStorage.getItem('musgo_lastdate');
       const td = today();
       if (lastDate === td) {
         state.rainToday = d.rainToday || false;
       } else {
         state.rainToday = false;
-        localStorage.setItem('misplantas_lastdate', td);
+        localStorage.setItem('musgo_lastdate', td);
       }
     }
   } catch(e) {}
@@ -987,22 +1232,22 @@ function getFilteredPlants() {
 }
 
 function needsWater(plant) {
-  const days = daysBetween(plant.lastWatered);
+  const lw = lastWatered(plant);
+  if (!lw) return true;
+  const days = daysBetween(lw);
   const section = state.sections.find(s => s.id === plant.section);
   if (state.rainToday && section && section.outdoor) return false;
   return days >= plant.freq;
 }
 
 function wateredToday(plant) {
-  return plant.lastWatered === today();
+  return (plant.waterLog || []).includes(today());
 }
 
 function renderStats() {
   const plants = state.plants;
   const needWater = plants.filter(p => needsWater(p)).length;
-  const wateredTodayCount = plants.filter(p => wateredToday(p)).length;
-  const totalSections = state.sections.length;
-
+  const wtCount = plants.filter(p => wateredToday(p)).length;
   document.getElementById('statsBar').innerHTML = `
     <div class="stat-card ${needWater > 0 ? 'alert' : ''}">
       <div class="stat-label">Necesitan agua</div>
@@ -1011,13 +1256,13 @@ function renderStats() {
     </div>
     <div class="stat-card">
       <div class="stat-label">Regadas hoy</div>
-      <div class="stat-value">${wateredTodayCount}</div>
+      <div class="stat-value">${wtCount}</div>
       <div class="stat-sub">de ${plants.length} total</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Total plantas</div>
       <div class="stat-value">${plants.length}</div>
-      <div class="stat-sub">en ${totalSections} secciones</div>
+      <div class="stat-sub">en ${state.sections.length} secciones</div>
     </div>
     <div class="stat-card" style="${state.rainToday ? 'border-color:var(--rain)' : ''}">
       <div class="stat-label">Lluvia hoy</div>
@@ -1031,13 +1276,11 @@ function renderTabs() {
   const all = { id: 'all', name: 'Todas', icon: '🌿' };
   const tabs = [all, ...state.sections];
   const container = document.getElementById('sectionTabs');
-
   container.innerHTML = tabs.map(s => {
     const isActive = state.activeSection === s.id;
     const cls = isActive ? (s.id === 'all' ? 'tab all' : 'tab active') : 'tab';
     return `<button class="${cls}" onclick="setSection('${s.id}')">${s.icon} ${s.name}</button>`;
   }).join('');
-
   container.innerHTML += `<button class="btn-add-section" onclick="openSectionModal()">＋ Añadir sección</button>`;
 }
 
@@ -1061,14 +1304,14 @@ function renderPlants() {
       <div class="add-plant-card" onclick="openAddPlantModal()">
         <div class="add-icon">＋</div>
         <span>Añadir planta</span>
-      </div>
-    `;
+      </div>`;
     return;
   }
 
   const cards = plants.map(p => {
     const sec = state.sections.find(s => s.id === p.section);
-    const days = daysBetween(p.lastWatered);
+    const lw = lastWatered(p);
+    const days = lw ? daysBetween(lw) : 999;
     const wToday = wateredToday(p);
     const nWater = needsWater(p);
     const rainProtected = state.rainToday && sec && sec.outdoor;
@@ -1079,7 +1322,7 @@ function renderPlants() {
     else if (wToday) { statusClass = 'ok'; statusText = '✓ Regada hoy'; }
 
     const cardClass = nWater && !rainProtected ? 'plant-card needs-water' : wToday ? 'plant-card watered-today' : 'plant-card';
-    const daysText = days === 0 ? 'Hoy' : days === 1 ? 'Ayer' : `Hace ${days} días`;
+    const daysText = days === 0 ? 'Hoy' : days === 1 ? 'Ayer' : days >= 999 ? 'Nunca' : `Hace ${days} días`;
     const daysClass = days <= 1 ? 'days-ago ok' : nWater ? 'days-ago' : 'days-ago ok';
 
     const btnWater = wToday
@@ -1087,7 +1330,7 @@ function renderPlants() {
       : `<button class="btn-water" onclick="waterPlant('${p.id}')">💧 Regar ahora</button>`;
 
     return `
-      <div class="${cardClass}" style="animation-delay:${Math.random()*0.1}s">
+      <div class="${cardClass}">
         <div class="plant-emoji-area">
           ${p.emoji}
           <span class="plant-section-badge">${sec ? sec.icon + ' ' + sec.name : ''}</span>
@@ -1106,21 +1349,19 @@ function renderPlants() {
           </div>
           <div class="plant-actions">
             ${btnWater}
+            <button class="btn-icon" onclick="openCalendarModal('${p.id}')" title="Ver calendario">📅</button>
             <button class="btn-icon" onclick="openEditPlant('${p.id}')" title="Editar">✏️</button>
             <button class="btn-icon delete" onclick="openDeleteModal('${p.id}')" title="Eliminar">🗑️</button>
           </div>
         </div>
-      </div>
-    `;
+      </div>`;
   });
 
-  // Add card at the end
   cards.push(`
     <div class="add-plant-card" onclick="openAddPlantModal()">
       <div class="add-icon">＋</div>
       <span>Añadir planta</span>
-    </div>
-  `);
+    </div>`);
 
   grid.innerHTML = cards.join('');
 }
@@ -1129,6 +1370,205 @@ function render() {
   renderStats();
   renderTabs();
   renderPlants();
+}
+
+// ===== CALENDAR =====
+const MONTH_NAMES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+function openCalendarModal(plantId) {
+  state.calPlantId = plantId;
+  state.calYear = new Date().getFullYear();
+  state.calMonth = new Date().getMonth();
+  renderCalendar();
+  document.getElementById('calendarModal').classList.add('open');
+}
+
+function closeCalendarModal() {
+  document.getElementById('calendarModal').classList.remove('open');
+}
+
+function calPrevMonth() {
+  state.calMonth--;
+  if (state.calMonth < 0) { state.calMonth = 11; state.calYear--; }
+  renderCalendar();
+}
+
+function calNextMonth() {
+  state.calMonth++;
+  if (state.calMonth > 11) { state.calMonth = 0; state.calYear++; }
+  renderCalendar();
+}
+
+function renderCalendar() {
+  const plant = state.plants.find(p => p.id === state.calPlantId);
+  if (!plant) return;
+
+  const sec = state.sections.find(s => s.id === plant.section);
+
+  // Plant info header
+  document.getElementById('calPlantInfo').innerHTML = `
+    <div class="cal-plant-emoji">${plant.emoji}</div>
+    <div>
+      <div class="cal-plant-name">${plant.name}</div>
+      <div class="cal-plant-species">${plant.species || (sec ? sec.icon + ' ' + sec.name : '')}</div>
+    </div>
+  `;
+
+  // Month label
+  document.getElementById('calMonthLabel').textContent = `${MONTH_NAMES[state.calMonth]} ${state.calYear}`;
+
+  const year = state.calYear;
+  const month = state.calMonth;
+  const todayStr = today();
+  const todayDate = new Date(todayStr);
+
+  // Build set of watered days for this plant this month
+  const wateredSet = new Set((plant.waterLog || []).filter(d => {
+    const dt = new Date(d);
+    return dt.getFullYear() === year && dt.getMonth() === month;
+  }).map(d => new Date(d).getDate()));
+
+  // Build set of rain days this month
+  const rainSet = new Set((state.rainLog || []).filter(d => {
+    const dt = new Date(d);
+    return dt.getFullYear() === year && dt.getMonth() === month;
+  }).map(d => new Date(d).getDate()));
+
+  // First day of month (Monday=0 based)
+  const firstDay = new Date(year, month, 1);
+  let startDow = firstDay.getDay(); // 0=Sun
+  startDow = startDow === 0 ? 6 : startDow - 1; // convert to Mon=0
+
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  // Figure out projected watering days based on freq
+  // Start from last watered date before this month, project forward
+  const lw = lastWatered(plant);
+  const projectedWaterDays = new Set();
+
+  if (lw) {
+    let cursor = new Date(lw);
+    cursor.setHours(0,0,0,0);
+    const monthEnd = new Date(year, month + 1, 0);
+
+    // Go forward from last watered
+    while (cursor <= monthEnd) {
+      cursor.setDate(cursor.getDate() + plant.freq);
+      if (cursor.getFullYear() === year && cursor.getMonth() === month) {
+        projectedWaterDays.add(cursor.getDate());
+      }
+    }
+  }
+
+  // Build cells
+  let cells = [];
+
+  // Empty cells before first day
+  for (let i = 0; i < startDow; i++) {
+    cells.push(`<div class="cal-day empty"></div>`);
+  }
+
+  // Stats counters
+  let wateredCount = 0, rainCount = 0, missedCount = 0;
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const cellDate = new Date(year, month, d);
+    const cellStr = cellDate.toISOString().split('T')[0];
+    const isPast = cellDate < todayDate;
+    const isToday = cellStr === todayStr;
+    const isFuture = cellDate > todayDate;
+    const isWatered = wateredSet.has(d);
+    const isRain = rainSet.has(d);
+    const isProjected = projectedWaterDays.has(d);
+
+    let classes = ['cal-day'];
+    let icons = [];
+
+    if (isToday) classes.push('today');
+
+    if (isWatered) {
+      classes.push('watered');
+      icons.push('💧');
+      wateredCount++;
+    }
+    if (isRain) {
+      classes.push('rain-day');
+      icons.push('🌧');
+      rainCount++;
+    }
+
+    // Missed: past day that was a projected watering day and wasn't watered or rained
+    if (isPast && isProjected && !isWatered && !isRain) {
+      classes.push('missed');
+      missedCount++;
+    }
+
+    // Future projected
+    if (isFuture && isProjected) {
+      classes.push('future-water');
+    }
+
+    if (!isWatered && !isRain && !isProjected && isPast && !isToday) {
+      classes.push('past-nodata');
+    }
+
+    // Clickable past days to log watering retroactively
+    if ((isPast || isToday) && !isWatered) {
+      classes.push('clickable-past');
+    }
+
+    const iconsHtml = icons.length ? `<div class="cal-day-icons">${icons.join('')}</div>` : '';
+
+    cells.push(`
+      <div class="${classes.join(' ')}" 
+           onclick="calDayClick('${cellStr}', ${isWatered})"
+           title="${isWatered ? 'Regada' : (isRain ? 'Lluvia' : (isProjected && isFuture ? 'Próximo riego' : ''))}">
+        <div class="cal-day-num">${d}</div>
+        ${iconsHtml}
+      </div>`);
+  }
+
+  document.getElementById('calDays').innerHTML = cells.join('');
+
+  // Summary
+  document.getElementById('calSummary').innerHTML = `
+    <div class="cal-sum-item">
+      <div class="cs-value" style="color:var(--sage-dark)">${wateredCount}</div>
+      <div class="cs-label">Riegos</div>
+    </div>
+    <div class="cal-sum-item">
+      <div class="cs-value" style="color:var(--rain)">${rainCount}</div>
+      <div class="cs-label">Días lluvia</div>
+    </div>
+    <div class="cal-sum-item">
+      <div class="cs-value" style="color:var(--terracotta)">${missedCount}</div>
+      <div class="cs-label">Sin regar</div>
+    </div>
+    <div class="cal-sum-item">
+      <div class="cs-value">${wateredCount + rainCount}</div>
+      <div class="cs-label">Días hidratada</div>
+    </div>
+  `;
+}
+
+function calDayClick(dateStr, alreadyWatered) {
+  if (alreadyWatered) return; // already logged
+  const plant = state.plants.find(p => p.id === state.calPlantId);
+  if (!plant) return;
+  const clickDate = new Date(dateStr);
+  const todayDate = new Date(today());
+  if (clickDate > todayDate) return; // no future logging
+
+  if (!plant.waterLog) plant.waterLog = [];
+  if (!plant.waterLog.includes(dateStr)) {
+    plant.waterLog.push(dateStr);
+    saveState();
+    render();
+    renderCalendar();
+    const d = new Date(dateStr);
+    const label = dateStr === today() ? 'hoy' : `el ${d.getDate()}/${d.getMonth()+1}`;
+    showToast(`💧 Riego añadido ${label}`);
+  }
 }
 
 // ===== ACTIONS =====
@@ -1140,7 +1580,11 @@ function setSection(id) {
 function waterPlant(id) {
   const p = state.plants.find(x => x.id === id);
   if (!p) return;
-  p.lastWatered = today();
+  if (!p.waterLog) p.waterLog = [];
+  const td = today();
+  if (!p.waterLog.includes(td)) {
+    p.waterLog.push(td);
+  }
   saveState();
   render();
   showToast(`💧 ${p.name} regada`);
@@ -1148,10 +1592,14 @@ function waterPlant(id) {
 
 function toggleRain() {
   state.rainToday = !state.rainToday;
-  const btn = document.getElementById('rainToggle');
-  btn.classList.toggle('on', state.rainToday);
-  const badge = document.getElementById('rainBadge');
-  badge.style.display = state.rainToday ? 'inline' : 'none';
+  const td = today();
+  if (state.rainToday) {
+    if (!state.rainLog.includes(td)) state.rainLog.push(td);
+  } else {
+    state.rainLog = state.rainLog.filter(d => d !== td);
+  }
+  document.getElementById('rainToggle').classList.toggle('on', state.rainToday);
+  document.getElementById('rainBadge').style.display = state.rainToday ? 'inline' : 'none';
   saveState();
   render();
   showToast(state.rainToday ? '🌧 Lluvia marcada — exterior al día' : '☀️ Sin lluvia hoy');
@@ -1159,8 +1607,12 @@ function toggleRain() {
 
 function markAllOutdoorWatered() {
   const outdoorSections = state.sections.filter(s => s.outdoor).map(s => s.id);
+  const td = today();
   state.plants.forEach(p => {
-    if (outdoorSections.includes(p.section)) p.lastWatered = today();
+    if (outdoorSections.includes(p.section)) {
+      if (!p.waterLog) p.waterLog = [];
+      if (!p.waterLog.includes(td)) p.waterLog.push(td);
+    }
   });
   saveState();
   render();
@@ -1197,15 +1649,10 @@ function openAddPlantModal() {
   document.getElementById('plantSpecies').value = '';
   document.getElementById('plantFreq').value = '3';
   document.getElementById('plantLight').value = '⛅ Luz indirecta';
-
   renderEmojiPicker('emojiPicker', plantEmojis, state.selectedEmoji, 'selectPlantEmoji');
-
   const sel = document.getElementById('plantSection');
-  sel.innerHTML = state.sections.map(s =>
-    `<option value="${s.id}">${s.icon} ${s.name}</option>`
-  ).join('');
+  sel.innerHTML = state.sections.map(s => `<option value="${s.id}">${s.icon} ${s.name}</option>`).join('');
   if (state.activeSection !== 'all') sel.value = state.activeSection;
-
   document.getElementById('plantModal').classList.add('open');
 }
 
@@ -1220,15 +1667,10 @@ function openEditPlant(id) {
   document.getElementById('plantSpecies').value = p.species || '';
   document.getElementById('plantFreq').value = p.freq;
   document.getElementById('plantLight').value = p.light;
-
   renderEmojiPicker('emojiPicker', plantEmojis, p.emoji, 'selectPlantEmoji');
-
   const sel = document.getElementById('plantSection');
-  sel.innerHTML = state.sections.map(s =>
-    `<option value="${s.id}">${s.icon} ${s.name}</option>`
-  ).join('');
+  sel.innerHTML = state.sections.map(s => `<option value="${s.id}">${s.icon} ${s.name}</option>`).join('');
   sel.value = p.section;
-
   document.getElementById('plantModal').classList.add('open');
 }
 
@@ -1260,7 +1702,7 @@ function savePlant() {
       section,
       freq: parseInt(document.getElementById('plantFreq').value),
       light: document.getElementById('plantLight').value,
-      lastWatered: daysAgo(99),
+      waterLog: [],
     });
     showToast(`🌱 ${name} añadida`);
   }
@@ -1319,8 +1761,7 @@ function saveSection() {
 
 function openWeatherModal() {
   renderWeatherModal();
-  const btn = document.getElementById('rainToggle');
-  btn.classList.toggle('on', state.rainToday);
+  document.getElementById('rainToggle').classList.toggle('on', state.rainToday);
   document.getElementById('weatherModal').classList.add('open');
 }
 
@@ -1328,7 +1769,6 @@ function closeWeatherModal() {
   document.getElementById('weatherModal').classList.remove('open');
 }
 
-// Close modals on overlay click
 document.querySelectorAll('.modal-overlay').forEach(el => {
   el.addEventListener('click', e => {
     if (e.target === el) el.classList.remove('open');
@@ -1349,7 +1789,6 @@ function showToast(msg) {
 loadState();
 render();
 fetchWeather();
-// Refresh weather every 10 min
 setInterval(fetchWeather, 600000);
 </script>
 </body>
