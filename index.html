@@ -1898,6 +1898,7 @@ async function loadCloudGarden() {
     loading: true,
     error: '',
   };
+  render();
 
   try {
     const garden = await window.supabaseData.fetchUserGarden();
@@ -1915,6 +1916,7 @@ async function loadCloudGarden() {
       syncedUserId: null,
       error: error instanceof Error ? error.message : String(error),
     };
+    render();
     showToast('⚠️ No pudimos cargar tus plantas desde la nube');
   }
 }
@@ -2111,6 +2113,35 @@ function renderTabs() {
 }
 
 function renderPlants() {
+  const grid = document.getElementById('plantsGrid');
+
+  if (!state.auth.ready || state.cloud.loading) {
+    grid.innerHTML = `
+      <div class="grid-full">
+        <div class="empty-state">
+          <div class="es-icon">🌿</div>
+          <h3>Cargando tu jardín</h3>
+          <p>Estamos recuperando tus plantas y secciones para que todo aparezca en esta vista.</p>
+        </div>
+      </div>`;
+    return;
+  }
+
+  if (state.auth.configured && !state.auth.user) {
+    grid.innerHTML = `
+      <div class="grid-full">
+        <div class="empty-state">
+          <div class="es-icon">🔐</div>
+          <h3>Inicia sesión para ver tus plantas</h3>
+          <p>Ahora el jardín se carga desde tu cuenta, así que necesitas entrar con Google para recuperar tus plantas guardadas.</p>
+          <div class="empty-state-actions">
+            <button class="btn-primary" onclick="handleGoogleSignIn()">Continuar con Google</button>
+          </div>
+        </div>
+      </div>`;
+    return;
+  }
+
   const plants = getFilteredPlants();
   const section = state.sections.find(s => s.id === state.activeSection);
   document.getElementById('activeSectionName').textContent =
@@ -2126,8 +2157,6 @@ function renderPlants() {
       subtitle.textContent = `${plants.length} planta${plants.length === 1 ? '' : 's'} en esta vista · ${needWaterCount} ${needWaterCount === 1 ? 'necesita' : 'necesitan'} agua hoy`;
     }
   }
-
-  const grid = document.getElementById('plantsGrid');
 
   if (plants.length === 0) {
     grid.innerHTML = `
