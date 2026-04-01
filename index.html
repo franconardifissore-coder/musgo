@@ -1524,10 +1524,7 @@
       <p class="section-subtitle" id="activeSectionSubtitle">Una vista limpia para detectar rápido qué toca cuidar hoy.</p>
     </div>
     <div class="section-actions">
-      <button class="btn-secondary" onclick="openPhotoIdentifyModal()">
-        <span>📷</span> Identificar planta por foto
-      </button>
-      <button class="btn-primary" onclick="openAddPlantModal()">
+      <button class="btn-primary" onclick="openPhotoIdentifyModal()">
         <span>＋</span> Añadir planta
       </button>
     </div>
@@ -2216,8 +2213,7 @@ function renderPlants() {
           <h3>Sin plantas aquí todavía</h3>
           <p>Empieza con una planta manual o usa la identificación por foto para crear una colección más bonita y ordenada.</p>
           <div class="empty-state-actions">
-            <button class="btn-primary" onclick="openAddPlantModal()">Añadir planta</button>
-            <button class="btn-secondary" onclick="openPhotoIdentifyModal()">Identificar por foto</button>
+            <button class="btn-primary" onclick="openPhotoIdentifyModal()">Añadir planta</button>
           </div>
         </div>
       </div>`;
@@ -2273,10 +2269,10 @@ function renderPlants() {
   });
 
   cards.push(`
-    <div class="add-plant-card" onclick="openAddPlantModal()">
+    <div class="add-plant-card" onclick="openPhotoIdentifyModal()">
       <div class="add-icon">＋</div>
       <span>Añadir planta</span>
-      <p>Suma una nueva especie o documenta otra zona verde de tu casa.</p>
+      <p>Empieza con una foto y, si quieres, completa la ficha manualmente desde el mismo flujo.</p>
     </div>`);
 
   grid.innerHTML = cards.join('');
