@@ -492,6 +492,13 @@
     letter-spacing: -0.04em;
   }
 
+  .section-title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
   .section-title span {
     color: var(--text);
   }
@@ -757,6 +764,13 @@
     justify-content: center;
     cursor: pointer;
     font-size: 1rem;
+  }
+
+  .btn-icon.small {
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+    font-size: 0.9rem;
   }
 
   .btn-icon:hover {
@@ -1501,9 +1515,12 @@
   <div class="section-tabs" id="sectionTabs"></div>
   <div class="section-header">
     <div>
-      <h2 class="section-title">
-        <span id="activeSectionName">Todas las plantas</span>
-      </h2>
+      <div class="section-title-row">
+        <h2 class="section-title">
+          <span id="activeSectionName">Todas las plantas</span>
+        </h2>
+        <button class="btn-icon small" id="editSectionButton" onclick="openEditSectionModal()" title="Editar sección" style="display:none">✏️</button>
+      </div>
       <p class="section-subtitle" id="activeSectionSubtitle">Una vista limpia para detectar rápido qué toca cuidar hoy.</p>
     </div>
     <div class="section-actions">
@@ -1618,6 +1635,26 @@
   </div>
 </div>
 
+<!-- MODAL EDIT SECTION -->
+<div class="modal-overlay" id="editSectionModal">
+  <div class="modal">
+    <h2>Editar sección</h2>
+    <p class="modal-sub">Puedes renombrar esta sección o eliminarla por completo junto con todas sus plantas.</p>
+    <div class="form-group">
+      <label>Nombre de la sección</label>
+      <input type="text" id="editSectionName" placeholder="Ej: Salón">
+    </div>
+    <div class="delete-confirm">Eliminar sección borrará también todas las plantas dentro de ella.</div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeEditSectionModal()">Descartar cambios</button>
+      <button class="btn-save" onclick="saveSectionChanges()">Guardar</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-danger" onclick="deleteCurrentSection()">Eliminar sección</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL DELETE CONFIRM -->
 <div class="modal-overlay" id="deleteModal">
   <div class="modal">
@@ -1707,6 +1744,7 @@ let state = {
     syncedUserId: null,
     error: '',
   },
+  editingSectionId: null,
   editingPlantId: null,
   deletingPlantId: null,
   selectedEmoji: '🌿',
@@ -1940,6 +1978,12 @@ async function deletePlantFromCloud(plantId) {
   await window.supabaseData.deletePlant(plantId);
 }
 
+async function deleteSectionFromCloud(sectionId) {
+  if (!isCloudSyncEnabled()) return;
+  await window.supabaseData.deletePlantsBySection(sectionId);
+  await window.supabaseData.deleteSection(sectionId);
+}
+
 function renderAuthArea() {
   const authArea = document.getElementById('authArea');
   if (!authArea) return;
@@ -2114,8 +2158,10 @@ function renderTabs() {
 
 function renderPlants() {
   const grid = document.getElementById('plantsGrid');
+  const editSectionButton = document.getElementById('editSectionButton');
 
   if (!state.auth.ready || state.cloud.loading) {
+    if (editSectionButton) editSectionButton.style.display = 'none';
     grid.innerHTML = `
       <div class="grid-full">
         <div class="empty-state">
@@ -2128,6 +2174,7 @@ function renderPlants() {
   }
 
   if (state.auth.configured && !state.auth.user) {
+    if (editSectionButton) editSectionButton.style.display = 'none';
     grid.innerHTML = `
       <div class="grid-full">
         <div class="empty-state">
@@ -2146,6 +2193,9 @@ function renderPlants() {
   const section = state.sections.find(s => s.id === state.activeSection);
   document.getElementById('activeSectionName').textContent =
     state.activeSection === 'all' ? 'Todas las plantas' : (section ? section.icon + ' ' + section.name : '');
+  if (editSectionButton) {
+    editSectionButton.style.display = state.activeSection !== 'all' && section ? 'inline-flex' : 'none';
+  }
   const needWaterCount = plants.filter(p => needsWater(p)).length;
   const subtitle = document.getElementById('activeSectionSubtitle');
   if (subtitle) {
@@ -2769,6 +2819,75 @@ async function saveSection() {
     return;
   }
   showToast(`📍 Sección "${name}" creada`);
+}
+
+function openEditSectionModal() {
+  if (state.activeSection === 'all') return;
+  const section = state.sections.find(item => item.id === state.activeSection);
+  if (!section) return;
+  state.editingSectionId = section.id;
+  document.getElementById('editSectionName').value = section.name;
+  document.getElementById('editSectionModal').classList.add('open');
+}
+
+function closeEditSectionModal() {
+  state.editingSectionId = null;
+  document.getElementById('editSectionModal').classList.remove('open');
+}
+
+async function saveSectionChanges() {
+  const sectionId = state.editingSectionId || state.activeSection;
+  const section = state.sections.find(item => item.id === sectionId);
+  if (!section) return;
+
+  const nextName = document.getElementById('editSectionName').value.trim();
+  if (!nextName) {
+    showToast('⚠️ El nombre es obligatorio');
+    return;
+  }
+
+  section.name = nextName;
+  section.outdoor = ['balcón','terraza','jardín','exterior','patio'].some(w => nextName.toLowerCase().includes(w));
+  render();
+  closeEditSectionModal();
+
+  try {
+    await syncSectionToCloud(section);
+  } catch (error) {
+    console.error('Failed to sync edited section', error);
+    showToast('⚠️ La sección se actualizó localmente, pero no pudimos sincronizarla');
+    return;
+  }
+
+  showToast(`✏️ Sección "${nextName}" actualizada`);
+}
+
+async function deleteCurrentSection() {
+  const sectionId = state.editingSectionId || state.activeSection;
+  const section = state.sections.find(item => item.id === sectionId);
+  if (!section) return;
+
+  const confirmed = window.confirm(`Eliminar la sección "${section.name}" también borrará todas sus plantas. ¿Quieres continuar?`);
+  if (!confirmed) return;
+
+  const plantIds = state.plants.filter(plant => plant.section === sectionId).map(plant => plant.id);
+  state.plants = state.plants.filter(plant => plant.section !== sectionId);
+  state.sections = state.sections.filter(item => item.id !== sectionId);
+  state.activeSection = 'all';
+  render();
+  closeEditSectionModal();
+
+  try {
+    if (isCloudSyncEnabled()) {
+      await deleteSectionFromCloud(sectionId);
+    }
+  } catch (error) {
+    console.error('Failed to delete section in cloud', error);
+    showToast('⚠️ La sección se eliminó localmente, pero no pudimos sincronizar el borrado');
+    return;
+  }
+
+  showToast(`🗑️ Sección "${section.name}" eliminada${plantIds.length ? ` con ${plantIds.length} planta${plantIds.length === 1 ? '' : 's'}` : ''}`);
 }
 
 document.querySelectorAll('.modal-overlay').forEach(el => {
