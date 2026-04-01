@@ -1359,6 +1359,7 @@
   };
 </script>
 <script src="./lib/identify-plant.js"></script>
+<script src="./lib/supabase-data.js"></script>
 <script type="module" src="./lib/supabase-auth.js"></script>
 <script>
 // ===== STATE =====
@@ -1389,6 +1390,11 @@ let state = {
     user: null,
     error: '',
   },
+  cloud: {
+    loading: false,
+    syncedUserId: null,
+    error: '',
+  },
   weatherLocation: {
     label: 'Zaragoza, Aragón',
     latitude: 41.6488,
@@ -1415,7 +1421,12 @@ let state = {
   calPlantId: null,
   calYear: new Date().getFullYear(),
   calMonth: new Date().getMonth(),
+  hasLocalSavedData: false,
 };
+
+const DEFAULT_SECTIONS = JSON.parse(JSON.stringify(state.sections));
+const DEFAULT_PLANTS = JSON.parse(JSON.stringify(state.plants));
+const DEFAULT_WEATHER_LOCATION = JSON.parse(JSON.stringify(state.weatherLocation));
 
 function daysAgo(n) {
   const d = new Date();
@@ -1457,6 +1468,37 @@ function setRainForDate(dateStr, isRainy, source) {
   else current.delete(dateStr);
   state[key] = Array.from(current).sort();
   syncRainState();
+}
+
+function getStorageKey(userId = state.auth?.user?.id || null) {
+  return userId ? `musgo_user_${userId}` : 'musgo_v1';
+}
+
+function resetPersistedState() {
+  state.sections = JSON.parse(JSON.stringify(DEFAULT_SECTIONS));
+  state.plants = JSON.parse(JSON.stringify(DEFAULT_PLANTS));
+  state.rainLog = [];
+  state.rainLogManual = [];
+  state.rainLogWeather = [];
+  state.rainToday = false;
+  state.weatherLocation = JSON.parse(JSON.stringify(DEFAULT_WEATHER_LOCATION));
+  state.hasLocalSavedData = false;
+}
+
+function applyPersistedState(d) {
+  state.sections = d.sections || state.sections;
+  state.rainLogManual = uniqueDates(d.rainLogManual || d.rainLog || []);
+  state.rainLogWeather = uniqueDates(d.rainLogWeather || []);
+  state.weatherLocation = d.weatherLocation || state.weatherLocation;
+  if (d.plants) {
+    state.plants = d.plants.map(p => {
+      if (!p.waterLog) {
+        p.waterLog = p.lastWatered ? [p.lastWatered] : [];
+        delete p.lastWatered;
+      }
+      return p;
+    });
+  }
 }
 
 function formatLocationLabel(result) {
@@ -1527,6 +1569,7 @@ function getPersistableImagePreview(dataUrl) {
 }
 
 function applyAuthState({ session = null, user = null, configured = state.auth.configured, error = '' } = {}) {
+  const previousUserId = state.auth.user?.id || null;
   state.auth = {
     ...state.auth,
     ready: true,
@@ -1536,6 +1579,21 @@ function applyAuthState({ session = null, user = null, configured = state.auth.c
     error,
   };
   renderAuthArea();
+
+  const nextUserId = user?.id || null;
+  if (nextUserId && nextUserId !== previousUserId) {
+    loadCloudGarden();
+  }
+  if (!nextUserId && previousUserId) {
+    state.cloud = {
+      loading: false,
+      syncedUserId: null,
+      error: '',
+    };
+    loadState();
+    renderWeatherModal();
+    render();
+  }
 }
 
 async function initAuth() {
@@ -1587,6 +1645,77 @@ function getUserInitial(user) {
 
 function getUserName(user) {
   return user?.user_metadata?.full_name || user?.user_metadata?.name || 'Sesión iniciada';
+}
+
+function isCloudSyncEnabled() {
+  return Boolean(state.auth.user && window.supabaseData);
+}
+
+async function loadCloudGarden() {
+  if (!isCloudSyncEnabled()) return;
+
+  const userId = state.auth.user.id;
+  state.cloud = {
+    ...state.cloud,
+    loading: true,
+    error: '',
+  };
+
+  try {
+    const garden = await window.supabaseData.fetchUserGarden();
+    if (!garden.sections.length && !garden.plants.length && state.hasLocalSavedData) {
+      await seedCloudGardenFromLocalState();
+      const seededGarden = await window.supabaseData.fetchUserGarden();
+      if (seededGarden.sections.length) state.sections = seededGarden.sections;
+      if (seededGarden.plants.length) state.plants = seededGarden.plants;
+    } else {
+      if (garden.sections.length) state.sections = garden.sections;
+      if (garden.plants.length) state.plants = garden.plants;
+    }
+    state.cloud = {
+      loading: false,
+      syncedUserId: userId,
+      error: '',
+    };
+    saveState();
+    render();
+  } catch (error) {
+    state.cloud = {
+      loading: false,
+      syncedUserId: null,
+      error: error instanceof Error ? error.message : String(error),
+    };
+    showToast('⚠️ No pudimos cargar tus plantas desde la nube');
+  }
+}
+
+async function seedCloudGardenFromLocalState() {
+  if (!isCloudSyncEnabled()) return;
+  for (const section of state.sections) {
+    await syncSectionToCloud(section);
+  }
+  for (const plant of state.plants) {
+    await syncPlantToCloud(plant);
+  }
+}
+
+async function syncSectionToCloud(section) {
+  if (!isCloudSyncEnabled()) return;
+  await window.supabaseData.upsertSection(section, state.auth.user.id);
+}
+
+async function syncPlantToCloud(plant) {
+  if (!isCloudSyncEnabled()) return;
+  const section = state.sections.find(item => item.id === plant.section);
+  if (section) {
+    await syncSectionToCloud(section);
+  }
+  await window.supabaseData.upsertPlant(plant, state.auth.user.id);
+}
+
+async function deletePlantFromCloud(plantId) {
+  if (!isCloudSyncEnabled()) return;
+  await window.supabaseData.deletePlant(plantId);
 }
 
 function renderAuthArea() {
@@ -1853,7 +1982,7 @@ function renderWeatherModal() {
 // ===== STORAGE =====
 function saveState() {
   try {
-    localStorage.setItem('musgo_v1', JSON.stringify({
+    localStorage.setItem(getStorageKey(), JSON.stringify({
       sections: state.sections,
       plants: state.plants,
       rainLog: state.rainLog,
@@ -1864,28 +1993,16 @@ function saveState() {
   } catch(e) {}
 }
 
-function loadState() {
+function loadState(userId = null) {
   try {
-    const saved = localStorage.getItem('musgo_v1');
+    resetPersistedState();
+    const saved = localStorage.getItem(getStorageKey(userId));
     // Also try to migrate from old key
-    const oldSaved = !saved ? localStorage.getItem('misplantas_v2') : null;
+    const oldSaved = !saved && !userId ? localStorage.getItem('misplantas_v2') : null;
     const raw = saved || oldSaved;
     if (raw) {
-      const d = JSON.parse(raw);
-      state.sections = d.sections || state.sections;
-      state.rainLogManual = uniqueDates(d.rainLogManual || d.rainLog || []);
-      state.rainLogWeather = uniqueDates(d.rainLogWeather || []);
-      state.weatherLocation = d.weatherLocation || state.weatherLocation;
-      // Migrate old plants (lastWatered string → waterLog array)
-      if (d.plants) {
-        state.plants = d.plants.map(p => {
-          if (!p.waterLog) {
-            p.waterLog = p.lastWatered ? [p.lastWatered] : [];
-            delete p.lastWatered;
-          }
-          return p;
-        });
-      }
+      state.hasLocalSavedData = true;
+      applyPersistedState(JSON.parse(raw));
     }
     syncRainState();
   } catch(e) {}
@@ -2225,7 +2342,7 @@ function renderCalendar() {
   `;
 }
 
-function calDayClick(dateStr, alreadyWatered) {
+async function calDayClick(dateStr, alreadyWatered) {
   if (alreadyWatered) return; // already logged
   const plant = state.plants.find(p => p.id === state.calPlantId);
   if (!plant) return;
@@ -2239,6 +2356,12 @@ function calDayClick(dateStr, alreadyWatered) {
     saveState();
     render();
     renderCalendar();
+    try {
+      await syncPlantToCloud(plant);
+    } catch (error) {
+      showToast('⚠️ El riego se guardó localmente, pero no pudimos sincronizarlo');
+      return;
+    }
     const d = new Date(dateStr);
     const label = dateStr === today() ? 'hoy' : `el ${d.getDate()}/${d.getMonth()+1}`;
     showToast(`💧 Riego añadido ${label}`);
@@ -2251,7 +2374,7 @@ function setSection(id) {
   render();
 }
 
-function waterPlant(id) {
+async function waterPlant(id) {
   const p = state.plants.find(x => x.id === id);
   if (!p) return;
   if (!p.waterLog) p.waterLog = [];
@@ -2261,6 +2384,12 @@ function waterPlant(id) {
   }
   saveState();
   render();
+  try {
+    await syncPlantToCloud(p);
+  } catch (error) {
+    showToast('⚠️ Regamos localmente, pero no pudimos sincronizar en la nube');
+    return;
+  }
   showToast(`💧 ${p.name} regada`);
 }
 
@@ -2273,17 +2402,29 @@ function toggleRain() {
   showToast(state.rainToday ? '🌧 Lluvia marcada — exterior al día' : '☀️ Sin lluvia hoy');
 }
 
-function markAllOutdoorWatered() {
+async function markAllOutdoorWatered() {
   const outdoorSections = state.sections.filter(s => s.outdoor).map(s => s.id);
   const td = today();
+  const updatedPlants = [];
   state.plants.forEach(p => {
     if (outdoorSections.includes(p.section)) {
       if (!p.waterLog) p.waterLog = [];
-      if (!p.waterLog.includes(td)) p.waterLog.push(td);
+      if (!p.waterLog.includes(td)) {
+        p.waterLog.push(td);
+        updatedPlants.push(p);
+      }
     }
   });
   saveState();
   render();
+  try {
+    for (const plant of updatedPlants) {
+      await syncPlantToCloud(plant);
+    }
+  } catch (error) {
+    showToast('⚠️ Se actualizó localmente, pero falló la sincronización en la nube');
+    return;
+  }
   showToast('🌧 Plantas de exterior marcadas como regadas');
 }
 
@@ -2496,12 +2637,13 @@ function closePlantModal() {
   document.getElementById('plantModal').classList.remove('open');
 }
 
-function savePlant() {
+async function savePlant() {
   const name = document.getElementById('plantName').value.trim();
   if (!name) { showToast('⚠️ El nombre es obligatorio'); return; }
   const section = document.getElementById('plantSection').value;
   if (!section) { showToast('⚠️ Elige una sección'); return; }
 
+  let plantToSync = null;
   if (state.editingPlantId) {
     const p = state.plants.find(x => x.id === state.editingPlantId);
     p.name = name;
@@ -2510,9 +2652,10 @@ function savePlant() {
     p.freq = parseInt(document.getElementById('plantFreq').value);
     p.light = document.getElementById('plantLight').value;
     p.emoji = state.selectedEmoji;
+    plantToSync = p;
     showToast(`✏️ ${name} actualizada`);
   } else {
-    state.plants.push({
+    plantToSync = {
       ...(state.identifiedPlantDraft || {}),
       id: 'p' + Date.now(),
       name,
@@ -2522,7 +2665,8 @@ function savePlant() {
       freq: parseInt(document.getElementById('plantFreq').value),
       light: document.getElementById('plantLight').value,
       waterLog: [],
-    });
+    };
+    state.plants.push(plantToSync);
     showToast(`🌱 ${name} añadida`);
   }
 
@@ -2530,6 +2674,11 @@ function savePlant() {
   saveState();
   closePlantModal();
   render();
+  try {
+    await syncPlantToCloud(plantToSync);
+  } catch (error) {
+    showToast('⚠️ La planta se guardó localmente, pero no pudimos asociarla a tu cuenta');
+  }
 }
 
 function openDeleteModal(id) {
@@ -2543,13 +2692,20 @@ function closeDeleteModal() {
   document.getElementById('deleteModal').classList.remove('open');
 }
 
-function confirmDelete() {
+async function confirmDelete() {
   if (!state.deletingPlantId) return;
   const p = state.plants.find(x => x.id === state.deletingPlantId);
+  const plantId = state.deletingPlantId;
   state.plants = state.plants.filter(x => x.id !== state.deletingPlantId);
   saveState();
   closeDeleteModal();
   render();
+  try {
+    await deletePlantFromCloud(plantId);
+  } catch (error) {
+    showToast('⚠️ Se eliminó localmente, pero no pudimos sincronizar el borrado');
+    return;
+  }
   if (p) showToast(`🗑️ ${p.name} eliminada`);
 }
 
@@ -2564,18 +2720,25 @@ function closeSectionModal() {
   document.getElementById('sectionModal').classList.remove('open');
 }
 
-function saveSection() {
+async function saveSection() {
   const name = document.getElementById('sectionName').value.trim();
   if (!name) { showToast('⚠️ El nombre es obligatorio'); return; }
-  state.sections.push({
+  const section = {
     id: 's' + Date.now(),
     name,
     icon: state.selectedSectionEmoji,
     outdoor: ['balcón','terraza','jardín','exterior','patio'].some(w => name.toLowerCase().includes(w)),
-  });
+  };
+  state.sections.push(section);
   saveState();
   closeSectionModal();
   render();
+  try {
+    await syncSectionToCloud(section);
+  } catch (error) {
+    showToast('⚠️ La sección se creó localmente, pero no pudimos sincronizarla');
+    return;
+  }
   showToast(`📍 Sección "${name}" creada`);
 }
 
