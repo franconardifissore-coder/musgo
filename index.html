@@ -1549,7 +1549,7 @@
       <div class="emoji-picker" id="emojiPicker"></div>
     </div>
     <div class="form-group">
-      <label>Nombre *</label>
+      <label>Nombre</label>
       <input type="text" id="plantName" placeholder="Ej: Monstera del salón">
     </div>
     <div class="form-group">
@@ -2715,27 +2715,28 @@ function closePlantModal() {
 
 async function savePlant() {
   const name = document.getElementById('plantName').value.trim();
-  if (!name) { showToast('⚠️ El nombre es obligatorio'); return; }
   const section = document.getElementById('plantSection').value;
   if (!section) { showToast('⚠️ Elige una sección'); return; }
+  const species = document.getElementById('plantSpecies').value.trim();
+  const resolvedName = name || species || 'Planta sin nombre';
 
   let plantToSync = null;
   if (state.editingPlantId) {
     const p = state.plants.find(x => x.id === state.editingPlantId);
-    p.name = name;
-    p.species = document.getElementById('plantSpecies').value.trim();
+    p.name = resolvedName;
+    p.species = species;
     p.section = section;
     p.freq = parseInt(document.getElementById('plantFreq').value);
     p.light = document.getElementById('plantLight').value;
     p.emoji = state.selectedEmoji;
     plantToSync = p;
-    showToast(`✏️ ${name} actualizada`);
+    showToast(`✏️ ${resolvedName} actualizada`);
   } else {
     plantToSync = {
       ...(state.identifiedPlantDraft || {}),
       id: createEntityId('plant'),
-      name,
-      species: document.getElementById('plantSpecies').value.trim(),
+      name: resolvedName,
+      species,
       emoji: state.selectedEmoji,
       section,
       freq: parseInt(document.getElementById('plantFreq').value),
@@ -2743,7 +2744,7 @@ async function savePlant() {
       waterLog: [],
     };
     state.plants.push(plantToSync);
-    showToast(`🌱 ${name} añadida`);
+    showToast(`🌱 ${resolvedName} añadida`);
   }
 
   state.identifiedPlantDraft = null;
