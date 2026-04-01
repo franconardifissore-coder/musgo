@@ -200,45 +200,6 @@
     font-size: 0.74rem;
   }
 
-  .weather-widget {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 16px;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.92);
-    border: 1px solid var(--line);
-    color: var(--muted);
-    cursor: pointer;
-    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
-    box-shadow: 0 8px 20px rgba(31, 52, 37, 0.05);
-  }
-
-  .weather-widget:hover {
-    transform: translateY(-1px);
-    border-color: rgba(79, 168, 109, 0.3);
-    box-shadow: 0 16px 30px rgba(31, 52, 37, 0.08);
-  }
-
-  .weather-widget .temp {
-    color: var(--text);
-    font-weight: 700;
-  }
-
-  .weather-desc {
-    color: var(--muted);
-    font-size: 0.8rem;
-  }
-
-  .weather-widget .rain-badge {
-    padding: 4px 10px;
-    border-radius: 999px;
-    background: var(--rain);
-    color: #fff;
-    font-size: 0.7rem;
-    font-weight: 700;
-  }
-
   .container {
     width: min(1240px, calc(100% - 24px));
     margin: 22px auto 0;
@@ -448,19 +409,6 @@
 
   .stat-card.alert .stat-icon {
     background: var(--danger-soft);
-  }
-
-  .stat-card.rain {
-    border-color: rgba(110, 157, 179, 0.28);
-  }
-
-  .stat-icon.rain {
-    background: var(--rain-soft);
-    color: var(--rain);
-  }
-
-  .stat-value.compact {
-    font-size: 1.8rem;
   }
 
   .section-tabs {
@@ -994,7 +942,6 @@
   }
 
   .form-note,
-  .weather-note,
   .identify-state,
   .delete-confirm {
     padding: 15px 16px;
@@ -1009,8 +956,7 @@
     color: var(--text);
   }
 
-  .form-note strong,
-  .weather-note strong {
+  .form-note strong {
     color: var(--text);
   }
 
@@ -1037,8 +983,7 @@
   }
 
   .identify-state.loading,
-  .identify-state.best-match,
-  .weather-note {
+  .identify-state.best-match {
     background: rgba(246, 251, 244, 0.86);
     border: 1px solid rgba(79, 168, 109, 0.12);
     color: var(--text);
@@ -1109,116 +1054,6 @@
   .best-match-meta {
     font-size: 0.78rem;
     color: var(--muted);
-  }
-
-  .weather-location-controls {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 10px;
-    align-items: end;
-  }
-
-  .weather-location-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 10px;
-  }
-
-  .weather-info-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-    margin: 18px 0;
-  }
-
-  .weather-info-item {
-    padding: 16px;
-    border-radius: 20px;
-    background: rgba(246, 251, 244, 0.88);
-    border: 1px solid rgba(79, 168, 109, 0.12);
-    text-align: left;
-  }
-
-  .weather-info-item .wi-icon {
-    font-size: 1.4rem;
-    margin-bottom: 8px;
-  }
-
-  .weather-info-item .wi-value {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.7rem;
-    letter-spacing: -0.04em;
-  }
-
-  .weather-info-item .wi-label {
-    margin-top: 6px;
-    color: var(--muted);
-    font-size: 0.8rem;
-  }
-
-  .weather-info-item.full-span {
-    grid-column: 1 / -1;
-  }
-
-  .weather-info-item.empty-card .wi-value {
-    font-size: 1rem;
-    font-family: 'DM Sans', sans-serif;
-    letter-spacing: 0;
-  }
-
-  .rain-toggle-area {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 16px;
-    padding: 16px;
-    margin-top: 14px;
-    border-radius: 22px;
-    background: rgba(240, 248, 251, 0.92);
-    border: 1px solid rgba(110, 157, 179, 0.16);
-  }
-
-  .rain-toggle-area .rt-info {
-    font-weight: 700;
-  }
-
-  .rain-toggle-area .rt-sub {
-    color: var(--muted);
-    margin-top: 3px;
-    font-size: 0.82rem;
-  }
-
-  .toggle {
-    width: 56px;
-    height: 32px;
-    border-radius: 999px;
-    border: none;
-    background: rgba(79, 168, 109, 0.24);
-    position: relative;
-    cursor: pointer;
-    flex-shrink: 0;
-  }
-
-  .toggle::after {
-    content: '';
-    position: absolute;
-    top: 4px;
-    left: 4px;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: #fff;
-    box-shadow: 0 8px 14px rgba(31, 52, 37, 0.14);
-    transition: left 0.2s ease;
-  }
-
-  .toggle.on {
-    background: var(--accent);
-  }
-
-  .toggle.on::after {
-    left: 28px;
   }
 
   .modal.modal-calendar {
@@ -1314,7 +1149,6 @@
   }
 
   .cal-dot.watered { background: var(--accent); }
-  .cal-dot.rain { background: var(--rain); }
   .cal-dot.missed { background: var(--danger); }
   .cal-dot.future { background: rgba(79, 168, 109, 0.32); }
 
@@ -1365,15 +1199,6 @@
   .cal-day.watered {
     background: rgba(79, 168, 109, 0.16);
     color: var(--accent-deep);
-  }
-
-  .cal-day.rain-day {
-    background: rgba(110, 157, 179, 0.16);
-    color: var(--rain);
-  }
-
-  .cal-day.watered.rain-day {
-    background: linear-gradient(145deg, rgba(79, 168, 109, 0.18), rgba(110, 157, 179, 0.16));
   }
 
   .cal-day.missed {
@@ -1568,17 +1393,12 @@
       justify-content: stretch;
     }
 
-    .auth-area,
-    .weather-widget {
+    .auth-area {
       width: 100%;
     }
 
     .auth-area {
       justify-content: stretch;
-    }
-
-    .weather-widget {
-      justify-content: center;
     }
 
     .hero-title {
@@ -1601,7 +1421,6 @@
       grid-template-columns: 1fr;
     }
 
-    .weather-info-grid,
     .cal-summary {
       grid-template-columns: 1fr 1fr;
     }
@@ -1629,7 +1448,6 @@
     }
 
     .stats-bar,
-    .weather-info-grid,
     .cal-summary {
       grid-template-columns: 1fr;
     }
@@ -1654,9 +1472,6 @@
       width: 100%;
     }
 
-    .weather-location-controls {
-      grid-template-columns: 1fr;
-    }
   }
 </style>
 </head>
@@ -1669,12 +1484,6 @@
   </div>
   <div class="header-right">
     <div class="auth-area" id="authArea"></div>
-    <div class="weather-widget" id="weatherWidget" onclick="openWeatherModal()">
-      <span id="weatherIcon">⛅</span>
-      <span class="temp" id="weatherTemp">--°C</span>
-      <span class="weather-desc" id="weatherDesc">Cargando...</span>
-      <span class="rain-badge" id="rainBadge" style="display:none">🌧 Lluvia</span>
-    </div>
   </div>
 </header>
 
@@ -1809,37 +1618,6 @@
   </div>
 </div>
 
-<!-- MODAL WEATHER -->
-<div class="modal-overlay" id="weatherModal">
-  <div class="modal">
-    <h2>🌤 Tiempo en tu zona</h2>
-    <p class="modal-sub" id="weatherModalLocation">Cargando datos meteorológicos...</p>
-    <div class="weather-location-controls">
-      <div class="form-group field-compact">
-        <label>Ubicación</label>
-        <input type="text" id="weatherLocationInput" placeholder="Ej: Madrid, ES">
-      </div>
-      <button class="btn-save" type="button" onclick="saveWeatherLocation()">Actualizar</button>
-    </div>
-    <div class="weather-location-actions">
-      <button class="btn-cancel" type="button" onclick="useBrowserLocation()">Usar mi ubicación</button>
-    </div>
-    <div class="weather-info-grid" id="weatherInfoGrid"></div>
-    <div class="weather-note" id="weatherNote"></div>
-    <div class="rain-toggle-area">
-      <div>
-        <div class="rt-info">¿Ha llovido hoy?</div>
-        <div class="rt-sub">Si ha llovido, las plantas de exterior no necesitan riego</div>
-      </div>
-      <button class="toggle" id="rainToggle" onclick="toggleRain()"></button>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeWeatherModal()">Cerrar</button>
-      <button class="btn-save" onclick="markAllOutdoorWatered(); closeWeatherModal();">Marcar ext. como regadas</button>
-    </div>
-  </div>
-</div>
-
 <!-- MODAL DELETE CONFIRM -->
 <div class="modal-overlay" id="deleteModal">
   <div class="modal">
@@ -1868,7 +1646,6 @@
 
     <div class="cal-legend">
       <div class="cal-legend-item"><div class="cal-dot watered"></div> Regada</div>
-      <div class="cal-legend-item"><div class="cal-dot rain"></div> Lluvia</div>
       <div class="cal-legend-item"><div class="cal-dot missed"></div> Sin regar (toca)</div>
       <div class="cal-legend-item"><div class="cal-dot future"></div> Próximo riego</div>
     </div>
@@ -1917,13 +1694,7 @@ let state = {
     { id: 'p4', name: 'Potus', species: 'Epipremnum aureum', emoji: '🍃', section: 's3', freq: 5, light: '🌥️ Sombra parcial', waterLog: [daysAgo(2), daysAgo(7), daysAgo(12)] },
     { id: 'p5', name: 'Helecho', species: 'Nephrolepis exaltata', emoji: '🌱', section: 's2', freq: 2, light: '🌥️ Sombra parcial', waterLog: [daysAgo(3), daysAgo(5), daysAgo(7)] },
   ],
-  // rainLog: array of date strings where it rained
-  rainLog: [],
-  rainLogManual: [],
-  rainLogWeather: [],
   activeSection: 'all',
-  rainToday: false,
-  weather: null,
   auth: {
     ready: false,
     configured: false,
@@ -1935,12 +1706,6 @@ let state = {
     loading: false,
     syncedUserId: null,
     error: '',
-  },
-  weatherLocation: {
-    label: 'Zaragoza, Aragón',
-    latitude: 41.6488,
-    longitude: -0.8891,
-    timezone: 'Europe/Madrid'
   },
   editingPlantId: null,
   deletingPlantId: null,
@@ -1963,7 +1728,6 @@ let state = {
   calYear: new Date().getFullYear(),
   calMonth: new Date().getMonth(),
 };
-const DEFAULT_WEATHER_LOCATION = JSON.parse(JSON.stringify(state.weatherLocation));
 
 function daysAgo(n) {
   const d = new Date();
@@ -1989,55 +1753,7 @@ function lastWatered(plant) {
   return plant.waterLog.slice().sort().reverse()[0];
 }
 
-function uniqueDates(dates) {
-  return Array.from(new Set((dates || []).filter(Boolean))).sort();
-}
-
-function syncRainState() {
-  state.rainLog = uniqueDates([...(state.rainLogManual || []), ...(state.rainLogWeather || [])]);
-  state.rainToday = state.rainLog.includes(today());
-}
-
-function setRainForDate(dateStr, isRainy, source) {
-  const key = source === 'weather' ? 'rainLogWeather' : 'rainLogManual';
-  const current = new Set(state[key] || []);
-  if (isRainy) current.add(dateStr);
-  else current.delete(dateStr);
-  state[key] = Array.from(current).sort();
-  syncRainState();
-}
-
 function resetTransientState() {
-  state.rainLog = [];
-  state.rainLogManual = [];
-  state.rainLogWeather = [];
-  state.rainToday = false;
-  state.weatherLocation = JSON.parse(JSON.stringify(DEFAULT_WEATHER_LOCATION));
-}
-
-function formatLocationLabel(result) {
-  return [result.name, result.admin1, result.country].filter(Boolean).join(', ');
-}
-
-function formatWeatherLocationLabel() {
-  return state.weatherLocation?.label || 'Ubicación sin definir';
-}
-
-function buildWeatherAdvice(weather) {
-  if (!weather) return '';
-  if (state.rainToday) {
-    return 'Se ha registrado lluvia hoy. Las plantas de exterior aparecen protegidas en su calendario y no contarán como pendientes de riego.';
-  }
-  if (weather.precipProb >= 60) {
-    return 'Hay bastante probabilidad de lluvia hoy. Antes de regar las plantas de exterior, conviene revisar si finalmente ha llovido.';
-  }
-  if (weather.maxTemp >= 28 && weather.wind >= 20) {
-    return 'Se espera calor y algo de viento hoy. Las macetas exteriores pueden secarse antes de lo habitual.';
-  }
-  if (weather.maxTemp <= 10) {
-    return 'Es un día fresco. El sustrato tardará más en secarse, así que mejor evitar riegos de más.';
-  }
-  return 'No se detecta lluvia relevante hoy. Puedes seguir el calendario habitual de riego.';
 }
 
 function confidenceToPercent(confidence) {
@@ -2114,7 +1830,6 @@ function applyAuthState({ session = null, user = null, configured = state.auth.c
     state.sections = [];
     state.plants = [];
     resetTransientState();
-    renderWeatherModal();
     render();
   }
 }
@@ -2290,200 +2005,6 @@ async function handleSignOut() {
   }
 }
 
-// ===== WEATHER =====
-async function fetchWeather() {
-  try {
-    const location = state.weatherLocation;
-    const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${location.latitude}&longitude=${location.longitude}&current=temperature_2m,precipitation,weathercode,relative_humidity_2m,wind_speed_10m&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,uv_index_max&forecast_days=1&timezone=${encodeURIComponent(location.timezone || 'auto')}`);
-    const data = await res.json();
-    const c = data.current;
-    const d = data.daily || {};
-    state.weather = {
-      temp: Math.round(c.temperature_2m),
-      humidity: c.relative_humidity_2m,
-      wind: Math.round(c.wind_speed_10m),
-      precip: c.precipitation,
-      code: c.weathercode,
-      maxTemp: Math.round((d.temperature_2m_max || [c.temperature_2m])[0]),
-      minTemp: Math.round((d.temperature_2m_min || [c.temperature_2m])[0]),
-      precipSum: Number(((d.precipitation_sum || [c.precipitation || 0])[0] || 0).toFixed(1)),
-      precipProb: (d.precipitation_probability_max || [0])[0] || 0,
-      dailyCode: (d.weathercode || [c.weathercode])[0],
-      uvMax: (d.uv_index_max || [0])[0] || 0
-    };
-    document.getElementById('weatherIcon').textContent = weatherIcon(c.weathercode);
-    document.getElementById('weatherTemp').textContent = state.weather.temp + '°C';
-    document.getElementById('weatherDesc').textContent = weatherDesc(c.weathercode);
-
-    const rainyToday =
-      state.weather.precipSum > 1 ||
-      state.weather.precipProb >= 60 ||
-      c.precipitation > 0.5 ||
-      [51,53,55,61,63,65,80,81,82].includes(c.weathercode) ||
-      [51,53,55,61,63,65,80,81,82].includes(state.weather.dailyCode);
-    const rainWasToday = state.rainToday;
-
-    setRainForDate(today(), rainyToday, 'weather');
-
-    if (rainyToday && !rainWasToday) {
-      showToast('🌧 Lluvia detectada hoy — plantas de exterior al día');
-    } else if (!rainyToday && rainWasToday && !(state.rainLogManual || []).includes(today())) {
-      showToast('☀️ Hoy ya no figura lluvia en esta ubicación');
-    }
-
-    renderWeatherModal();
-    render();
-    saveState();
-  } catch(e) {
-    document.getElementById('weatherDesc').textContent = 'Sin conexión';
-    renderWeatherModal();
-  }
-}
-
-async function findLocation(query) {
-  const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=1&language=es&format=json`);
-  const data = await res.json();
-  if (!data.results || !data.results.length) {
-    throw new Error('location_not_found');
-  }
-  const match = data.results[0];
-  state.weatherLocation = {
-    label: formatLocationLabel(match),
-    latitude: match.latitude,
-    longitude: match.longitude,
-    timezone: match.timezone || 'auto'
-  };
-}
-
-async function saveWeatherLocation() {
-  const input = document.getElementById('weatherLocationInput');
-  const query = input.value.trim();
-  if (!query) {
-    showToast('⚠️ Escribe una ciudad o dirección');
-    return;
-  }
-  try {
-    await findLocation(query);
-    input.value = state.weatherLocation.label;
-    saveState();
-    await fetchWeather();
-    showToast(`📍 Ubicación actualizada: ${state.weatherLocation.label}`);
-  } catch (e) {
-    showToast('⚠️ No he encontrado esa ubicación');
-  }
-}
-
-function useBrowserLocation() {
-  if (!navigator.geolocation) {
-    showToast('⚠️ Este navegador no permite geolocalización');
-    return;
-  }
-
-  navigator.geolocation.getCurrentPosition(async position => {
-    state.weatherLocation = {
-      label: `Tu ubicación actual (${position.coords.latitude.toFixed(2)}, ${position.coords.longitude.toFixed(2)})`,
-      latitude: position.coords.latitude,
-      longitude: position.coords.longitude,
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'auto'
-    };
-    document.getElementById('weatherLocationInput').value = state.weatherLocation.label;
-    saveState();
-    await fetchWeather();
-    showToast('📍 Ubicación obtenida del dispositivo');
-  }, () => {
-    showToast('⚠️ No he podido obtener tu ubicación');
-  }, {
-    enableHighAccuracy: true,
-    timeout: 8000
-  });
-}
-
-function weatherIcon(code) {
-  if (code === 0) return '☀️';
-  if (code <= 2) return '⛅';
-  if (code <= 3) return '☁️';
-  if (code <= 49) return '🌫️';
-  if (code <= 59) return '🌦️';
-  if (code <= 69) return '🌧️';
-  if (code <= 79) return '❄️';
-  if (code <= 82) return '🌧️';
-  if (code <= 99) return '⛈️';
-  return '🌤️';
-}
-
-function weatherDesc(code) {
-  if (code === 0) return 'Despejado';
-  if (code <= 2) return 'Parcialmente nublado';
-  if (code <= 3) return 'Nublado';
-  if (code <= 49) return 'Niebla';
-  if (code <= 59) return 'Llovizna';
-  if (code <= 69) return 'Lluvia';
-  if (code <= 79) return 'Nieve';
-  if (code <= 82) return 'Chubascos';
-  if (code <= 99) return 'Tormenta';
-  return 'Variable';
-}
-
-function renderWeatherModal() {
-  const locationLabel = formatWeatherLocationLabel();
-  document.getElementById('weatherModalLocation').textContent = `${locationLabel} — Hoy`;
-  document.getElementById('weatherLocationInput').value = locationLabel;
-
-  if (!state.weather) {
-    document.getElementById('weatherInfoGrid').innerHTML = `
-      <div class="weather-info-item full-span empty-card">
-        <div class="wi-icon">🌤</div>
-        <div class="wi-value">Sin datos todavía</div>
-        <div class="wi-label">Actualiza la ubicación para cargar el tiempo del día</div>
-      </div>
-    `;
-    document.getElementById('weatherNote').innerHTML = `<strong>Riego de hoy</strong>Sin datos meteorológicos cargados todavía para esta ubicación.`;
-    document.getElementById('rainToggle').classList.toggle('on', state.rainToday);
-    document.getElementById('rainBadge').style.display = state.rainToday ? 'inline' : 'none';
-    return;
-  }
-
-  const w = state.weather;
-  document.getElementById('weatherInfoGrid').innerHTML = `
-    <div class="weather-info-item">
-      <div class="wi-icon">${weatherIcon(w.code)}</div>
-      <div class="wi-value">${w.temp}°C</div>
-      <div class="wi-label">Ahora</div>
-    </div>
-    <div class="weather-info-item">
-      <div class="wi-icon">🌡️</div>
-      <div class="wi-value">${w.minTemp}° / ${w.maxTemp}°</div>
-      <div class="wi-label">Mín / Máx hoy</div>
-    </div>
-    <div class="weather-info-item">
-      <div class="wi-icon">🌧</div>
-      <div class="wi-value">${w.precipProb}%</div>
-      <div class="wi-label">Prob. lluvia</div>
-    </div>
-    <div class="weather-info-item">
-      <div class="wi-icon">💦</div>
-      <div class="wi-value">${w.precipSum}mm</div>
-      <div class="wi-label">Lluvia esperada</div>
-    </div>
-    <div class="weather-info-item">
-      <div class="wi-icon">💧</div>
-      <div class="wi-value">${w.humidity}%</div>
-      <div class="wi-label">Humedad</div>
-    </div>
-    <div class="weather-info-item">
-      <div class="wi-icon">💨</div>
-      <div class="wi-value">${w.wind}km/h</div>
-      <div class="wi-label">Viento</div>
-    </div>
-  `;
-  document.getElementById('weatherNote').innerHTML = `
-    <strong>Riego de hoy</strong>
-    ${buildWeatherAdvice(w)}
-  `;
-  document.getElementById('rainToggle').classList.toggle('on', state.rainToday);
-  document.getElementById('rainBadge').style.display = state.rainToday ? 'inline' : 'none';
-}
-
 // ===== STORAGE =====
 function saveState() {
   return;
@@ -2493,7 +2014,6 @@ function loadState() {
   state.sections = [];
   state.plants = [];
   resetTransientState();
-  syncRainState();
 }
 
 // ===== RENDER =====
@@ -2506,8 +2026,6 @@ function needsWater(plant) {
   const lw = lastWatered(plant);
   if (!lw) return true;
   const days = daysBetween(lw);
-  const section = state.sections.find(s => s.id === plant.section);
-  if (state.rainToday && section && section.outdoor) return false;
   return days >= plant.freq;
 }
 
@@ -2552,14 +2070,6 @@ function renderStats() {
       <div class="stat-value">${plants.length}</div>
       <div class="stat-sub">en ${state.sections.length} secciones</div>
     </div>
-    <div class="stat-card ${state.rainToday ? 'rain' : ''}">
-      <div class="stat-top">
-        <div class="stat-label">Lluvia hoy</div>
-        <div class="stat-icon ${state.rainToday ? 'rain' : ''}">${state.rainToday ? '🌧' : '☀️'}</div>
-      </div>
-      <div class="stat-value compact">${state.rainToday ? 'Sí' : 'No'}</div>
-      <div class="stat-sub">${state.rainToday ? 'Ha llovido' : 'Sin lluvia'}</div>
-    </div>
   `;
 }
 
@@ -2584,7 +2094,7 @@ function renderHeroSummary(totalPlants, needWater, wateredCount) {
   }
 
   if (collectionCopy) {
-    collectionCopy.textContent = `${state.sections.length} secciones · ${wateredCount} regadas hoy · ${state.rainToday ? 'lluvia registrada' : 'sin lluvia registrada'}`;
+    collectionCopy.textContent = `${state.sections.length} secciones · ${wateredCount} regadas hoy · seguimiento simple y manual`;
   }
 }
 
@@ -2646,14 +2156,12 @@ function renderPlants() {
     const days = lw ? daysBetween(lw) : 999;
     const wToday = wateredToday(p);
     const nWater = needsWater(p);
-    const rainProtected = state.rainToday && sec && sec.outdoor;
 
     let statusClass = 'ok', statusText = 'Al día';
-    if (rainProtected) { statusClass = 'rain'; statusText = '🌧 Lluvia'; }
-    else if (nWater) { statusClass = 'warn'; statusText = '💧 Necesita agua'; }
+    if (nWater) { statusClass = 'warn'; statusText = '💧 Necesita agua'; }
     else if (wToday) { statusClass = 'ok'; statusText = '✓ Regada hoy'; }
 
-    const cardClass = nWater && !rainProtected ? 'plant-card needs-water' : wToday ? 'plant-card watered-today' : 'plant-card';
+    const cardClass = nWater ? 'plant-card needs-water' : wToday ? 'plant-card watered-today' : 'plant-card';
     const daysText = days === 0 ? 'Hoy' : days === 1 ? 'Ayer' : days >= 999 ? 'Nunca' : `Hace ${days} días`;
     const daysClass = days <= 1 ? 'days-ago ok' : nWater ? 'days-ago' : 'days-ago ok';
 
@@ -2737,14 +2245,12 @@ function renderCalendar() {
   const plant = state.plants.find(p => p.id === state.calPlantId);
   if (!plant) return;
 
-  const sec = state.sections.find(s => s.id === plant.section);
-
   // Plant info header
   document.getElementById('calPlantInfo').innerHTML = `
     <div class="cal-plant-emoji">${plant.emoji}</div>
     <div>
       <div class="cal-plant-name">${plant.name}</div>
-      <div class="cal-plant-species">${plant.species || (sec ? sec.icon + ' ' + sec.name : '')}</div>
+      <div class="cal-plant-species">${plant.species || ''}</div>
     </div>
   `;
 
@@ -2758,12 +2264,6 @@ function renderCalendar() {
 
   // Build set of watered days for this plant this month
   const wateredSet = new Set((plant.waterLog || []).filter(d => {
-    const dt = new Date(d);
-    return dt.getFullYear() === year && dt.getMonth() === month;
-  }).map(d => new Date(d).getDate()));
-
-  // Build set of rain days this month
-  const rainSet = new Set(((sec && sec.outdoor) ? state.rainLog : []).filter(d => {
     const dt = new Date(d);
     return dt.getFullYear() === year && dt.getMonth() === month;
   }).map(d => new Date(d).getDate()));
@@ -2803,7 +2303,7 @@ function renderCalendar() {
   }
 
   // Stats counters
-  let wateredCount = 0, rainCount = 0, missedCount = 0;
+  let wateredCount = 0, missedCount = 0;
 
   for (let d = 1; d <= daysInMonth; d++) {
     const cellDate = new Date(year, month, d);
@@ -2812,7 +2312,6 @@ function renderCalendar() {
     const isToday = cellStr === todayStr;
     const isFuture = cellDate > todayDate;
     const isWatered = wateredSet.has(d);
-    const isRain = rainSet.has(d);
     const isProjected = projectedWaterDays.has(d);
 
     let classes = ['cal-day'];
@@ -2825,14 +2324,8 @@ function renderCalendar() {
       icons.push('💧');
       wateredCount++;
     }
-    if (isRain) {
-      classes.push('rain-day');
-      icons.push('🌧');
-      rainCount++;
-    }
-
-    // Missed: past day that was a projected watering day and wasn't watered or rained
-    if (isPast && isProjected && !isWatered && !isRain) {
+    // Missed: past day that was a projected watering day and wasn't watered
+    if (isPast && isProjected && !isWatered) {
       classes.push('missed');
       missedCount++;
     }
@@ -2842,7 +2335,7 @@ function renderCalendar() {
       classes.push('future-water');
     }
 
-    if (!isWatered && !isRain && !isProjected && isPast && !isToday) {
+    if (!isWatered && !isProjected && isPast && !isToday) {
       classes.push('past-nodata');
     }
 
@@ -2856,7 +2349,7 @@ function renderCalendar() {
     cells.push(`
       <div class="${classes.join(' ')}" 
            onclick="calDayClick('${cellStr}', ${isWatered})"
-           title="${isWatered ? 'Regada' : (isRain ? 'Lluvia' : (isProjected && isFuture ? 'Próximo riego' : ''))}">
+           title="${isWatered ? 'Regada' : (isProjected && isFuture ? 'Próximo riego' : '')}">
         <div class="cal-day-num">${d}</div>
         ${iconsHtml}
       </div>`);
@@ -2871,16 +2364,16 @@ function renderCalendar() {
       <div class="cs-label">Riegos</div>
     </div>
     <div class="cal-sum-item">
-      <div class="cs-value rain">${rainCount}</div>
-      <div class="cs-label">Días lluvia</div>
-    </div>
-    <div class="cal-sum-item">
       <div class="cs-value missed">${missedCount}</div>
       <div class="cs-label">Sin regar</div>
     </div>
     <div class="cal-sum-item">
-      <div class="cs-value">${wateredCount + rainCount}</div>
-      <div class="cs-label">Días hidratada</div>
+      <div class="cs-value">${projectedWaterDays.size}</div>
+      <div class="cs-label">Riegos previstos</div>
+    </div>
+    <div class="cal-sum-item">
+      <div class="cs-value">${wateredCount + missedCount}</div>
+      <div class="cs-label">Días con seguimiento</div>
     </div>
   `;
 }
@@ -2935,42 +2428,6 @@ async function waterPlant(id) {
     return;
   }
   showToast(`💧 ${p.name} regada`);
-}
-
-function toggleRain() {
-  const td = today();
-  setRainForDate(td, !state.rainToday, 'manual');
-  renderWeatherModal();
-  saveState();
-  render();
-  showToast(state.rainToday ? '🌧 Lluvia marcada — exterior al día' : '☀️ Sin lluvia hoy');
-}
-
-async function markAllOutdoorWatered() {
-  const outdoorSections = state.sections.filter(s => s.outdoor).map(s => s.id);
-  const td = today();
-  const updatedPlants = [];
-  state.plants.forEach(p => {
-    if (outdoorSections.includes(p.section)) {
-      if (!p.waterLog) p.waterLog = [];
-      if (!p.waterLog.includes(td)) {
-        p.waterLog.push(td);
-        updatedPlants.push(p);
-      }
-    }
-  });
-  saveState();
-  render();
-  try {
-    for (const plant of updatedPlants) {
-      await syncPlantToCloud(plant);
-    }
-  } catch (error) {
-    console.error('Failed to sync outdoor watering', error);
-    showToast('⚠️ Se actualizó localmente, pero falló la sincronización en la nube');
-    return;
-  }
-  showToast('🌧 Plantas de exterior marcadas como regadas');
 }
 
 // ===== EMOJIS =====
@@ -3290,15 +2747,6 @@ async function saveSection() {
   showToast(`📍 Sección "${name}" creada`);
 }
 
-function openWeatherModal() {
-  renderWeatherModal();
-  document.getElementById('weatherModal').classList.add('open');
-}
-
-function closeWeatherModal() {
-  document.getElementById('weatherModal').classList.remove('open');
-}
-
 document.querySelectorAll('.modal-overlay').forEach(el => {
   el.addEventListener('click', e => {
     if (e.target === el) el.classList.remove('open');
@@ -3319,10 +2767,7 @@ function showToast(msg) {
 loadState();
 renderAuthArea();
 render();
-renderWeatherModal();
-fetchWeather();
 initAuth();
-setInterval(fetchWeather, 600000);
 </script>
 </body>
 </html>
