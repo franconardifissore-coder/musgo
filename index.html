@@ -1542,7 +1542,19 @@ async function initAuth() {
   const authApi = window.supabaseAuth;
 
   if (!authApi) {
-    applyAuthState({ configured: false, error: 'Supabase Auth no está cargado todavía.' });
+    state.auth = {
+      ...state.auth,
+      ready: false,
+      configured: false,
+      session: null,
+      user: null,
+      error: '',
+    };
+    renderAuthArea();
+
+    window.addEventListener('musgo:supabase-auth-ready', () => {
+      initAuth();
+    }, { once: true });
     return;
   }
 
