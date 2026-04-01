@@ -79,6 +79,86 @@
     display: flex;
     align-items: center;
     gap: 16px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .auth-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .auth-status {
+    font-size: 0.78rem;
+    color: var(--text-light);
+    background: rgba(255,254,249,0.72);
+    border: 1px solid rgba(122,158,126,0.15);
+    border-radius: 999px;
+    padding: 7px 12px;
+  }
+
+  .auth-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--card-bg);
+    border: 1px solid rgba(122,158,126,0.22);
+    border-radius: 999px;
+    padding: 7px 10px 7px 8px;
+  }
+
+  .auth-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(122,158,126,0.16);
+    color: var(--sage-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    font-weight: 600;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .auth-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .auth-user-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+  }
+
+  .auth-user-name {
+    font-size: 0.8rem;
+    color: var(--text);
+    font-weight: 600;
+    line-height: 1.1;
+  }
+
+  .auth-user-email {
+    font-size: 0.72rem;
+    color: var(--text-light);
+    line-height: 1.1;
+    max-width: 170px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .btn-auth {
+    border-radius: 999px;
+    padding: 10px 16px;
+    font-size: 0.84rem;
   }
 
   .weather-widget {
@@ -1059,6 +1139,7 @@
     <h1>Musgo</h1>
   </div>
   <div class="header-right">
+    <div class="auth-area" id="authArea"></div>
     <div class="weather-widget" id="weatherWidget" onclick="openWeatherModal()">
       <span id="weatherIcon">⛅</span>
       <span class="temp" id="weatherTemp">--°C</span>
@@ -1272,7 +1353,13 @@
   </div>
 </div>
 
+<script>
+  window.__MUSGO_CONFIG__ = {
+    SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhib2p6aWZob2N4eWdkb2p6cWpuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTIyMDIsImV4cCI6MjA5MDUyODIwMn0.bELLTjPbm4NnWQ7ujX4bQXroOJwCCLF16rvRHwNZMTM"
+  };
+</script>
 <script src="./lib/identify-plant.js"></script>
+<script type="module" src="./lib/supabase-auth.js"></script>
 <script>
 // ===== STATE =====
 let state = {
@@ -1295,6 +1382,13 @@ let state = {
   activeSection: 'all',
   rainToday: false,
   weather: null,
+  auth: {
+    ready: false,
+    configured: false,
+    session: null,
+    user: null,
+    error: '',
+  },
   weatherLocation: {
     label: 'Zaragoza, Aragón',
     latitude: 41.6488,
@@ -1430,6 +1524,124 @@ function fileToDataUrl(file) {
 function getPersistableImagePreview(dataUrl) {
   if (!dataUrl || dataUrl.length > 350000) return '';
   return dataUrl;
+}
+
+function applyAuthState({ session = null, user = null, configured = state.auth.configured, error = '' } = {}) {
+  state.auth = {
+    ...state.auth,
+    ready: true,
+    configured,
+    session,
+    user,
+    error,
+  };
+  renderAuthArea();
+}
+
+async function initAuth() {
+  const authApi = window.supabaseAuth;
+
+  if (!authApi) {
+    applyAuthState({ configured: false, error: 'Supabase Auth no está cargado todavía.' });
+    return;
+  }
+
+  const configured = Boolean(authApi.isConfigured && authApi.isConfigured());
+  applyAuthState({ configured, error: configured ? '' : 'Falta configurar SUPABASE_ANON_KEY en runtime.' });
+
+  if (!configured) return;
+
+  try {
+    const { session, user } = await authApi.getSessionData();
+    applyAuthState({ configured: true, session, user, error: '' });
+  } catch (error) {
+    applyAuthState({
+      configured: true,
+      session: null,
+      user: null,
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
+
+  authApi.onAuthStateChange(({ session, user }) => {
+    applyAuthState({ configured: true, session, user, error: '' });
+  });
+}
+
+function getUserInitial(user) {
+  const source = user?.user_metadata?.full_name || user?.email || '?';
+  return source.trim().charAt(0).toUpperCase();
+}
+
+function getUserName(user) {
+  return user?.user_metadata?.full_name || user?.user_metadata?.name || 'Sesión iniciada';
+}
+
+function renderAuthArea() {
+  const authArea = document.getElementById('authArea');
+  if (!authArea) return;
+
+  if (!state.auth.ready) {
+    authArea.innerHTML = `<div class="auth-status">Preparando acceso...</div>`;
+    return;
+  }
+
+  if (!state.auth.configured) {
+    authArea.innerHTML = `<div class="auth-status">${escapeHtml(state.auth.error || 'Auth no configurado')}</div>`;
+    return;
+  }
+
+  if (!state.auth.user) {
+    authArea.innerHTML = `
+      <button class="btn-secondary btn-auth" type="button" onclick="handleGoogleSignIn()">
+        <span>G</span> Continuar con Google
+      </button>
+    `;
+    return;
+  }
+
+  const avatarUrl = state.auth.user.user_metadata?.avatar_url || '';
+  authArea.innerHTML = `
+    <div class="auth-user">
+      <div class="auth-avatar">
+        ${avatarUrl ? `<img src="${avatarUrl}" alt="${escapeHtml(getUserName(state.auth.user))}">` : escapeHtml(getUserInitial(state.auth.user))}
+      </div>
+      <div class="auth-user-meta">
+        <div class="auth-user-name">${escapeHtml(getUserName(state.auth.user))}</div>
+        <div class="auth-user-email">${escapeHtml(state.auth.user.email || '')}</div>
+      </div>
+    </div>
+    <button class="btn-secondary btn-auth" type="button" onclick="handleSignOut()">Cerrar sesión</button>
+  `;
+}
+
+async function handleGoogleSignIn() {
+  const authApi = window.supabaseAuth;
+  if (!authApi || !authApi.isConfigured || !authApi.isConfigured()) {
+    showToast('⚠️ Supabase Auth no está configurado');
+    return;
+  }
+
+  try {
+    await authApi.signInWithGoogle();
+  } catch (error) {
+    showToast('⚠️ No pudimos iniciar sesión con Google');
+  }
+}
+
+async function handleSignOut() {
+  const authApi = window.supabaseAuth;
+  if (!authApi || !authApi.isConfigured || !authApi.isConfigured()) {
+    showToast('⚠️ Supabase Auth no está configurado');
+    return;
+  }
+
+  try {
+    await authApi.signOut();
+    showToast('👋 Sesión cerrada');
+  } catch (error) {
+    showToast('⚠️ No pudimos cerrar la sesión');
+  }
 }
 
 // ===== WEATHER =====
@@ -2382,9 +2594,11 @@ function showToast(msg) {
 
 // ===== INIT =====
 loadState();
+renderAuthArea();
 render();
 renderWeatherModal();
 fetchWeather();
+initAuth();
 setInterval(fetchWeather, 600000);
 </script>
 </body>
