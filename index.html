@@ -1541,6 +1541,13 @@ function getPersistableImagePreview(dataUrl) {
   return dataUrl;
 }
 
+function createEntityId(prefix = 'id') {
+  if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+    return window.crypto.randomUUID();
+  }
+  return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
 function applyAuthState({ session = null, user = null, configured = state.auth.configured, error = '' } = {}) {
   const previousUserId = state.auth.user?.id || null;
   state.auth = {
@@ -2327,6 +2334,7 @@ async function waterPlant(id) {
   try {
     await syncPlantToCloud(p);
   } catch (error) {
+    console.error('Failed to sync watered plant', error);
     showToast('⚠️ Regamos localmente, pero no pudimos sincronizar en la nube');
     return;
   }
@@ -2362,6 +2370,7 @@ async function markAllOutdoorWatered() {
       await syncPlantToCloud(plant);
     }
   } catch (error) {
+    console.error('Failed to sync outdoor watering', error);
     showToast('⚠️ Se actualizó localmente, pero falló la sincronización en la nube');
     return;
   }
@@ -2597,7 +2606,7 @@ async function savePlant() {
   } else {
     plantToSync = {
       ...(state.identifiedPlantDraft || {}),
-      id: 'p' + Date.now(),
+      id: createEntityId('plant'),
       name,
       species: document.getElementById('plantSpecies').value.trim(),
       emoji: state.selectedEmoji,
@@ -2617,6 +2626,7 @@ async function savePlant() {
   try {
     await syncPlantToCloud(plantToSync);
   } catch (error) {
+    console.error('Failed to sync plant', error);
     showToast('⚠️ La planta se guardó localmente, pero no pudimos asociarla a tu cuenta');
   }
 }
@@ -2643,6 +2653,7 @@ async function confirmDelete() {
   try {
     await deletePlantFromCloud(plantId);
   } catch (error) {
+    console.error('Failed to delete plant in cloud', error);
     showToast('⚠️ Se eliminó localmente, pero no pudimos sincronizar el borrado');
     return;
   }
@@ -2664,7 +2675,7 @@ async function saveSection() {
   const name = document.getElementById('sectionName').value.trim();
   if (!name) { showToast('⚠️ El nombre es obligatorio'); return; }
   const section = {
-    id: 's' + Date.now(),
+    id: createEntityId('section'),
     name,
     icon: state.selectedSectionEmoji,
     outdoor: ['balcón','terraza','jardín','exterior','patio'].some(w => name.toLowerCase().includes(w)),
@@ -2676,6 +2687,7 @@ async function saveSection() {
   try {
     await syncSectionToCloud(section);
   } catch (error) {
+    console.error('Failed to sync section', error);
     showToast('⚠️ La sección se creó localmente, pero no pudimos sincronizarla');
     return;
   }
