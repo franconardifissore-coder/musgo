@@ -449,7 +449,7 @@
     height: 84px;
     padding: 12px 24px 18px;
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 12px;
     background: rgba(249, 249, 248, 0.9);
     backdrop-filter: blur(12px);
@@ -2466,6 +2466,7 @@ function applyAuthState({ session = null, user = null, configured = state.auth.c
     error,
   };
   renderAuthArea();
+  render();
 
   const nextUserId = user?.id || null;
   if (nextUserId && nextUserId !== previousUserId) {
