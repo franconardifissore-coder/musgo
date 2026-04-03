@@ -134,6 +134,58 @@
     flex-direction: column;
     gap: 24px;
     min-height: 100%;
+    animation: screen-enter 0.24s ease;
+  }
+
+  @keyframes screen-enter {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .screen-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .screen-back {
+    border: none;
+    background: rgba(255, 255, 255, 0.88);
+    color: #345d4c;
+    border-radius: 999px;
+    min-height: 40px;
+    padding: 0 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.84rem;
+    font-weight: 700;
+    box-shadow: 0 10px 24px rgba(31, 52, 37, 0.06);
+    border: 1px solid rgba(52, 93, 76, 0.12);
+    cursor: pointer;
+  }
+
+  .screen-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background: rgba(79, 168, 109, 0.1);
+    color: #2e7d4f;
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    width: fit-content;
   }
 
   .screen-intro {
@@ -307,17 +359,36 @@
 
   .space-card {
     background: #fff;
-    border-radius: 12px;
+    border-radius: 28px;
     padding: 24px;
-    box-shadow: 0 4px 20px rgba(52, 93, 76, 0.04);
+    box-shadow: 0 14px 34px rgba(52, 93, 76, 0.07);
     display: flex;
     flex-direction: column;
     gap: 20px;
+    border: 1px solid rgba(52, 93, 76, 0.06);
+  }
+
+  .space-card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+  }
+
+  .space-card-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 18px;
+    background: linear-gradient(180deg, #edf5ef 0%, #f9fbf8 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.55rem;
   }
 
   .space-card-name {
-    font-size: 2rem;
-    line-height: 1;
+    font-size: 1.55rem;
+    line-height: 1.05;
     font-weight: 800;
     color: #345d4c;
     letter-spacing: -0.05em;
@@ -325,8 +396,18 @@
 
   .space-card-count {
     color: #40493d;
-    font-size: 1rem;
+    font-size: 0.96rem;
     line-height: 1.5;
+  }
+
+  .space-card-badge {
+    padding: 8px 10px;
+    border-radius: 999px;
+    background: #f3f6f2;
+    color: #5d6c60;
+    font-size: 0.76rem;
+    font-weight: 700;
+    white-space: nowrap;
   }
 
   .space-card-actions {
@@ -496,20 +577,26 @@
 
   .detail-card,
   .profile-card,
-  .editor-card {
+  .editor-card,
+  .space-editor-card,
+  .detail-actions-card {
     background: #fff;
-    border-radius: 20px;
-    box-shadow: 0 4px 20px rgba(52, 93, 76, 0.04);
+    border-radius: 28px;
+    box-shadow: 0 14px 34px rgba(52, 93, 76, 0.07);
     overflow: hidden;
+    border: 1px solid rgba(52, 93, 76, 0.06);
   }
 
   .detail-hero {
-    height: 320px;
-    background: linear-gradient(180deg, #eef3ee 0%, #e6ece5 100%);
+    height: 336px;
+    background:
+      radial-gradient(circle at top right, rgba(79, 168, 109, 0.16), transparent 30%),
+      linear-gradient(180deg, #eef3ee 0%, #e6ece5 100%);
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    position: relative;
   }
 
   .detail-hero img {
@@ -522,15 +609,28 @@
     font-size: 6rem;
   }
 
+  .detail-status-pill {
+    position: absolute;
+    left: 18px;
+    top: 18px;
+    padding: 9px 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.92);
+    color: #345d4c;
+    font-size: 0.78rem;
+    font-weight: 700;
+    box-shadow: 0 10px 18px rgba(31, 52, 37, 0.08);
+  }
+
   .detail-body {
-    padding: 20px;
+    padding: 24px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 18px;
   }
 
   .detail-name {
-    font-size: 1.7rem;
+    font-size: 1.95rem;
     line-height: 1.1;
     font-weight: 800;
     color: #191c1c;
@@ -543,6 +643,12 @@
     line-height: 1.45;
   }
 
+  .detail-description {
+    color: #5d6c60;
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+
   .detail-grid,
   .profile-stats {
     display: grid;
@@ -552,8 +658,8 @@
 
   .detail-chip,
   .profile-stat {
-    background: #f3f4f3;
-    border-radius: 16px;
+    background: #f5f7f4;
+    border-radius: 20px;
     padding: 14px;
   }
 
@@ -581,16 +687,64 @@
   }
 
   .editor-card {
-    padding: 20px;
+    padding: 22px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 18px;
+  }
+
+  .editor-hero {
+    padding: 28px 24px 22px;
+    border-radius: 28px;
+    background:
+      radial-gradient(circle at top right, rgba(79, 168, 109, 0.16), transparent 34%),
+      linear-gradient(180deg, #ffffff 0%, #f4f8f3 100%);
+    box-shadow: 0 16px 36px rgba(52, 93, 76, 0.08);
+    border: 1px solid rgba(52, 93, 76, 0.06);
+    text-align: center;
+  }
+
+  .editor-hero-emoji {
+    width: 86px;
+    height: 86px;
+    margin: 0 auto 16px;
+    border-radius: 26px;
+    background: rgba(255, 255, 255, 0.92);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.8rem;
+    box-shadow: 0 14px 24px rgba(31, 52, 37, 0.07);
+  }
+
+  .editor-hero-title {
+    font-size: 1.45rem;
+    line-height: 1.15;
+    font-weight: 800;
+    color: #191c1c;
+    letter-spacing: -0.04em;
+  }
+
+  .editor-hero-copy {
+    margin-top: 8px;
+    color: #5d6c60;
+    font-size: 0.92rem;
+    line-height: 1.55;
   }
 
   .editor-note {
     color: #40493d;
     font-size: 0.88rem;
     line-height: 1.5;
+    padding: 12px 14px;
+    border-radius: 18px;
+    background: rgba(79, 168, 109, 0.08);
+  }
+
+  .form-group-inline {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
   }
 
   .editor-select,
@@ -628,7 +782,10 @@
     flex-direction: column;
     align-items: center;
     gap: 16px;
-    padding: 32px 24px 24px;
+    padding: 36px 24px 24px;
+    background:
+      radial-gradient(circle at top center, rgba(79, 168, 109, 0.16), transparent 36%),
+      linear-gradient(180deg, #ffffff 0%, #f4f8f3 100%);
   }
 
   .profile-avatar-lg {
@@ -660,6 +817,121 @@
   .profile-email {
     color: #40493d;
     font-size: 0.92rem;
+  }
+
+  .profile-copy {
+    color: #5d6c60;
+    text-align: center;
+    font-size: 0.92rem;
+    line-height: 1.55;
+    max-width: 28ch;
+  }
+
+  .profile-panel-body {
+    padding: 0 24px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .profile-collection-card {
+    border-radius: 22px;
+    padding: 18px;
+    background: #f5f7f4;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .profile-collection-kicker {
+    color: #708172;
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .profile-collection-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #191c1c;
+  }
+
+  .profile-collection-copy {
+    color: #5d6c60;
+    font-size: 0.9rem;
+    line-height: 1.55;
+  }
+
+  .space-editor-card {
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .space-editor-preview {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    border-radius: 22px;
+    background: #f5f7f4;
+  }
+
+  .space-editor-icon {
+    width: 62px;
+    height: 62px;
+    border-radius: 20px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    box-shadow: 0 10px 18px rgba(31, 52, 37, 0.06);
+  }
+
+  .space-editor-title {
+    font-size: 1.18rem;
+    font-weight: 800;
+    color: #191c1c;
+  }
+
+  .space-editor-subtitle {
+    color: #5d6c60;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-top: 4px;
+  }
+
+  .danger-panel {
+    border-radius: 22px;
+    padding: 16px;
+    background: rgba(207, 113, 82, 0.08);
+    border: 1px solid rgba(207, 113, 82, 0.18);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .danger-panel-title {
+    color: #a04f35;
+    font-size: 0.84rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .danger-panel-copy {
+    color: #7a4f40;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .detail-actions-card {
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
   }
 
   button,
@@ -2001,6 +2273,10 @@
   }
 
   @media (max-width: 720px) {
+    .form-group-inline {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
     .logo h1 {
       font-size: 1.55rem;
     }
@@ -2325,6 +2601,7 @@ let state = {
   deletingPlantId: null,
   screenPlantMode: 'create',
   screenPlantDraft: null,
+  screenSectionDraft: null,
   selectedEmoji: '🌿',
   selectedSectionEmoji: '🪴',
   identifiedPlantDraft: null,
@@ -2453,6 +2730,28 @@ function createPlantDraft(prefill = null, existingPlant = null) {
     identifiedAt: prefill?.identifiedAt || null,
     waterLog: [],
   };
+}
+
+function createSectionDraft(existingSection = null) {
+  return {
+    id: existingSection?.id || null,
+    name: existingSection?.name || '',
+    icon: existingSection?.icon || '🪴',
+    plantCount: existingSection ? state.plants.filter(plant => plant.section === existingSection.id).length : 0,
+  };
+}
+
+function getPreviousMainView(fallback = 'plants') {
+  return ['plants', 'scan', 'spaces', 'profile'].includes(state.previousMainView) ? state.previousMainView : fallback;
+}
+
+function renderBackButton(label = 'Volver', targetView = null) {
+  const destination = targetView || getPreviousMainView();
+  return `<button class="screen-back" type="button" onclick="setView('${destination}')">← ${escapeHtml(label)}</button>`;
+}
+
+function goBackToMainView(fallback = 'plants') {
+  setView(getPreviousMainView(fallback));
 }
 
 function applyAuthState({ session = null, user = null, configured = state.auth.configured, error = '' } = {}) {
@@ -2849,9 +3148,16 @@ function renderSpacesScreen() {
     const plantsInSection = state.plants.filter(plant => plant.section === section.id);
     return `
       <article class="space-card">
+        <div class="space-card-top">
+          <div>
+            <div class="space-card-name">${escapeHtml(section.name)}</div>
+            <div class="space-card-count">${plantsInSection.length} planta${plantsInSection.length === 1 ? '' : 's'} en este espacio</div>
+          </div>
+          <div class="space-card-icon">${escapeHtml(section.icon || '🪴')}</div>
+        </div>
+        <div class="space-card-badge">${plantsInSection.length ? 'Con vida vegetal' : 'Listo para empezar'}</div>
         <div>
-        <div class="space-card-name">${escapeHtml(section.name)}</div>
-        <div class="space-card-count">🪴 ${plantsInSection.length} planta${plantsInSection.length === 1 ? '' : 's'}</div>
+          <div class="space-card-count">${plantsInSection.length ? 'Organiza, riega y mantén este rincón al día desde una sola vista.' : 'Añade tus primeras plantas a este espacio para empezar a seguir su cuidado.'}</div>
         </div>
         <div class="space-card-actions">
           <button class="space-card-button secondary" type="button" onclick="editSectionFromSpaces('${section.id}')">Editar</button>
@@ -2873,6 +3179,58 @@ function renderSpacesScreen() {
           <span class="add-circle">＋</span>
           <span class="add-label">Añadir Nuevo Espacio</span>
         </button>
+      </div>
+    </section>
+  `;
+}
+
+function renderEditSpaceScreen() {
+  const draft = state.screenSectionDraft;
+  if (!draft) {
+    return `
+      <section class="screen">
+        <div class="screen-head">
+          ${renderBackButton('Espacios', 'spaces')}
+        </div>
+        <div class="screen-intro">
+          <h1 class="screen-title">Editar espacio</h1>
+          <p class="screen-subtitle">No encontramos el espacio que querías editar.</p>
+        </div>
+      </section>
+    `;
+  }
+
+  return `
+    <section class="screen">
+      <div class="screen-head">
+        ${renderBackButton('Espacios', 'spaces')}
+      </div>
+      <div class="screen-intro">
+        <div class="screen-kicker">Tus Espacios</div>
+        <h1 class="screen-title">Editar espacio</h1>
+        <p class="screen-subtitle">Actualiza el nombre del espacio o elimínalo por completo junto con las plantas que contiene.</p>
+      </div>
+      <div class="space-editor-card">
+        <div class="space-editor-preview">
+          <div class="space-editor-icon">${escapeHtml(draft.icon || '🪴')}</div>
+          <div>
+            <div class="space-editor-title">${escapeHtml(draft.name || 'Espacio sin nombre')}</div>
+            <div class="space-editor-subtitle">${draft.plantCount} planta${draft.plantCount === 1 ? '' : 's'} viven aquí mismo.</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Nombre del espacio</label>
+          <input class="editor-input" type="text" value="${escapeHtml(draft.name || '')}" placeholder="Ej: Salón, Cocina, Balcón..." oninput="updateScreenSectionName(this.value)">
+        </div>
+        <div class="danger-panel">
+          <div class="danger-panel-title">Zona delicada</div>
+          <div class="danger-panel-copy">Eliminar este espacio borrará también ${draft.plantCount === 0 ? 'cualquier planta futura asociada.' : `las ${draft.plantCount} planta${draft.plantCount === 1 ? '' : 's'} que contiene.`}</div>
+        </div>
+      </div>
+      <div class="screen-actions">
+        <button class="btn-primary" type="button" onclick="saveSectionFromScreen()">Guardar</button>
+        <button class="btn-secondary" type="button" onclick="cancelEditSectionView()">Descartar cambios</button>
+        <button class="btn-danger" type="button" onclick="deleteSectionFromScreen()">Eliminar sección</button>
       </div>
     </section>
   `;
@@ -2926,26 +3284,42 @@ function renderScanScreen() {
 function renderPlantCreateScreen() {
   const draft = state.screenPlantDraft || createPlantDraft();
   const isEditing = state.screenPlantMode === 'edit';
+  const sectionName = state.sections.find(section => section.id === draft.section)?.name || 'Sin sección';
+  const identificationLabel = draft.identifiedSpecies
+    ? `Identificada como ${escapeHtml(draft.identifiedSpecies)}`
+    : `Se guardará en ${escapeHtml(sectionName)}`;
   return `
     <section class="screen">
+      <div class="screen-head">
+        ${renderBackButton(isEditing ? 'Detalle' : 'Scan', isEditing ? 'plantDetail' : 'scan')}
+      </div>
       <div class="screen-intro">
+        <div class="screen-kicker">${isEditing ? 'Tu colección' : 'Nueva planta'}</div>
         <h1 class="screen-title">${isEditing ? 'Editar planta' : 'Crear planta'}</h1>
         <p class="screen-subtitle">${isEditing ? 'Actualiza la ficha de tu planta.' : 'Completa manualmente la ficha y guárdala en tu colección.'}</p>
       </div>
+      <div class="editor-hero">
+        <div class="editor-hero-emoji">${escapeHtml(draft.emoji || '🌿')}</div>
+        <div class="editor-hero-title">${escapeHtml((draft.name || draft.species || (isEditing ? 'Tu planta' : 'Nueva ficha')).trim())}</div>
+        <div class="editor-hero-copy">${identificationLabel}</div>
+      </div>
       <div class="editor-card">
+        ${draft.identifiedSpecies ? `<div class="editor-note">Sugerencia IA: <strong>${escapeHtml(draft.identifiedSpecies)}</strong>${draft.identificationConfidence !== null && draft.identificationConfidence !== undefined ? ` · ${confidenceToPercent(draft.identificationConfidence)}% confianza` : ''}</div>` : ''}
         <div class="form-group">
           <label>Icono</label>
           <div class="emoji-row">
             ${plantEmojis.slice(0, 12).map(emoji => `<button class="emoji-pill ${draft.emoji === emoji ? 'active' : ''}" type="button" onclick="setScreenPlantEmoji('${emoji}')">${emoji}</button>`).join('')}
           </div>
         </div>
-        <div class="form-group">
-          <label>Nombre</label>
-          <input class="editor-input" type="text" value="${escapeHtml(draft.name || '')}" placeholder="Ej: Monstera del salón" oninput="updateScreenPlantField('name', this.value)">
-        </div>
-        <div class="form-group">
-          <label>Especie</label>
-          <input class="editor-input" type="text" value="${escapeHtml(draft.species || '')}" placeholder="Ej: Monstera deliciosa" oninput="updateScreenPlantField('species', this.value)">
+        <div class="form-group-inline">
+          <div class="form-group">
+            <label>Nombre</label>
+            <input class="editor-input" type="text" value="${escapeHtml(draft.name || '')}" placeholder="Ej: Monstera del salón" oninput="updateScreenPlantField('name', this.value)">
+          </div>
+          <div class="form-group">
+            <label>Especie</label>
+            <input class="editor-input" type="text" value="${escapeHtml(draft.species || '')}" placeholder="Ej: Monstera deliciosa" oninput="updateScreenPlantField('species', this.value)">
+          </div>
         </div>
         <div class="form-group">
           <label>Sección</label>
@@ -2953,22 +3327,24 @@ function renderPlantCreateScreen() {
             ${state.sections.map(section => `<option value="${section.id}" ${draft.section === section.id ? 'selected' : ''}>${escapeHtml(section.icon)} ${escapeHtml(section.name)}</option>`).join('')}
           </select>
         </div>
-        <div class="form-group">
-          <label>Frecuencia de riego</label>
-          <select class="editor-select" onchange="updateScreenPlantField('freq', Number(this.value))">
-            ${[1,2,3,5,7,14,30].map(freq => `<option value="${freq}" ${Number(draft.freq) === freq ? 'selected' : ''}>${freq === 1 ? 'Cada día' : `Cada ${freq} días`}</option>`).join('')}
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Luz</label>
-          <select class="editor-select" onchange="updateScreenPlantField('light', this.value)">
-            ${['☀️ Sol directo','⛅ Luz indirecta','🌥️ Sombra parcial','🌑 Poca luz'].map(light => `<option value="${light}" ${draft.light === light ? 'selected' : ''}>${escapeHtml(light)}</option>`).join('')}
-          </select>
+        <div class="form-group-inline">
+          <div class="form-group">
+            <label>Frecuencia de riego</label>
+            <select class="editor-select" onchange="updateScreenPlantField('freq', Number(this.value))">
+              ${[1,2,3,5,7,14,30].map(freq => `<option value="${freq}" ${Number(draft.freq) === freq ? 'selected' : ''}>${freq === 1 ? 'Cada día' : `Cada ${freq} días`}</option>`).join('')}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Luz</label>
+            <select class="editor-select" onchange="updateScreenPlantField('light', this.value)">
+              ${['☀️ Sol directo','⛅ Luz indirecta','🌥️ Sombra parcial','🌑 Poca luz'].map(light => `<option value="${light}" ${draft.light === light ? 'selected' : ''}>${escapeHtml(light)}</option>`).join('')}
+            </select>
+          </div>
         </div>
       </div>
       <div class="screen-actions">
         <button class="btn-primary" type="button" onclick="savePlantFromScreen()">${isEditing ? 'Guardar cambios' : 'Guardar'}</button>
-        <button class="btn-secondary" type="button" onclick="cancelPlantCreateView()">Cancelar</button>
+        <button class="btn-secondary" type="button" onclick="cancelPlantCreateView()">Descartar cambios</button>
       </div>
     </section>
   `;
@@ -2997,12 +3373,17 @@ function renderPlantDetailScreen() {
 
   return `
     <section class="screen">
+      <div class="screen-head">
+        ${renderBackButton('Plantas', 'plants')}
+      </div>
       <div class="screen-intro">
+        <div class="screen-kicker">Plant Detail</div>
         <h1 class="screen-title">Detalle de planta</h1>
         <p class="screen-subtitle">${escapeHtml(section ? section.name : 'Sin sección')} · ${escapeHtml(status)}</p>
       </div>
       <div class="detail-card">
         <div class="detail-hero">
+          <div class="detail-status-pill">${escapeHtml(status)}</div>
           ${plant.imagePreview ? `<img src="${plant.imagePreview}" alt="${escapeHtml(plant.name || plant.species || 'Planta')}">` : `<div class="detail-emoji">${escapeHtml(plant.emoji || '🪴')}</div>`}
         </div>
         <div class="detail-body">
@@ -3010,6 +3391,7 @@ function renderPlantDetailScreen() {
             <div class="detail-name">${escapeHtml(plant.name || plant.species || 'Planta sin nombre')}</div>
             <div class="detail-species">${escapeHtml(plant.species || 'Sin especie definida')}</div>
           </div>
+          <div class="detail-description">Un rincón vivo dentro de ${escapeHtml(section ? section.name : 'tu colección')}. Desde aquí puedes revisar su ritmo de riego, editar la ficha o consultar su calendario.</div>
           <div class="detail-grid">
             <div class="detail-chip">
               <div class="detail-chip-label">Último riego</div>
@@ -3030,7 +3412,7 @@ function renderPlantDetailScreen() {
           </div>
         </div>
       </div>
-      <div class="screen-actions">
+      <div class="detail-actions-card">
         <button class="btn-primary" type="button" onclick="waterPlant('${plant.id}')">Regar ahora</button>
         <button class="btn-secondary" type="button" onclick="openCalendarModal('${plant.id}')">Ver calendario</button>
         <button class="btn-secondary" type="button" onclick="openPlantCreateView(null, '${plant.id}')">Editar ficha</button>
@@ -3070,6 +3452,7 @@ function renderProfileScreen() {
   return `
     <section class="screen">
       <div class="screen-intro">
+        <div class="screen-kicker">Profile</div>
         <h1 class="screen-title">Perfil</h1>
         <p class="screen-subtitle">Tu cuenta y el resumen de tu colección.</p>
       </div>
@@ -3080,8 +3463,9 @@ function renderProfileScreen() {
           </div>
           <div class="profile-name">${escapeHtml(getUserName(user))}</div>
           <div class="profile-email">${escapeHtml(user?.email || '')}</div>
+          <div class="profile-copy">Tu jardín está guardado en la nube para que puedas seguirlo desde cualquier dispositivo.</div>
         </div>
-        <div class="detail-body">
+        <div class="profile-panel-body">
           <div class="profile-stats">
             <div class="profile-stat">
               <div class="profile-stat-label">Plantas</div>
@@ -3091,6 +3475,11 @@ function renderProfileScreen() {
               <div class="profile-stat-label">Espacios</div>
               <div class="profile-stat-value">${state.sections.length}</div>
             </div>
+          </div>
+          <div class="profile-collection-card">
+            <div class="profile-collection-kicker">Colección</div>
+            <div class="profile-collection-title">${state.plants.length ? 'Todo sincronizado' : 'Empieza tu jardín'}</div>
+            <div class="profile-collection-copy">${state.plants.length ? `Tienes ${state.plants.length} planta${state.plants.length === 1 ? '' : 's'} repartidas en ${state.sections.length} espacio${state.sections.length === 1 ? '' : 's'}.` : 'Añade tu primera planta y empieza a construir una colección más ordenada y cuidada.'}</div>
           </div>
         </div>
       </div>
@@ -3123,6 +3512,10 @@ function renderCurrentView() {
   }
   if (state.currentView === 'plantCreate') {
     appMain.innerHTML = renderPlantCreateScreen();
+    return;
+  }
+  if (state.currentView === 'editSpace') {
+    appMain.innerHTML = renderEditSpaceScreen();
     return;
   }
   appMain.innerHTML = renderPlantsScreen();
@@ -3351,8 +3744,12 @@ function openPlantCreateView(prefill = null, plantId = null) {
 function cancelPlantCreateView() {
   state.screenPlantDraft = null;
   state.editingPlantId = null;
-  state.currentView = state.previousMainView || 'scan';
-  render();
+  if (state.screenPlantMode === 'edit' && state.detailPlantId) {
+    state.currentView = 'plantDetail';
+    render();
+    return;
+  }
+  goBackToMainView('scan');
 }
 
 function updateScreenPlantField(field, value) {
@@ -3375,6 +3772,26 @@ function setSection(id) {
   state.activeSection = id;
   state.currentView = 'plants';
   render();
+}
+
+function openEditSectionView(sectionId) {
+  const section = state.sections.find(item => item.id === sectionId);
+  if (!section) return;
+  state.editingSectionId = section.id;
+  state.screenSectionDraft = createSectionDraft(section);
+  state.currentView = 'editSpace';
+  render();
+}
+
+function cancelEditSectionView() {
+  state.screenSectionDraft = null;
+  state.editingSectionId = null;
+  setView('spaces');
+}
+
+function updateScreenSectionName(value) {
+  if (!state.screenSectionDraft) return;
+  state.screenSectionDraft.name = value;
 }
 
 async function waterPlant(id) {
@@ -3739,6 +4156,10 @@ async function confirmDelete() {
   const p = state.plants.find(x => x.id === state.deletingPlantId);
   const plantId = state.deletingPlantId;
   state.plants = state.plants.filter(x => x.id !== state.deletingPlantId);
+  if (state.detailPlantId === plantId) {
+    state.detailPlantId = null;
+    state.currentView = 'plants';
+  }
   saveState();
   closeDeleteModal();
   render();
@@ -3788,16 +4209,12 @@ async function saveSection() {
 
 function openEditSectionModal() {
   if (state.activeSection === 'all') return;
-  const section = state.sections.find(item => item.id === state.activeSection);
-  if (!section) return;
-  state.editingSectionId = section.id;
-  document.getElementById('editSectionName').value = section.name;
-  document.getElementById('editSectionModal').classList.add('open');
+  openEditSectionView(state.activeSection);
 }
 
 function editSectionFromSpaces(sectionId) {
   state.activeSection = sectionId;
-  openEditSectionModal();
+  openEditSectionView(sectionId);
 }
 
 function closeEditSectionModal() {
@@ -3810,7 +4227,8 @@ async function saveSectionChanges() {
   const section = state.sections.find(item => item.id === sectionId);
   if (!section) return;
 
-  const nextName = document.getElementById('editSectionName').value.trim();
+  const modalInput = document.getElementById('editSectionName');
+  const nextName = ((state.screenSectionDraft?.name ?? modalInput?.value) || '').trim();
   if (!nextName) {
     showToast('⚠️ El nombre es obligatorio');
     return;
@@ -3818,8 +4236,9 @@ async function saveSectionChanges() {
 
   section.name = nextName;
   section.outdoor = ['balcón','terraza','jardín','exterior','patio'].some(w => nextName.toLowerCase().includes(w));
-  render();
-  closeEditSectionModal();
+  state.screenSectionDraft = null;
+  state.editingSectionId = null;
+  setView('spaces');
 
   try {
     await syncSectionToCloud(section);
@@ -3830,6 +4249,10 @@ async function saveSectionChanges() {
   }
 
   showToast(`✏️ Sección "${nextName}" actualizada`);
+}
+
+async function saveSectionFromScreen() {
+  await saveSectionChanges();
 }
 
 async function deleteCurrentSection() {
@@ -3844,8 +4267,9 @@ async function deleteCurrentSection() {
   state.plants = state.plants.filter(plant => plant.section !== sectionId);
   state.sections = state.sections.filter(item => item.id !== sectionId);
   state.activeSection = 'all';
-  render();
-  closeEditSectionModal();
+  state.screenSectionDraft = null;
+  state.editingSectionId = null;
+  setView('spaces');
 
   try {
     if (isCloudSyncEnabled()) {
@@ -3858,6 +4282,10 @@ async function deleteCurrentSection() {
   }
 
   showToast(`🗑️ Sección "${section.name}" eliminada${plantIds.length ? ` con ${plantIds.length} planta${plantIds.length === 1 ? '' : 's'}` : ''}`);
+}
+
+async function deleteSectionFromScreen() {
+  await deleteCurrentSection();
 }
 
 document.querySelectorAll('.modal-overlay').forEach(el => {
