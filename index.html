@@ -494,6 +494,174 @@
     color: #40493d;
   }
 
+  .detail-card,
+  .profile-card,
+  .editor-card {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(52, 93, 76, 0.04);
+    overflow: hidden;
+  }
+
+  .detail-hero {
+    height: 320px;
+    background: linear-gradient(180deg, #eef3ee 0%, #e6ece5 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .detail-hero img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .detail-emoji {
+    font-size: 6rem;
+  }
+
+  .detail-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .detail-name {
+    font-size: 1.7rem;
+    line-height: 1.1;
+    font-weight: 800;
+    color: #191c1c;
+    letter-spacing: -0.04em;
+  }
+
+  .detail-species {
+    color: #40493d;
+    font-size: 0.95rem;
+    line-height: 1.45;
+  }
+
+  .detail-grid,
+  .profile-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .detail-chip,
+  .profile-stat {
+    background: #f3f4f3;
+    border-radius: 16px;
+    padding: 14px;
+  }
+
+  .detail-chip-label,
+  .profile-stat-label {
+    color: #708172;
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .detail-chip-value,
+  .profile-stat-value {
+    margin-top: 6px;
+    color: #191c1c;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+
+  .screen-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .editor-card {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .editor-note {
+    color: #40493d;
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .editor-select,
+  .editor-input {
+    width: 100%;
+    min-height: 56px;
+    border-radius: 18px;
+    border: 1px solid rgba(52, 93, 76, 0.14);
+    background: #f9fbf8;
+    padding: 14px 16px;
+    color: #191c1c;
+  }
+
+  .emoji-row {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .emoji-pill {
+    border: none;
+    border-radius: 16px;
+    background: #f3f4f3;
+    min-height: 48px;
+    font-size: 1.2rem;
+    cursor: pointer;
+  }
+
+  .emoji-pill.active {
+    background: #c6ebd4;
+  }
+
+  .profile-head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 32px 24px 24px;
+  }
+
+  .profile-avatar-lg {
+    width: 128px;
+    height: 128px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #dbe9df;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.4rem;
+    color: #345d4c;
+  }
+
+  .profile-avatar-lg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .profile-name {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #191c1c;
+    letter-spacing: -0.04em;
+  }
+
+  .profile-email {
+    color: #40493d;
+    font-size: 0.92rem;
+  }
+
   button,
   input,
   select,
@@ -2137,6 +2305,7 @@ let state = {
     { id: 'p5', name: 'Helecho', species: 'Nephrolepis exaltata', emoji: '🌱', section: 's2', freq: 2, light: '🌥️ Sombra parcial', waterLog: [daysAgo(3), daysAgo(5), daysAgo(7)] },
   ],
   currentView: 'plants',
+  previousMainView: 'plants',
   activeSection: 'all',
   auth: {
     ready: false,
@@ -2152,7 +2321,10 @@ let state = {
   },
   editingSectionId: null,
   editingPlantId: null,
+  detailPlantId: null,
   deletingPlantId: null,
+  screenPlantMode: 'create',
+  screenPlantDraft: null,
   selectedEmoji: '🌿',
   selectedSectionEmoji: '🪴',
   identifiedPlantDraft: null,
@@ -2247,6 +2419,40 @@ function createEntityId(prefix = 'id') {
     return window.crypto.randomUUID();
   }
   return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+function createPlantDraft(prefill = null, existingPlant = null) {
+  if (existingPlant) {
+    return {
+      id: existingPlant.id,
+      name: existingPlant.name || '',
+      species: existingPlant.species || '',
+      emoji: existingPlant.emoji || '🌿',
+      section: existingPlant.section || (state.sections[0]?.id || ''),
+      freq: existingPlant.freq || 3,
+      light: existingPlant.light || '⛅ Luz indirecta',
+      imagePreview: existingPlant.imagePreview || '',
+      identifiedSpecies: existingPlant.identifiedSpecies || '',
+      identificationConfidence: existingPlant.identificationConfidence ?? null,
+      identifiedAt: existingPlant.identifiedAt || null,
+      waterLog: Array.isArray(existingPlant.waterLog) ? [...existingPlant.waterLog] : [],
+    };
+  }
+
+  return {
+    id: null,
+    name: prefill?.name || '',
+    species: prefill?.species || '',
+    emoji: prefill?.emoji || '🌿',
+    section: state.activeSection !== 'all' ? state.activeSection : (state.sections[0]?.id || ''),
+    freq: 3,
+    light: '⛅ Luz indirecta',
+    imagePreview: prefill?.imagePreview || '',
+    identifiedSpecies: prefill?.identifiedSpecies || '',
+    identificationConfidence: prefill?.identificationConfidence ?? null,
+    identifiedAt: prefill?.identifiedAt || null,
+    waterLog: [],
+  };
 }
 
 function applyAuthState({ session = null, user = null, configured = state.auth.configured, error = '' } = {}) {
@@ -2495,13 +2701,17 @@ function renderPlantVisual(plant) {
 function renderBottomNav() {
   const nav = document.getElementById('bottomNav');
   if (!nav) return;
+  const activeMainView = ['plants', 'scan', 'spaces', 'profile'].includes(state.currentView)
+    ? state.currentView
+    : state.previousMainView;
   const items = [
     { id: 'plants', icon: '🪴', label: 'Plantas' },
     { id: 'scan', icon: '📸', label: 'Scan' },
     { id: 'spaces', icon: '▦', label: 'Espacios' },
+    { id: 'profile', icon: '👤', label: 'Perfil' },
   ];
   nav.innerHTML = items.map(item => `
-    <button class="bottom-nav-item ${state.currentView === item.id ? 'active' : ''}" onclick="setView('${item.id}')" type="button">
+    <button class="bottom-nav-item ${activeMainView === item.id ? 'active' : ''}" onclick="setView('${item.id}')" type="button">
       <span class="nav-icon">${item.icon}</span>
     </button>
   `).join('');
@@ -2563,11 +2773,11 @@ function renderPlantsScreen() {
     const lastText = days === null ? 'Aún sin riegos' : days === 0 ? 'Regada hoy' : `Último riego hace ${days} día${days === 1 ? '' : 's'}`;
     return `
       <article class="plant-tile">
-        <div class="plant-tile-visual">
+        <button class="plant-tile-visual" type="button" onclick="openPlantDetail('${plant.id}')" style="border:none;padding:0;">
           ${plant.imagePreview ? `<img src="${plant.imagePreview}" alt="${escapeHtml(plant.name || plant.species || 'Planta')}">` : `<div class="plant-tile-emoji">${escapeHtml(plant.emoji || '🪴')}</div>`}
-        </div>
+        </button>
         <div class="plant-tile-body">
-          <div class="plant-tile-name">${escapeHtml(plant.name || plant.species || 'Planta sin nombre')}</div>
+          <button class="plant-tile-name" type="button" onclick="openPlantDetail('${plant.id}')" style="border:none;background:none;padding:0;text-align:left;">${escapeHtml(plant.name || plant.species || 'Planta sin nombre')}</button>
           <div class="plant-tile-meta">${escapeHtml(lastText)}</div>
           <div class="plant-tile-actions">
             <button class="plant-tile-action primary" type="button" onclick="waterPlant('${plant.id}')">${wateredToday(plant) ? 'Regada' : 'Regar'}</button>
@@ -2706,7 +2916,186 @@ function renderScanScreen() {
             <div class="scan-box-copy">Reconocimiento con AI</div>
           </div>
         </button>
-        <button class="scan-secondary" type="button" onclick="openAddPlantModal()">Crear manualmente</button>
+        <button class="scan-secondary" type="button" onclick="openPlantCreateView()">Crear manualmente</button>
+      </div>
+    </section>
+  `;
+}
+
+function renderPlantCreateScreen() {
+  const draft = state.screenPlantDraft || createPlantDraft();
+  const isEditing = state.screenPlantMode === 'edit';
+  return `
+    <section class="screen">
+      <div class="screen-intro">
+        <h1 class="screen-title">${isEditing ? 'Editar planta' : 'Crear planta'}</h1>
+        <p class="screen-subtitle">${isEditing ? 'Actualiza la ficha de tu planta.' : 'Completa manualmente la ficha y guárdala en tu colección.'}</p>
+      </div>
+      <div class="editor-card">
+        <div class="form-group">
+          <label>Icono</label>
+          <div class="emoji-row">
+            ${plantEmojis.slice(0, 12).map(emoji => `<button class="emoji-pill ${draft.emoji === emoji ? 'active' : ''}" type="button" onclick="setScreenPlantEmoji('${emoji}')">${emoji}</button>`).join('')}
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Nombre</label>
+          <input class="editor-input" type="text" value="${escapeHtml(draft.name || '')}" placeholder="Ej: Monstera del salón" oninput="updateScreenPlantField('name', this.value)">
+        </div>
+        <div class="form-group">
+          <label>Especie</label>
+          <input class="editor-input" type="text" value="${escapeHtml(draft.species || '')}" placeholder="Ej: Monstera deliciosa" oninput="updateScreenPlantField('species', this.value)">
+        </div>
+        <div class="form-group">
+          <label>Sección</label>
+          <select class="editor-select" onchange="updateScreenPlantField('section', this.value)">
+            ${state.sections.map(section => `<option value="${section.id}" ${draft.section === section.id ? 'selected' : ''}>${escapeHtml(section.icon)} ${escapeHtml(section.name)}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Frecuencia de riego</label>
+          <select class="editor-select" onchange="updateScreenPlantField('freq', Number(this.value))">
+            ${[1,2,3,5,7,14,30].map(freq => `<option value="${freq}" ${Number(draft.freq) === freq ? 'selected' : ''}>${freq === 1 ? 'Cada día' : `Cada ${freq} días`}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Luz</label>
+          <select class="editor-select" onchange="updateScreenPlantField('light', this.value)">
+            ${['☀️ Sol directo','⛅ Luz indirecta','🌥️ Sombra parcial','🌑 Poca luz'].map(light => `<option value="${light}" ${draft.light === light ? 'selected' : ''}>${escapeHtml(light)}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="screen-actions">
+        <button class="btn-primary" type="button" onclick="savePlantFromScreen()">${isEditing ? 'Guardar cambios' : 'Guardar'}</button>
+        <button class="btn-secondary" type="button" onclick="cancelPlantCreateView()">Cancelar</button>
+      </div>
+    </section>
+  `;
+}
+
+function renderPlantDetailScreen() {
+  const plant = state.plants.find(item => item.id === state.detailPlantId);
+  if (!plant) {
+    return `
+      <section class="screen">
+        <div class="screen-intro">
+          <h1 class="screen-title">Detalle de planta</h1>
+          <p class="screen-subtitle">No hemos encontrado esta planta.</p>
+        </div>
+        <div class="screen-actions">
+          <button class="btn-primary" type="button" onclick="setView('plants')">Volver a plantas</button>
+        </div>
+      </section>
+    `;
+  }
+
+  const section = state.sections.find(item => item.id === plant.section);
+  const last = lastWatered(plant);
+  const days = last ? daysBetween(last) : null;
+  const status = wateredToday(plant) ? 'Regada hoy' : needsWater(plant) ? 'Necesita agua' : 'Al día';
+
+  return `
+    <section class="screen">
+      <div class="screen-intro">
+        <h1 class="screen-title">Detalle de planta</h1>
+        <p class="screen-subtitle">${escapeHtml(section ? section.name : 'Sin sección')} · ${escapeHtml(status)}</p>
+      </div>
+      <div class="detail-card">
+        <div class="detail-hero">
+          ${plant.imagePreview ? `<img src="${plant.imagePreview}" alt="${escapeHtml(plant.name || plant.species || 'Planta')}">` : `<div class="detail-emoji">${escapeHtml(plant.emoji || '🪴')}</div>`}
+        </div>
+        <div class="detail-body">
+          <div>
+            <div class="detail-name">${escapeHtml(plant.name || plant.species || 'Planta sin nombre')}</div>
+            <div class="detail-species">${escapeHtml(plant.species || 'Sin especie definida')}</div>
+          </div>
+          <div class="detail-grid">
+            <div class="detail-chip">
+              <div class="detail-chip-label">Último riego</div>
+              <div class="detail-chip-value">${days === null ? 'Nunca' : days === 0 ? 'Hoy' : `Hace ${days} día${days === 1 ? '' : 's'}`}</div>
+            </div>
+            <div class="detail-chip">
+              <div class="detail-chip-label">Frecuencia</div>
+              <div class="detail-chip-value">Cada ${plant.freq} día${plant.freq === 1 ? '' : 's'}</div>
+            </div>
+            <div class="detail-chip">
+              <div class="detail-chip-label">Luz</div>
+              <div class="detail-chip-value">${escapeHtml(plant.light || 'No definida')}</div>
+            </div>
+            <div class="detail-chip">
+              <div class="detail-chip-label">Sección</div>
+              <div class="detail-chip-value">${escapeHtml(section ? `${section.icon} ${section.name}` : 'Sin sección')}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-actions">
+        <button class="btn-primary" type="button" onclick="waterPlant('${plant.id}')">Regar ahora</button>
+        <button class="btn-secondary" type="button" onclick="openCalendarModal('${plant.id}')">Ver calendario</button>
+        <button class="btn-secondary" type="button" onclick="openPlantCreateView(null, '${plant.id}')">Editar ficha</button>
+        <button class="btn-danger" type="button" onclick="openDeleteModal('${plant.id}')">Eliminar</button>
+      </div>
+    </section>
+  `;
+}
+
+function renderProfileScreen() {
+  if (!state.auth.ready || state.cloud.loading) {
+    return `
+      <section class="screen">
+        <div class="screen-intro">
+          <h1 class="screen-title">Perfil</h1>
+          <p class="screen-subtitle">Tu cuenta y el resumen de tu colección.</p>
+        </div>
+        ${renderLoadingCard('Estamos preparando tu perfil.')}
+      </section>
+    `;
+  }
+
+  if (state.auth.configured && !state.auth.user) {
+    return `
+      <section class="screen">
+        <div class="screen-intro">
+          <h1 class="screen-title">Perfil</h1>
+          <p class="screen-subtitle">Tu cuenta y el resumen de tu colección.</p>
+        </div>
+        ${renderAuthPrompt('Inicia sesión para ver tu perfil y gestionar tu colección desde cualquier dispositivo.')}
+      </section>
+    `;
+  }
+
+  const user = state.auth.user;
+  const avatarUrl = user?.user_metadata?.avatar_url || '';
+  return `
+    <section class="screen">
+      <div class="screen-intro">
+        <h1 class="screen-title">Perfil</h1>
+        <p class="screen-subtitle">Tu cuenta y el resumen de tu colección.</p>
+      </div>
+      <div class="profile-card">
+        <div class="profile-head">
+          <div class="profile-avatar-lg">
+            ${avatarUrl ? `<img src="${avatarUrl}" alt="${escapeHtml(getUserName(user))}">` : escapeHtml(getUserInitial(user))}
+          </div>
+          <div class="profile-name">${escapeHtml(getUserName(user))}</div>
+          <div class="profile-email">${escapeHtml(user?.email || '')}</div>
+        </div>
+        <div class="detail-body">
+          <div class="profile-stats">
+            <div class="profile-stat">
+              <div class="profile-stat-label">Plantas</div>
+              <div class="profile-stat-value">${state.plants.length}</div>
+            </div>
+            <div class="profile-stat">
+              <div class="profile-stat-label">Espacios</div>
+              <div class="profile-stat-value">${state.sections.length}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-actions">
+        <button class="btn-primary" type="button" onclick="setView('scan')">Añadir planta</button>
+        <button class="btn-secondary" type="button" onclick="handleSignOut()">Cerrar sesión</button>
       </div>
     </section>
   `;
@@ -2721,6 +3110,18 @@ function renderCurrentView() {
   }
   if (state.currentView === 'scan') {
     appMain.innerHTML = renderScanScreen();
+    return;
+  }
+  if (state.currentView === 'profile') {
+    appMain.innerHTML = renderProfileScreen();
+    return;
+  }
+  if (state.currentView === 'plantDetail') {
+    appMain.innerHTML = renderPlantDetailScreen();
+    return;
+  }
+  if (state.currentView === 'plantCreate') {
+    appMain.innerHTML = renderPlantCreateScreen();
     return;
   }
   appMain.innerHTML = renderPlantsScreen();
@@ -2924,6 +3325,48 @@ async function calDayClick(dateStr, alreadyWatered) {
 // ===== ACTIONS =====
 function setView(view) {
   state.currentView = view;
+  if (['plants', 'scan', 'spaces', 'profile'].includes(view)) {
+    state.previousMainView = view;
+  }
+  render();
+}
+
+function openPlantDetail(plantId) {
+  state.detailPlantId = plantId;
+  state.currentView = 'plantDetail';
+  render();
+}
+
+function openPlantCreateView(prefill = null, plantId = null) {
+  const existingPlant = plantId ? state.plants.find(item => item.id === plantId) : null;
+  state.screenPlantMode = existingPlant ? 'edit' : 'create';
+  state.screenPlantDraft = createPlantDraft(prefill, existingPlant);
+  state.selectedEmoji = state.screenPlantDraft.emoji || '🌿';
+  state.editingPlantId = existingPlant ? existingPlant.id : null;
+  state.currentView = 'plantCreate';
+  render();
+}
+
+function cancelPlantCreateView() {
+  state.screenPlantDraft = null;
+  state.editingPlantId = null;
+  state.currentView = state.previousMainView || 'scan';
+  render();
+}
+
+function updateScreenPlantField(field, value) {
+  if (!state.screenPlantDraft) {
+    state.screenPlantDraft = createPlantDraft();
+  }
+  state.screenPlantDraft[field] = value;
+}
+
+function setScreenPlantEmoji(emoji) {
+  if (!state.screenPlantDraft) {
+    state.screenPlantDraft = createPlantDraft();
+  }
+  state.screenPlantDraft.emoji = emoji;
+  state.selectedEmoji = emoji;
   render();
 }
 
@@ -2986,6 +3429,58 @@ async function waterSection(sectionId) {
   }
 
   showToast(`💧 ${section.name} al día`);
+}
+
+async function savePlantFromScreen() {
+  const draft = state.screenPlantDraft || createPlantDraft();
+  if (!draft.section) {
+    showToast('⚠️ Elige una sección');
+    return;
+  }
+
+  const resolvedName = (draft.name || '').trim() || (draft.species || '').trim() || 'Planta sin nombre';
+  let plantToSync;
+
+  if (state.screenPlantMode === 'edit' && draft.id) {
+    const existing = state.plants.find(item => item.id === draft.id);
+    if (!existing) return;
+    existing.name = resolvedName;
+    existing.species = (draft.species || '').trim();
+    existing.emoji = draft.emoji || '🌿';
+    existing.section = draft.section;
+    existing.freq = Number(draft.freq) || 3;
+    existing.light = draft.light || '⛅ Luz indirecta';
+    plantToSync = existing;
+  } else {
+    plantToSync = {
+      ...(draft || {}),
+      id: createEntityId('plant'),
+      name: resolvedName,
+      species: (draft.species || '').trim(),
+      emoji: draft.emoji || '🌿',
+      section: draft.section,
+      freq: Number(draft.freq) || 3,
+      light: draft.light || '⛅ Luz indirecta',
+      waterLog: Array.isArray(draft.waterLog) ? draft.waterLog : [],
+    };
+    state.plants.push(plantToSync);
+  }
+
+  state.detailPlantId = plantToSync.id;
+  state.screenPlantDraft = null;
+  state.editingPlantId = null;
+  state.currentView = 'plantDetail';
+  render();
+
+  try {
+    await syncPlantToCloud(plantToSync);
+  } catch (error) {
+    console.error('Failed to sync plant from screen', error);
+    showToast('⚠️ La planta se guardó localmente, pero no pudimos sincronizarla');
+    return;
+  }
+
+  showToast(`🌱 ${resolvedName} guardada`);
 }
 
 // ===== EMOJIS =====
@@ -3138,12 +3633,12 @@ function selectIdentificationResult(index) {
   };
 
   closePhotoIdentifyModal();
-  openAddPlantModal(state.identifiedPlantDraft);
+  openPlantCreateView(state.identifiedPlantDraft);
 }
 
 function createPlantManuallyFromIdentification() {
   closePhotoIdentifyModal();
-  openAddPlantModal();
+  openPlantCreateView();
 }
 
 // ===== MODALS =====
@@ -3173,23 +3668,7 @@ function openAddPlantModal(prefill = null) {
 }
 
 function openEditPlant(id) {
-  const p = state.plants.find(x => x.id === id);
-  if (!p) return;
-  state.identifiedPlantDraft = null;
-  state.editingPlantId = id;
-  state.selectedEmoji = p.emoji;
-  document.getElementById('modalTitle').textContent = 'Editar planta';
-  document.getElementById('modalSub').textContent = p.name;
-  document.getElementById('plantName').value = p.name;
-  document.getElementById('plantSpecies').value = p.species || '';
-  document.getElementById('plantFreq').value = p.freq;
-  document.getElementById('plantLight').value = p.light;
-  document.getElementById('identifiedPlantNote').style.display = 'none';
-  renderEmojiPicker('emojiPicker', plantEmojis, p.emoji, 'selectPlantEmoji');
-  const sel = document.getElementById('plantSection');
-  sel.innerHTML = state.sections.map(s => `<option value="${s.id}">${s.icon} ${s.name}</option>`).join('');
-  sel.value = p.section;
-  document.getElementById('plantModal').classList.add('open');
+  openPlantCreateView(null, id);
 }
 
 function closePlantModal() {
