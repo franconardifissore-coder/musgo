@@ -250,18 +250,21 @@
 
   .plant-tile {
     background: #fff;
-    border-radius: 16px;
+    border-radius: 24px;
     overflow: hidden;
-    box-shadow: 0 4px 20px rgba(52, 93, 76, 0.04);
+    box-shadow: 0 14px 34px rgba(52, 93, 76, 0.07);
     display: flex;
     flex-direction: column;
     min-height: 252px;
+    border: 1px solid rgba(52, 93, 76, 0.06);
   }
 
   .plant-tile-visual {
-    height: 160px;
+    height: 176px;
     position: relative;
-    background: linear-gradient(180deg, #f2f5f1 0%, #edf3eb 100%);
+    background:
+      radial-gradient(circle at top center, rgba(79, 168, 109, 0.16), transparent 42%),
+      linear-gradient(180deg, #f2f5f1 0%, #edf3eb 100%);
     overflow: hidden;
   }
 
@@ -280,11 +283,49 @@
     font-size: 4rem;
   }
 
+  .plant-tile-badge {
+    position: absolute;
+    left: 14px;
+    top: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.92);
+    color: #5d6c60;
+    font-size: 0.74rem;
+    font-weight: 700;
+    box-shadow: 0 10px 18px rgba(31, 52, 37, 0.08);
+  }
+
+  .plant-tile-status {
+    position: absolute;
+    right: 14px;
+    bottom: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 34px;
+    padding: 8px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.92);
+    color: #345d4c;
+    font-size: 0.74rem;
+    font-weight: 700;
+    box-shadow: 0 10px 18px rgba(31, 52, 37, 0.08);
+  }
+
+  .plant-tile-status.warn {
+    background: rgba(255, 244, 239, 0.94);
+    color: #b85d42;
+  }
+
   .plant-tile-body {
-    padding: 16px;
+    padding: 18px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
     flex: 1;
   }
 
@@ -296,9 +337,9 @@
   }
 
   .plant-tile-meta {
-    color: #40493d;
+    color: #5d6c60;
     font-size: 0.82rem;
-    line-height: 1.3;
+    line-height: 1.45;
   }
 
   .plant-tile-actions {
@@ -311,8 +352,8 @@
   .plant-tile-action {
     border: none;
     border-radius: 999px;
-    padding: 8px 10px;
-    background: #f3f4f3;
+    padding: 9px 12px;
+    background: #f5f7f4;
     color: #345d4c;
     font-size: 0.76rem;
     font-weight: 700;
@@ -326,15 +367,18 @@
 
   .add-plant-card-mobile {
     min-height: 244px;
-    border-radius: 16px;
+    border-radius: 24px;
     border: 2px dashed #bfcaba;
-    background: rgba(237, 238, 237, 0.5);
+    background:
+      radial-gradient(circle at top right, rgba(79, 168, 109, 0.12), transparent 30%),
+      rgba(237, 238, 237, 0.5);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 16px;
     cursor: pointer;
+    box-shadow: 0 14px 34px rgba(52, 93, 76, 0.05);
   }
 
   .add-plant-card-mobile .add-circle {
@@ -1831,13 +1875,13 @@
   .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(22, 35, 27, 0.38);
-    backdrop-filter: blur(12px);
+    background: rgba(22, 35, 27, 0.28);
+    backdrop-filter: blur(16px);
     z-index: 200;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px;
+    padding: 24px;
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.24s ease, visibility 0.24s ease;
@@ -1852,11 +1896,13 @@
     width: min(100%, 520px);
     max-height: 90vh;
     overflow-y: auto;
-    padding: 30px;
-    border-radius: 32px;
-    background: rgba(255, 255, 255, 0.94);
+    padding: 32px 28px;
+    border-radius: 36px;
+    background:
+      radial-gradient(circle at top right, rgba(79, 168, 109, 0.12), transparent 28%),
+      rgba(255, 255, 255, 0.95);
     border: 1px solid rgba(255, 255, 255, 0.8);
-    box-shadow: 0 38px 90px rgba(22, 35, 27, 0.2);
+    box-shadow: 0 38px 90px rgba(22, 35, 27, 0.16);
     transform: translateY(18px) scale(0.98);
     transition: transform 0.25s ease;
   }
@@ -1874,7 +1920,7 @@
 
   .modal-sub {
     color: var(--muted);
-    margin-bottom: 22px;
+    margin-bottom: 24px;
     line-height: 1.6;
     font-size: 0.92rem;
   }
@@ -1889,7 +1935,7 @@
 
   .form-group label {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     color: var(--muted-soft);
     font-size: 0.76rem;
     font-weight: 700;
@@ -1902,7 +1948,7 @@
   .form-group textarea {
     width: 100%;
     min-height: 54px;
-    padding: 14px 18px;
+    padding: 15px 16px;
     border-radius: 18px;
     border: 1px solid var(--line);
     background: #f9fcf8;
@@ -1920,13 +1966,13 @@
   .emoji-picker {
     display: grid;
     grid-template-columns: repeat(7, minmax(0, 1fr));
-    gap: 8px;
+    gap: 10px;
   }
 
   .emoji-btn {
     width: 100%;
     aspect-ratio: 1;
-    border-radius: 16px;
+    border-radius: 18px;
     border: 1px solid transparent;
     background: rgba(79, 168, 109, 0.08);
     display: flex;
@@ -1947,7 +1993,7 @@
   .identify-actions {
     display: flex;
     gap: 12px;
-    margin-top: 22px;
+    margin-top: 18px;
     flex-wrap: wrap;
   }
 
@@ -1976,7 +2022,7 @@
   }
 
   .identify-upload {
-    padding: 20px;
+    padding: 22px;
     border-radius: 24px;
     background: rgba(246, 251, 244, 0.8);
     border: 1px dashed rgba(79, 168, 109, 0.26);
@@ -2025,7 +2071,7 @@
 
   .identify-result {
     padding: 16px;
-    border-radius: 22px;
+    border-radius: 24px;
     border: 1px solid rgba(96, 125, 101, 0.12);
     background: rgba(255, 255, 255, 0.86);
     text-align: left;
@@ -2073,6 +2119,9 @@
 
   .modal.modal-calendar {
     max-width: 620px;
+    background:
+      radial-gradient(circle at top right, rgba(79, 168, 109, 0.1), transparent 28%),
+      rgba(255, 255, 255, 0.96);
   }
 
   .cal-plant-info {
@@ -2080,7 +2129,7 @@
     align-items: center;
     gap: 14px;
     margin-bottom: 18px;
-    padding: 16px;
+    padding: 18px;
     border-radius: 24px;
     background: rgba(246, 251, 244, 0.9);
     border: 1px solid rgba(79, 168, 109, 0.12);
@@ -2125,7 +2174,7 @@
   .cal-nav-btn {
     width: 42px;
     height: 42px;
-    border-radius: 16px;
+    border-radius: 18px;
     border: 1px solid var(--line);
     background: rgba(255, 255, 255, 0.86);
     display: flex;
@@ -2190,7 +2239,7 @@
 
   .cal-day {
     aspect-ratio: 1;
-    border-radius: 16px;
+    border-radius: 18px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -2257,8 +2306,8 @@
   }
 
   .cal-sum-item {
-    padding: 14px;
-    border-radius: 20px;
+    padding: 16px 14px;
+    border-radius: 22px;
     background: rgba(246, 251, 244, 0.9);
     border: 1px solid rgba(79, 168, 109, 0.12);
     text-align: center;
@@ -3272,14 +3321,18 @@ function renderPlantsScreen() {
     const last = lastWatered(plant);
     const days = last ? daysBetween(last) : null;
     const lastText = days === null ? 'Aún sin riegos' : days === 0 ? 'Regada hoy' : `Último riego hace ${days} día${days === 1 ? '' : 's'}`;
+    const section = state.sections.find(item => item.id === plant.section);
+    const status = wateredToday(plant) ? 'Regada hoy' : needsWater(plant) ? 'Toca riego' : 'Al día';
     return `
       <article class="plant-tile">
         <button class="plant-tile-visual" type="button" onclick="openPlantDetail('${plant.id}')" style="border:none;padding:0;">
+          <span class="plant-tile-badge">${escapeHtml(section ? `${section.icon} ${section.name}` : '🪴 Sin sección')}</span>
+          <span class="plant-tile-status ${needsWater(plant) && !wateredToday(plant) ? 'warn' : ''}">${escapeHtml(status)}</span>
           ${plant.imagePreview ? `<img src="${plant.imagePreview}" alt="${escapeHtml(plant.name || plant.species || 'Planta')}">` : `<div class="plant-tile-emoji">${escapeHtml(plant.emoji || '🪴')}</div>`}
         </button>
         <div class="plant-tile-body">
           <button class="plant-tile-name" type="button" onclick="openPlantDetail('${plant.id}')" style="border:none;background:none;padding:0;text-align:left;">${escapeHtml(plant.name || plant.species || 'Planta sin nombre')}</button>
-          <div class="plant-tile-meta">${escapeHtml(lastText)}</div>
+          <div class="plant-tile-meta">${escapeHtml(plant.species || 'Sin especie definida')} · ${escapeHtml(lastText)}</div>
           <div class="plant-tile-actions">
             <button class="plant-tile-action primary" type="button" onclick="waterPlant('${plant.id}')">${wateredToday(plant) ? 'Regada' : 'Regar'}</button>
             <button class="plant-tile-action" type="button" onclick="openCalendarModal('${plant.id}')">Calendario</button>
