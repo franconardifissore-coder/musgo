@@ -4321,9 +4321,11 @@ function getCalendarMonthData(plant, year, month) {
     let cursor = new Date(lw);
     cursor.setHours(0,0,0,0);
     const monthEnd = new Date(year, month + 1, 0);
+    monthEnd.setHours(23,59,59,999);
     while (cursor <= monthEnd) {
       cursor.setDate(cursor.getDate() + plant.freq);
-      if (cursor.getFullYear() === year && cursor.getMonth() === month) {
+      const isFutureOccurrence = cursor > todayDate;
+      if (isFutureOccurrence && cursor.getFullYear() === year && cursor.getMonth() === month) {
         projectedWaterDays.add(cursor.getDate());
       }
     }
