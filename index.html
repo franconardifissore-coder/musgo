@@ -2743,10 +2743,11 @@
   }
 
   .btn-danger {
-    min-height: 32px;
-    padding: 0;
-    border: none;
-    background: transparent;
+    min-height: 64px;
+    padding: 16px 24px;
+    border: 1.5px solid #b24f37;
+    border-radius: 999px;
+    background: #ffffff;
     color: #b24f37;
     cursor: pointer;
     font-weight: 700;
@@ -2755,13 +2756,25 @@
     align-items: center;
     justify-content: center;
     gap: 10px;
-    box-shadow: none;
+    box-shadow: 0 8px 20px rgba(31, 52, 37, 0.04);
+  }
+
+  .btn-danger::before {
+    content: '';
+    width: 24px;
+    height: 24px;
+    background-image: url('./resources/Delete icon.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    flex-shrink: 0;
   }
 
   .btn-danger:hover {
     transform: translateY(-1px);
-    box-shadow: none;
+    box-shadow: 0 12px 24px rgba(31, 52, 37, 0.06);
     color: #9f402d;
+    border-color: #9f402d;
   }
 
   @keyframes fadeIn {
@@ -4193,7 +4206,7 @@ function renderPlantDetailScreen() {
         </div>
       </div>
       <div class="detail-actions-card">
-        <button class="btn-danger" type="button" onclick="openDeleteModal('${plant.id}')">🗑 Eliminar</button>
+        <button class="btn-danger" type="button" onclick="openDeleteModal('${plant.id}')">Eliminar</button>
         <button class="btn-primary" type="button" onclick="savePlantDetail()">Guardar</button>
       </div>
     </section>
