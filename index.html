@@ -480,7 +480,7 @@
   .scan-panel {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 20px;
   }
 
   .scan-box {
@@ -514,8 +514,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2rem;
     color: #345d4c;
+  }
+
+  .scan-box-icon img {
+    width: 30px;
+    height: 30px;
+    display: block;
   }
 
   .scan-box-title {
@@ -543,34 +548,6 @@
     font-weight: 600;
     cursor: pointer;
     box-shadow: 0 8px 20px rgba(52, 93, 76, 0.12);
-  }
-
-  .scan-feature-list {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-  }
-
-  .scan-feature {
-    border-radius: 22px;
-    padding: 16px;
-    background: rgba(255, 255, 255, 0.9);
-    box-shadow: 0 14px 24px rgba(31, 52, 37, 0.05);
-    border: 1px solid rgba(52, 93, 76, 0.06);
-  }
-
-  .scan-feature-title {
-    color: #191c1c;
-    font-size: 0.92rem;
-    font-weight: 800;
-    line-height: 1.3;
-  }
-
-  .scan-feature-copy {
-    margin-top: 6px;
-    color: #5d6c60;
-    font-size: 0.82rem;
-    line-height: 1.5;
   }
 
   .topbar-auth .btn-auth,
@@ -2613,10 +2590,6 @@
       grid-template-columns: minmax(0, 1fr);
     }
 
-    .scan-feature-list {
-      grid-template-columns: minmax(0, 1fr);
-    }
-
     .logo h1 {
       font-size: 1.55rem;
     }
@@ -3673,28 +3646,17 @@ function renderScanScreen() {
   return `
     <section class="screen">
       <div class="screen-intro">
-        <div class="screen-kicker">Scan & Identify</div>
         <h1 class="screen-title">Scanea tu planta</h1>
         <p class="screen-subtitle">Enfoca tu planta para identificarla automáticamente o cárgala manualmente.</p>
       </div>
       <div class="scan-panel">
         <button class="scan-box" type="button" onclick="openPhotoIdentifyModal()">
           <div class="scan-box-inner">
-            <div class="scan-box-icon">⌾</div>
+            <div class="scan-box-icon"><img src="./resources/scanner icon.svg" alt="Escanear planta"></div>
             <div class="scan-box-title">Escanear planta</div>
-            <div class="scan-box-copy">Saca una foto, revisa las especies sugeridas y crea la ficha con un solo flujo.</div>
+            <div class="scan-box-copy">Saca una foto, revisa las especies sugeridas y crea la ficha en un solo flujo.</div>
           </div>
         </button>
-        <div class="scan-feature-list">
-          <div class="scan-feature">
-            <div class="scan-feature-title">Identificación guiada</div>
-            <div class="scan-feature-copy">Te mostramos las 3 opciones más probables para que confirmes antes de guardar.</div>
-          </div>
-          <div class="scan-feature">
-            <div class="scan-feature-title">Alta manual rápida</div>
-            <div class="scan-feature-copy">Si prefieres, puedes pasar a creación manual sin salir del flujo.</div>
-          </div>
-        </div>
         <button class="scan-secondary" type="button" onclick="openPlantCreateView()">Crear manualmente</button>
       </div>
     </section>
