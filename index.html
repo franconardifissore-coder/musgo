@@ -4169,7 +4169,6 @@ function renderProfileScreen() {
     return `
       <section class="screen">
         <div class="screen-intro">
-          <div class="screen-kicker">Profile</div>
           <h1 class="screen-title">Perfil</h1>
           <p class="screen-subtitle">Entra con tu email o usa Google para acceder a tu jardín desde cualquier dispositivo.</p>
         </div>
@@ -4204,7 +4203,6 @@ function renderProfileScreen() {
   return `
     <section class="screen">
       <div class="screen-intro">
-        <div class="screen-kicker">Profile</div>
         <h1 class="screen-title">Perfil</h1>
         <p class="screen-subtitle">Tu cuenta y el resumen de tu colección.</p>
       </div>
@@ -4215,7 +4213,6 @@ function renderProfileScreen() {
           </div>
           <div class="profile-name">${escapeHtml(getUserName(user))}</div>
           <div class="profile-email">${escapeHtml(user?.email || '')}</div>
-          <div class="profile-copy">Tu jardín está guardado en la nube para que puedas seguirlo desde cualquier dispositivo.</div>
         </div>
         <div class="profile-panel-body">
           <div class="profile-stats">
@@ -4227,11 +4224,6 @@ function renderProfileScreen() {
               <div class="profile-stat-label">Espacios</div>
               <div class="profile-stat-value">${state.sections.length}</div>
             </div>
-          </div>
-          <div class="profile-collection-card">
-            <div class="profile-collection-kicker">Colección</div>
-            <div class="profile-collection-title">${state.plants.length ? 'Todo sincronizado' : 'Empieza tu jardín'}</div>
-            <div class="profile-collection-copy">${state.plants.length ? `Tienes ${state.plants.length} planta${state.plants.length === 1 ? '' : 's'} repartidas en ${state.sections.length} espacio${state.sections.length === 1 ? '' : 's'}.` : 'Añade tu primera planta y empieza a construir una colección más ordenada y cuidada.'}</div>
           </div>
         </div>
       </div>
