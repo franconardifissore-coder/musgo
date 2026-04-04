@@ -637,7 +637,9 @@
   .profile-card,
   .editor-card,
   .space-editor-card,
-  .detail-actions-card {
+  .detail-actions-card,
+  .detail-calendar-card,
+  .detail-form-card {
     background: #fff;
     border-radius: 28px;
     box-shadow: 0 14px 34px rgba(52, 93, 76, 0.07);
@@ -645,154 +647,18 @@
     border: 1px solid rgba(52, 93, 76, 0.06);
   }
 
-  .detail-hero {
-    height: 336px;
-    background:
-      radial-gradient(circle at top right, rgba(79, 168, 109, 0.16), transparent 30%),
-      linear-gradient(180deg, #eef3ee 0%, #e6ece5 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    position: relative;
-  }
-
-  .detail-hero img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .detail-emoji {
-    font-size: 6rem;
-  }
-
-  .detail-status-pill {
-    position: absolute;
-    left: 18px;
-    top: 18px;
-    padding: 9px 12px;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.92);
-    color: #345d4c;
-    font-size: 0.78rem;
-    font-weight: 700;
-    box-shadow: 0 10px 18px rgba(31, 52, 37, 0.08);
-  }
-
-  .detail-body {
-    padding: 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-  }
-
-  .detail-name {
-    font-size: 1.95rem;
-    line-height: 1.1;
-    font-weight: 800;
-    color: #191c1c;
-    letter-spacing: -0.04em;
-  }
-
-  .detail-species {
-    color: #40493d;
-    font-size: 0.95rem;
-    line-height: 1.45;
-  }
-
-  .detail-description {
-    color: #5d6c60;
-    font-size: 0.92rem;
-    line-height: 1.6;
-  }
-
-  .detail-tabs {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
-    padding: 6px;
-    border-radius: 999px;
-    background: #f5f7f4;
-  }
-
-  .detail-tab {
-    min-height: 42px;
-    border-radius: 999px;
-    border: none;
-    background: transparent;
-    color: #708172;
-    font-size: 0.78rem;
-    font-weight: 700;
-  }
-
-  .detail-tab.active {
-    background: #ffffff;
-    color: #345d4c;
-    box-shadow: 0 8px 18px rgba(31, 52, 37, 0.06);
-  }
-
-  .detail-info-card {
-    padding: 18px;
-    border-radius: 22px;
-    background: #f5f7f4;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .detail-info-title {
-    font-size: 1rem;
-    font-weight: 800;
-    color: #191c1c;
-    letter-spacing: -0.02em;
-  }
-
-  .detail-info-copy {
-    color: #5d6c60;
-    font-size: 0.9rem;
-    line-height: 1.6;
-  }
-
-  .detail-gallery {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 10px;
-  }
-
-  .detail-gallery-item {
-    aspect-ratio: 1;
-    border-radius: 18px;
-    overflow: hidden;
-    background: linear-gradient(180deg, #eef3ee 0%, #e6ece5 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #345d4c;
-    font-size: 1.8rem;
-  }
-
-  .detail-gallery-item img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .detail-grid,
   .profile-stats {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
   }
 
-  .detail-chip,
   .profile-stat {
     background: #f5f7f4;
     border-radius: 20px;
     padding: 14px;
   }
 
-  .detail-chip-label,
   .profile-stat-label {
     color: #708172;
     font-size: 0.74rem;
@@ -800,13 +666,94 @@
     letter-spacing: 0.06em;
   }
 
-  .detail-chip-value,
   .profile-stat-value {
     margin-top: 6px;
     color: #191c1c;
     font-size: 1rem;
     font-weight: 700;
     line-height: 1.35;
+  }
+
+  .detail-calendar-card,
+  .detail-form-card {
+    padding: 20px;
+  }
+
+  .detail-calendar-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .detail-calendar-month {
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: #191c1c;
+    letter-spacing: -0.04em;
+  }
+
+  .detail-calendar-nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .detail-calendar-nav button {
+    width: 34px;
+    height: 34px;
+    border: none;
+    background: transparent;
+    color: #191c1c;
+    font-size: 1.4rem;
+    cursor: pointer;
+  }
+
+  .detail-calendar-grid {
+    border-radius: 28px;
+    background: #ffffff;
+    padding: 18px 14px 14px;
+    box-shadow: inset 0 0 0 1px rgba(52, 93, 76, 0.05);
+  }
+
+  .detail-form-card {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .detail-field {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .detail-field label {
+    color: #889489;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .detail-input,
+  .detail-select {
+    width: 100%;
+    min-height: 54px;
+    border: 1px solid rgba(52, 93, 76, 0.08);
+    border-radius: 18px;
+    background: #f7f9f6;
+    padding: 14px 16px;
+    color: #191c1c;
+    font-size: 0.98rem;
+    outline: none;
+  }
+
+  .detail-input:focus,
+  .detail-select:focus {
+    border-color: rgba(79, 168, 109, 0.36);
+    box-shadow: 0 0 0 4px rgba(79, 168, 109, 0.1);
   }
 
   .screen-actions {
@@ -2855,6 +2802,7 @@ let state = {
   screenPlantMode: 'create',
   screenPlantDraft: null,
   screenSectionDraft: null,
+  detailDraft: null,
   splashVisible: false,
   selectedEmoji: '🌿',
   selectedSectionEmoji: '🪴',
@@ -3664,10 +3612,11 @@ function renderPlantDetailScreen() {
     `;
   }
 
-  const section = state.sections.find(item => item.id === plant.section);
-  const last = lastWatered(plant);
-  const days = last ? daysBetween(last) : null;
-  const status = wateredToday(plant) ? 'Regada hoy' : needsWater(plant) ? 'Necesita agua' : 'Al día';
+  const draft = state.detailDraft || {
+    name: plant.name || '',
+    freq: Number(plant.freq) || 3,
+    section: plant.section || '',
+  };
 
   return `
     <section class="screen">
@@ -3675,62 +3624,30 @@ function renderPlantDetailScreen() {
         ${renderBackButton('Plantas', 'plants')}
       </div>
       <div class="screen-intro">
-        <div class="screen-kicker">Plant Detail</div>
         <h1 class="screen-title">Detalle de planta</h1>
-        <p class="screen-subtitle">${escapeHtml(section ? section.name : 'Sin sección')} · ${escapeHtml(status)}</p>
       </div>
-      <div class="detail-card">
-        <div class="detail-hero">
-          <div class="detail-status-pill">${escapeHtml(status)}</div>
-          ${plant.imagePreview ? `<img src="${plant.imagePreview}" alt="${escapeHtml(plant.name || plant.species || 'Planta')}">` : `<div class="detail-emoji">${escapeHtml(plant.emoji || '🪴')}</div>`}
+      ${renderInlinePlantCalendar(plant)}
+      <div class="detail-form-card">
+        <div class="detail-field">
+          <label>Nombre</label>
+          <input class="detail-input" type="text" value="${escapeHtml(draft.name || '')}" oninput="updateDetailPlantField('name', this.value)">
         </div>
-        <div class="detail-body">
-          <div>
-            <div class="detail-name">${escapeHtml(plant.name || plant.species || 'Planta sin nombre')}</div>
-            <div class="detail-species">${escapeHtml(plant.species || 'Sin especie definida')}</div>
-          </div>
-          <div class="detail-tabs">
-            <button class="detail-tab active" type="button">Información</button>
-            <button class="detail-tab" type="button">Cuidados</button>
-            <button class="detail-tab" type="button">Ficha</button>
-          </div>
-          <div class="detail-info-card">
-            <div class="detail-info-title">Resumen de hoy</div>
-            <div class="detail-info-copy">Un rincón vivo dentro de ${escapeHtml(section ? section.name : 'tu colección')}. Desde aquí puedes revisar su ritmo de riego, editar la ficha o consultar su calendario.</div>
-          </div>
-          <div class="detail-grid">
-            <div class="detail-chip">
-              <div class="detail-chip-label">Último riego</div>
-              <div class="detail-chip-value">${days === null ? 'Nunca' : days === 0 ? 'Hoy' : `Hace ${days} día${days === 1 ? '' : 's'}`}</div>
-            </div>
-            <div class="detail-chip">
-              <div class="detail-chip-label">Frecuencia</div>
-              <div class="detail-chip-value">Cada ${plant.freq} día${plant.freq === 1 ? '' : 's'}</div>
-            </div>
-            <div class="detail-chip">
-              <div class="detail-chip-label">Luz</div>
-              <div class="detail-chip-value">${escapeHtml(plant.light || 'No definida')}</div>
-            </div>
-            <div class="detail-chip">
-              <div class="detail-chip-label">Sección</div>
-              <div class="detail-chip-value">${escapeHtml(section ? `${section.icon} ${section.name}` : 'Sin sección')}</div>
-            </div>
-          </div>
-          <div class="detail-info-card">
-            <div class="detail-info-title">Photo Gallery</div>
-            <div class="detail-gallery">
-              <div class="detail-gallery-item">${plant.imagePreview ? `<img src="${plant.imagePreview}" alt="${escapeHtml(plant.name || 'Planta')}">` : escapeHtml(plant.emoji || '🪴')}</div>
-              <div class="detail-gallery-item">${escapeHtml(plant.emoji || '🪴')}</div>
-              <div class="detail-gallery-item">${escapeHtml(section?.icon || '🌿')}</div>
-            </div>
-          </div>
+        <div class="detail-field">
+          <label>Frecuencia de riego</label>
+          <select class="detail-select" onchange="updateDetailPlantField('freq', Number(this.value))">
+            ${[1,2,3,5,7,14,30].map(freq => `<option value="${freq}" ${Number(draft.freq) === freq ? 'selected' : ''}>${freq === 1 ? 'Cada día' : `Cada ${freq} días`}</option>`).join('')}
+          </select>
+        </div>
+        <div class="detail-field">
+          <label>Espacio</label>
+          <select class="detail-select" onchange="updateDetailPlantField('section', this.value)">
+            ${state.sections.map(section => `<option value="${section.id}" ${draft.section === section.id ? 'selected' : ''}>${escapeHtml(section.name)}</option>`).join('')}
+          </select>
         </div>
       </div>
       <div class="detail-actions-card">
-        <button class="btn-primary" type="button" onclick="waterPlant('${plant.id}')">Regar ahora</button>
-        <button class="btn-secondary" type="button" onclick="openCalendarModal('${plant.id}')">Ver calendario</button>
-        <button class="btn-secondary" type="button" onclick="openPlantCreateView(null, '${plant.id}')">Editar ficha</button>
         <button class="btn-danger" type="button" onclick="openDeleteModal('${plant.id}')">Eliminar</button>
+        <button class="btn-primary" type="button" onclick="savePlantDetail()">Guardar</button>
       </div>
     </section>
   `;
@@ -3855,6 +3772,99 @@ function render() {
 // ===== CALENDAR =====
 const MONTH_NAMES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
+function getCalendarMonthData(plant, year, month) {
+  const todayStr = today();
+  const todayDate = new Date(todayStr);
+  const wateredSet = new Set((plant.waterLog || []).filter(d => {
+    const dt = new Date(d);
+    return dt.getFullYear() === year && dt.getMonth() === month;
+  }).map(d => new Date(d).getDate()));
+
+  const firstDay = new Date(year, month, 1);
+  let startDow = firstDay.getDay();
+  startDow = startDow === 0 ? 6 : startDow - 1;
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  const lw = lastWatered(plant);
+  const projectedWaterDays = new Set();
+  if (lw) {
+    let cursor = new Date(lw);
+    cursor.setHours(0,0,0,0);
+    const monthEnd = new Date(year, month + 1, 0);
+    while (cursor <= monthEnd) {
+      cursor.setDate(cursor.getDate() + plant.freq);
+      if (cursor.getFullYear() === year && cursor.getMonth() === month) {
+        projectedWaterDays.add(cursor.getDate());
+      }
+    }
+  }
+
+  const cells = [];
+  for (let i = 0; i < startDow; i++) {
+    cells.push({ empty: true });
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const cellDate = new Date(year, month, d);
+    const cellStr = cellDate.toISOString().split('T')[0];
+    const isToday = cellStr === todayStr;
+    const isWatered = wateredSet.has(d);
+    const isProjected = projectedWaterDays.has(d);
+    const isPastOrToday = cellDate <= todayDate;
+    cells.push({
+      day: d,
+      dateStr: cellStr,
+      isToday,
+      isWatered,
+      isProjected,
+      canToggle: isPastOrToday,
+    });
+  }
+
+  return { cells };
+}
+
+function renderInlinePlantCalendar(plant) {
+  const { cells } = getCalendarMonthData(plant, state.calYear, state.calMonth);
+  return `
+    <div class="detail-calendar-card">
+      <div class="detail-calendar-head">
+        <div class="detail-calendar-month">${MONTH_NAMES[state.calMonth]} ${state.calYear}</div>
+        <div class="detail-calendar-nav">
+          <button type="button" onclick="calPrevMonth()">‹</button>
+          <button type="button" onclick="calNextMonth()">›</button>
+        </div>
+      </div>
+      <div class="detail-calendar-grid">
+        <div class="cal-weekdays">
+          <div class="cal-weekday">L</div>
+          <div class="cal-weekday">M</div>
+          <div class="cal-weekday">X</div>
+          <div class="cal-weekday">J</div>
+          <div class="cal-weekday">V</div>
+          <div class="cal-weekday">S</div>
+          <div class="cal-weekday">D</div>
+        </div>
+        <div class="cal-days">
+          ${cells.map(cell => {
+            if (cell.empty) return `<div class="cal-day empty"></div>`;
+            const classes = ['cal-day'];
+            if (cell.isToday) classes.push('today');
+            if (cell.isWatered) classes.push('watered');
+            if (!cell.isWatered && cell.isProjected) classes.push('future-water');
+            if (cell.canToggle) classes.push('clickable-past');
+            return `
+              <div class="${classes.join(' ')}" onclick="detailCalendarDayClick('${cell.dateStr}', ${cell.isWatered})">
+                <div class="cal-day-num">${cell.day}</div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 function openCalendarModal(plantId) {
   state.calPlantId = plantId;
   state.calYear = new Date().getFullYear();
@@ -3870,12 +3880,20 @@ function closeCalendarModal() {
 function calPrevMonth() {
   state.calMonth--;
   if (state.calMonth < 0) { state.calMonth = 11; state.calYear--; }
+  if (state.currentView === 'plantDetail') {
+    render();
+    return;
+  }
   renderCalendar();
 }
 
 function calNextMonth() {
   state.calMonth++;
   if (state.calMonth > 11) { state.calMonth = 0; state.calYear++; }
+  if (state.currentView === 'plantDetail') {
+    render();
+    return;
+  }
   renderCalendar();
 }
 
@@ -4042,6 +4060,11 @@ async function calDayClick(dateStr, alreadyWatered) {
   }
 }
 
+async function detailCalendarDayClick(dateStr, alreadyWatered) {
+  state.calPlantId = state.detailPlantId;
+  await calDayClick(dateStr, alreadyWatered);
+}
+
 // ===== ACTIONS =====
 function setView(view) {
   state.currentView = view;
@@ -4052,7 +4075,17 @@ function setView(view) {
 }
 
 function openPlantDetail(plantId) {
+  const plant = state.plants.find(item => item.id === plantId);
+  if (!plant) return;
   state.detailPlantId = plantId;
+  state.detailDraft = {
+    name: plant.name || '',
+    freq: Number(plant.freq) || 3,
+    section: plant.section || (state.sections[0]?.id || ''),
+  };
+  state.calPlantId = plantId;
+  state.calYear = new Date().getFullYear();
+  state.calMonth = new Date().getMonth();
   state.currentView = 'plantDetail';
   render();
 }
@@ -4083,6 +4116,11 @@ function updateScreenPlantField(field, value) {
     state.screenPlantDraft = createPlantDraft();
   }
   state.screenPlantDraft[field] = value;
+}
+
+function updateDetailPlantField(field, value) {
+  if (!state.detailDraft) return;
+  state.detailDraft[field] = value;
 }
 
 function setScreenPlantEmoji(emoji) {
@@ -4138,6 +4176,32 @@ async function waterPlant(id) {
     return;
   }
   showToast(`💧 ${p.name} regada`);
+}
+
+async function savePlantDetail() {
+  const plant = state.plants.find(item => item.id === state.detailPlantId);
+  const draft = state.detailDraft;
+  if (!plant || !draft) return;
+  if (!draft.section) {
+    showToast('⚠️ Elige un espacio');
+    return;
+  }
+
+  plant.name = (draft.name || '').trim() || plant.species || 'Planta sin nombre';
+  plant.freq = Number(draft.freq) || 3;
+  plant.section = draft.section;
+  saveState();
+  render();
+
+  try {
+    await syncPlantToCloud(plant);
+  } catch (error) {
+    console.error('Failed to sync plant detail', error);
+    showToast('⚠️ Guardamos localmente, pero no pudimos sincronizar la ficha');
+    return;
+  }
+
+  showToast('🌱 Cambios guardados');
 }
 
 async function waterSection(sectionId) {
@@ -4484,6 +4548,7 @@ async function confirmDelete() {
   state.plants = state.plants.filter(x => x.id !== state.deletingPlantId);
   if (state.detailPlantId === plantId) {
     state.detailPlantId = null;
+    state.detailDraft = null;
     state.currentView = 'plants';
   }
   saveState();
