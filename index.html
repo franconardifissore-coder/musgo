@@ -4427,6 +4427,7 @@ async function waterSection(sectionId) {
 
 async function savePlantFromScreen() {
   const draft = state.screenPlantDraft || createPlantDraft();
+  const isIdentifiedFlow = state.screenPlantMode !== 'edit' && Boolean(draft.identifiedSpecies);
   if (!draft.section) {
     showToast('⚠️ Elige una sección');
     return;
@@ -4460,10 +4461,11 @@ async function savePlantFromScreen() {
     state.plants.push(plantToSync);
   }
 
-  state.detailPlantId = plantToSync.id;
+  state.detailPlantId = isIdentifiedFlow ? null : plantToSync.id;
+  state.detailDraft = null;
   state.screenPlantDraft = null;
   state.editingPlantId = null;
-  state.currentView = 'plantDetail';
+  state.currentView = isIdentifiedFlow ? 'plants' : 'plantDetail';
   render();
 
   try {
