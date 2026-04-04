@@ -7,6 +7,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
+    --green-dark: #345D4C;
+    --green-light: #C6EBD4;
     --bg: #f4f7f1;
     --bg-soft: #eef4ec;
     --surface: rgba(255, 255, 255, 0.84);
@@ -14,9 +16,9 @@
     --surface-muted: #f6faf4;
     --line: rgba(96, 125, 101, 0.14);
     --line-strong: rgba(83, 115, 88, 0.2);
-    --accent: #4fa86d;
-    --accent-deep: #2e7d4f;
-    --accent-soft: rgba(79, 168, 109, 0.13);
+    --accent: var(--green-dark);
+    --accent-deep: var(--green-dark);
+    --accent-soft: rgba(198, 235, 212, 0.5);
     --text: #1f3425;
     --text-soft: #526457;
     --muted: #708172;
@@ -2272,43 +2274,62 @@
   }
 
   .cal-day {
-    aspect-ratio: 1;
-    border-radius: 18px;
+    position: relative;
+    width: 44px;
+    height: 44px;
+    margin: 0 auto;
+    border-radius: 50%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 4px;
     border: 1px solid transparent;
-    background: rgba(255, 255, 255, 0.7);
+    background: transparent;
+    color: #191c1c;
     font-size: 0.84rem;
+    font-weight: 500;
     transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
   }
 
   .cal-day.empty {
     background: transparent;
+    width: auto;
+    height: auto;
+    border-radius: 0;
   }
 
   .cal-day.today {
-    border-color: rgba(79, 168, 109, 0.34);
+    background: #ffffff;
+    border-color: var(--green-dark);
+    color: var(--green-dark);
     font-weight: 700;
   }
 
   .cal-day.watered {
-    background: rgba(79, 168, 109, 0.16);
-    color: var(--accent-deep);
+    background: var(--green-dark);
+    color: #ffffff;
+    font-weight: 700;
   }
 
-  .cal-day.missed {
-    background: rgba(207, 113, 82, 0.14);
-    color: var(--danger);
+  .cal-day.watered::after {
+    content: '';
+    position: absolute;
+    right: -2px;
+    bottom: -2px;
+    width: 18px;
+    height: 20px;
+    border-radius: 50%;
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAAUCAYAAACAl21KAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAAkJJREFUeAGFlDtv01AUx48daG1RRBIJBEkHCxgYGIqKmDOAxAifoEUMMDDQDTFQvkE7MMCAVBiQYIGxokihggFFAYJopzZtqj6lVo7VR+w2D/f8b31dO3aav3R0j+/jd8+951wTtcl13STbU7Y8W9U91l+2MTaDuokn5dgW3e4abV+rBCAYfAnfatRoY98iq75HTqtOpxSV+hIaXexNCvP0RVGU+yEQQ+5x8xl+xd4U1kkAXj/bT5rag89xho3AUb3xsTiIaVbp9as3NPN/1u/bbTpU2l6iRquJT9xlToDYGebWcFoHsZDy/AK9e/ueioXf/hiOu7Jvys9RGdGQiKa2FYFUuZX6+OGTgEqtOKaMCglKAjRwdMF7/qSpyakQRAqRmV5/w22S49blkAFQUoYLFQvF0DGCsm1bbOLfV8OR7oDaPrlY+EMnCZvYthPpj4DK82Xqprg5EZCua5TJXqLHTx5RJ+m6LloUqicLXgWepp4WPZlsltZW1ymVTtHNW4OxoDSPiTWJnhBoGp4s/Tt3b4sW6b9y9TI9f/GM4RkfAjg2wcaockC4ur8rXmXmkc5f1hyntUVfJ7+FsiMF8PDDIdL4+NfOZOTmEwx6IN9anpscHmtpuyIWoY5+TP8kx8vQIEcCEGTo54UhGrYbDKpIkIGoMAdvaWZn2a+roHC5hn6B+rW07BphyDic4G/Eh+F7q77Dv5GaqGCoL9HLR0kFM+VDIgKMbaLLTy0vX3xQSicg7oyO3uE5r/sfWwkZiltzCMNGaJPm7xaSAAAAAElFTkSuQmCC");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
   }
 
   .cal-day.future-water {
-    border-style: dashed;
-    border-color: rgba(79, 168, 109, 0.24);
-    background: rgba(246, 251, 244, 0.8);
-    color: var(--muted);
+    background: var(--green-light);
+    color: var(--green-dark);
+    font-weight: 700;
   }
 
   .cal-day.past-nodata {
@@ -2322,7 +2343,7 @@
 
   .cal-day.clickable-past:hover {
     transform: translateY(-1px);
-    border-color: rgba(79, 168, 109, 0.24);
+    border-color: rgba(52, 93, 76, 0.18);
   }
 
   .cal-day-icons {
@@ -3848,6 +3869,22 @@ function getCalendarMonthData(plant, year, month) {
   return { cells };
 }
 
+function renderCalendarCells(cells, clickHandlerName) {
+  return cells.map(cell => {
+    if (cell.empty) return `<div class="cal-day empty"></div>`;
+    const classes = ['cal-day'];
+    if (cell.isToday) classes.push('today');
+    if (cell.isWatered) classes.push('watered');
+    if (!cell.isWatered && cell.isProjected) classes.push('future-water');
+    if (cell.canToggle) classes.push('clickable-past');
+    return `
+      <div class="${classes.join(' ')}" onclick="${clickHandlerName}('${cell.dateStr}', ${cell.isWatered})">
+        <div class="cal-day-num">${cell.day}</div>
+      </div>
+    `;
+  }).join('');
+}
+
 function renderInlinePlantCalendar(plant) {
   const { cells } = getCalendarMonthData(plant, state.calYear, state.calMonth);
   return `
@@ -3865,24 +3902,12 @@ function renderInlinePlantCalendar(plant) {
           <div class="cal-weekday">M</div>
           <div class="cal-weekday">X</div>
           <div class="cal-weekday">J</div>
-          <div class="cal-weekday">V</div>
-          <div class="cal-weekday">S</div>
-          <div class="cal-weekday">D</div>
+        <div class="cal-weekday">V</div>
+        <div class="cal-weekday">S</div>
+        <div class="cal-weekday">D</div>
         </div>
         <div class="cal-days">
-          ${cells.map(cell => {
-            if (cell.empty) return `<div class="cal-day empty"></div>`;
-            const classes = ['cal-day'];
-            if (cell.isToday) classes.push('today');
-            if (cell.isWatered) classes.push('watered');
-            if (!cell.isWatered && cell.isProjected) classes.push('future-water');
-            if (cell.canToggle) classes.push('clickable-past');
-            return `
-              <div class="${classes.join(' ')}" onclick="detailCalendarDayClick('${cell.dateStr}', ${cell.isWatered})">
-                <div class="cal-day-num">${cell.day}</div>
-              </div>
-            `;
-          }).join('')}
+          ${renderCalendarCells(cells, 'detailCalendarDayClick')}
         </div>
       </div>
     </div>
@@ -3937,123 +3962,29 @@ function renderCalendar() {
   // Month label
   document.getElementById('calMonthLabel').textContent = `${MONTH_NAMES[state.calMonth]} ${state.calYear}`;
 
-  const year = state.calYear;
-  const month = state.calMonth;
-  const todayStr = today();
-  const todayDate = new Date(todayStr);
+  const { cells } = getCalendarMonthData(plant, state.calYear, state.calMonth);
+  const wateredCount = cells.filter(cell => cell.isWatered).length;
+  const futureCount = cells.filter(cell => !cell.isWatered && cell.isProjected).length;
+  const todayCount = cells.filter(cell => cell.isToday).length;
 
-  // Build set of watered days for this plant this month
-  const wateredSet = new Set((plant.waterLog || []).filter(d => {
-    const dt = new Date(d);
-    return dt.getFullYear() === year && dt.getMonth() === month;
-  }).map(d => new Date(d).getDate()));
+  document.getElementById('calDays').innerHTML = renderCalendarCells(cells, 'calDayClick');
 
-  // First day of month (Monday=0 based)
-  const firstDay = new Date(year, month, 1);
-  let startDow = firstDay.getDay(); // 0=Sun
-  startDow = startDow === 0 ? 6 : startDow - 1; // convert to Mon=0
-
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-  // Figure out projected watering days based on freq
-  // Start from last watered date before this month, project forward
-  const lw = lastWatered(plant);
-  const projectedWaterDays = new Set();
-
-  if (lw) {
-    let cursor = new Date(lw);
-    cursor.setHours(0,0,0,0);
-    const monthEnd = new Date(year, month + 1, 0);
-
-    // Go forward from last watered
-    while (cursor <= monthEnd) {
-      cursor.setDate(cursor.getDate() + plant.freq);
-      if (cursor.getFullYear() === year && cursor.getMonth() === month) {
-        projectedWaterDays.add(cursor.getDate());
-      }
-    }
-  }
-
-  // Build cells
-  let cells = [];
-
-  // Empty cells before first day
-  for (let i = 0; i < startDow; i++) {
-    cells.push(`<div class="cal-day empty"></div>`);
-  }
-
-  // Stats counters
-  let wateredCount = 0, missedCount = 0;
-
-  for (let d = 1; d <= daysInMonth; d++) {
-    const cellDate = new Date(year, month, d);
-    const cellStr = cellDate.toISOString().split('T')[0];
-    const isPast = cellDate < todayDate;
-    const isToday = cellStr === todayStr;
-    const isFuture = cellDate > todayDate;
-    const isWatered = wateredSet.has(d);
-    const isProjected = projectedWaterDays.has(d);
-
-    let classes = ['cal-day'];
-    let icons = [];
-
-    if (isToday) classes.push('today');
-
-    if (isWatered) {
-      classes.push('watered');
-      icons.push('💧');
-      wateredCount++;
-    }
-    // Missed: past day that was a projected watering day and wasn't watered
-    if (isPast && isProjected && !isWatered) {
-      classes.push('missed');
-      missedCount++;
-    }
-
-    // Future projected
-    if (isFuture && isProjected) {
-      classes.push('future-water');
-    }
-
-    if (!isWatered && !isProjected && isPast && !isToday) {
-      classes.push('past-nodata');
-    }
-
-    // Clickable past days to log watering retroactively
-    if ((isPast || isToday) && !isWatered) {
-      classes.push('clickable-past');
-    }
-
-    const iconsHtml = icons.length ? `<div class="cal-day-icons">${icons.join('')}</div>` : '';
-
-    cells.push(`
-      <div class="${classes.join(' ')}" 
-           onclick="calDayClick('${cellStr}', ${isWatered})"
-           title="${isWatered ? 'Regada' : (isProjected && isFuture ? 'Próximo riego' : '')}">
-        <div class="cal-day-num">${d}</div>
-        ${iconsHtml}
-      </div>`);
-  }
-
-  document.getElementById('calDays').innerHTML = cells.join('');
-
-  // Summary
   document.getElementById('calSummary').innerHTML = `
     <div class="cal-sum-item">
       <div class="cs-value watered">${wateredCount}</div>
       <div class="cs-label">Riegos</div>
     </div>
     <div class="cal-sum-item">
-      <div class="cs-value missed">${missedCount}</div>
-      <div class="cs-label">Sin regar</div>
+      <div class="cs-value">${todayCount}</div>
+      <div class="cs-label">Hoy</div>
     </div>
     <div class="cal-sum-item">
-      <div class="cs-value">${projectedWaterDays.size}</div>
-      <div class="cs-label">Riegos previstos</div>
+      <div class="cs-value">${futureCount}</div>
+      <div class="cs-label">Próximos</div>
     </div>
     <div class="cal-sum-item">
-      <div class="cs-value">${wateredCount + missedCount}</div>
-      <div class="cs-label">Días con seguimiento</div>
+      <div class="cs-value">${cells.filter(cell => !cell.empty).length}</div>
+      <div class="cs-label">Días del mes</div>
     </div>
   `;
 }
