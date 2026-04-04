@@ -260,7 +260,7 @@
   }
 
   .plant-tile-visual {
-    height: 176px;
+    height: 220px;
     position: relative;
     background:
       radial-gradient(circle at top center, rgba(79, 168, 109, 0.16), transparent 42%),
@@ -283,117 +283,29 @@
     font-size: 4rem;
   }
 
-  .plant-tile-badge {
-    position: absolute;
-    left: 14px;
-    top: 14px;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 10px;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.92);
-    color: #5d6c60;
-    font-size: 0.74rem;
-    font-weight: 700;
-    box-shadow: 0 10px 18px rgba(31, 52, 37, 0.08);
-  }
-
-  .plant-tile-status {
-    position: absolute;
-    right: 14px;
-    bottom: 14px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 34px;
-    padding: 8px 10px;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.92);
-    color: #345d4c;
-    font-size: 0.74rem;
-    font-weight: 700;
-    box-shadow: 0 10px 18px rgba(31, 52, 37, 0.08);
-  }
-
-  .plant-tile-status.warn {
-    background: rgba(255, 244, 239, 0.94);
-    color: #b85d42;
-  }
-
   .plant-tile-body {
-    padding: 18px;
+    padding: 20px 18px 22px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    flex: 1;
-  }
-
-  .plant-tile-name {
-    font-size: 1.05rem;
-    font-weight: 800;
-    color: #191c1c;
-    line-height: 1.2;
-    letter-spacing: -0.03em;
-  }
-
-  .plant-tile-meta {
-    color: #5d6c60;
-    font-size: 0.82rem;
-    line-height: 1.45;
-  }
-
-  .plant-tile-subtitle {
-    color: #889489;
-    font-size: 0.76rem;
-    line-height: 1.35;
-  }
-
-  .plant-tile-info-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
     gap: 10px;
   }
 
+  .plant-tile-name {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #191c1c;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
   .plant-tile-last {
-    color: #5d6c60;
-    font-size: 0.8rem;
-    line-height: 1.35;
-  }
-
-  .plant-tile-actions {
-    margin-top: auto;
-    display: flex;
-    gap: 8px;
-    flex-wrap: nowrap;
-  }
-
-  .plant-tile-action {
-    border: none;
-    border-radius: 999px;
-    padding: 9px 12px;
-    background: #f5f7f4;
-    color: #345d4c;
-    font-size: 0.76rem;
-    font-weight: 700;
-    cursor: pointer;
-  }
-
-  .plant-tile-action.primary {
-    background: #345d4c;
-    color: #fff;
-    flex: 1;
-  }
-
-  .plant-tile-action.icon {
-    width: 42px;
-    min-width: 42px;
-    min-height: 42px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
+    color: #4b564d;
+    font-size: 0.98rem;
+    line-height: 1.45;
   }
 
   .add-plant-card-mobile {
@@ -3437,27 +3349,15 @@ function renderPlantsScreen() {
   const tiles = plants.map(plant => {
     const last = lastWatered(plant);
     const days = last ? daysBetween(last) : null;
-    const lastText = days === null ? 'Aún sin riegos' : days === 0 ? 'Regada hoy' : `Último riego hace ${days} día${days === 1 ? '' : 's'}`;
-    const section = state.sections.find(item => item.id === plant.section);
-    const status = wateredToday(plant) ? 'Regada hoy' : needsWater(plant) ? 'Toca riego' : 'Al día';
+    const lastText = days === null ? 'Último riego pendiente' : days === 0 ? 'Último riego hoy' : `Último riego hace ${days} día${days === 1 ? '' : 's'}`;
     return `
       <article class="plant-tile">
         <button class="plant-tile-visual" type="button" onclick="openPlantDetail('${plant.id}')" style="border:none;padding:0;">
-          <span class="plant-tile-badge">${escapeHtml(section ? `${section.icon} ${section.name}` : '🪴 Sin sección')}</span>
-          <span class="plant-tile-status ${needsWater(plant) && !wateredToday(plant) ? 'warn' : ''}">${escapeHtml(status)}</span>
           ${plant.imagePreview ? `<img src="${plant.imagePreview}" alt="${escapeHtml(plant.name || plant.species || 'Planta')}">` : `<div class="plant-tile-emoji">${escapeHtml(plant.emoji || '🪴')}</div>`}
         </button>
         <div class="plant-tile-body">
           <button class="plant-tile-name" type="button" onclick="openPlantDetail('${plant.id}')" style="border:none;background:none;padding:0;text-align:left;">${escapeHtml(plant.name || plant.species || 'Planta sin nombre')}</button>
-          <div class="plant-tile-subtitle">${escapeHtml(plant.species || 'Sin especie definida')}</div>
-          <div class="plant-tile-info-row">
-            <div class="plant-tile-last">${escapeHtml(lastText)}</div>
-          </div>
-          <div class="plant-tile-actions">
-            <button class="plant-tile-action primary" type="button" onclick="waterPlant('${plant.id}')">${wateredToday(plant) ? 'Regada' : 'Regar'}</button>
-            <button class="plant-tile-action icon" type="button" onclick="openCalendarModal('${plant.id}')">🗓</button>
-            <button class="plant-tile-action icon" type="button" onclick="openEditPlant('${plant.id}')">✎</button>
-          </div>
+          <div class="plant-tile-last">${escapeHtml(lastText)}</div>
         </div>
       </article>
     `;
