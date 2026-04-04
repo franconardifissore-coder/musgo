@@ -2981,123 +2981,6 @@
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<!-- MODAL ADD/EDIT PLANT -->
-<div class="modal-overlay" id="plantModal">
-  <div class="modal">
-    <h2 id="modalTitle">Nueva planta</h2>
-    <p class="modal-sub" id="modalSub">Añade una planta a tu colección</p>
-    <div class="form-note" id="identifiedPlantNote" style="display:none"></div>
-    <div class="form-group">
-      <label>Icono</label>
-      <div class="emoji-picker" id="emojiPicker"></div>
-    </div>
-    <div class="form-group">
-      <label>Nombre</label>
-      <input type="text" id="plantName" placeholder="Ej: Monstera del salón">
-    </div>
-    <div class="form-group">
-      <label>Especie (opcional)</label>
-      <input type="text" id="plantSpecies" placeholder="Ej: Monstera deliciosa">
-    </div>
-    <div class="form-group">
-      <label>Sección *</label>
-      <select id="plantSection"></select>
-    </div>
-    <div class="form-group">
-      <label>Frecuencia de riego</label>
-      <select id="plantFreq">
-        <option value="1">Cada día</option>
-        <option value="2">Cada 2 días</option>
-        <option value="3" selected>Cada 3 días</option>
-        <option value="5">Cada 5 días</option>
-        <option value="7">Cada semana</option>
-        <option value="14">Cada 2 semanas</option>
-        <option value="30">Cada mes</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label>Luz</label>
-      <select id="plantLight">
-        <option value="☀️ Sol directo">☀️ Sol directo</option>
-        <option value="⛅ Luz indirecta" selected>⛅ Luz indirecta</option>
-        <option value="🌥️ Sombra parcial">🌥️ Sombra parcial</option>
-        <option value="🌑 Poca luz">🌑 Poca luz</option>
-      </select>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closePlantModal()">Cancelar</button>
-      <button class="btn-save" onclick="savePlant()">Guardar planta</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL PHOTO IDENTIFICATION -->
-<div class="modal-overlay" id="identifyModal">
-  <div class="modal">
-    <h2>📷 Identificar planta por foto</h2>
-    <p class="modal-sub">Sube una foto o toma una nueva para sugerir especies antes de crear la ficha.</p>
-    <div class="identify-upload">
-      <div class="form-group field-compact">
-        <label>Foto de la planta</label>
-        <input type="file" id="identifyImageInput" accept="image/*" capture="environment" onchange="handleIdentificationFileChange(event)">
-      </div>
-      <div class="identify-preview" id="identifyPreview" style="display:none"></div>
-    </div>
-    <div class="identify-state loading" id="identifyLoading" style="display:none">Analizando planta...</div>
-    <div class="identify-state error" id="identifyError" style="display:none"></div>
-    <div class="identify-state empty" id="identifyEmpty" style="display:none"></div>
-    <div class="identify-state best-match" id="identifyBestMatch" style="display:none"></div>
-    <div class="identify-results" id="identifyResults" style="display:none"></div>
-    <div class="identify-actions">
-      <button class="btn-cancel" type="button" onclick="createPlantManuallyFromIdentification()">Crear planta manualmente</button>
-      <button class="btn-save" type="button" id="analyzePlantButton" onclick="analyzePlantPhoto()">Analizar planta</button>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closePhotoIdentifyModal()">Cerrar</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL ADD SECTION -->
-<div class="modal-overlay" id="sectionModal">
-  <div class="modal">
-    <h2>Nueva sección</h2>
-    <p class="modal-sub">Define un espacio de tu casa</p>
-    <div class="form-group">
-      <label>Icono de la sección</label>
-      <div class="emoji-picker" id="sectionEmojiPicker"></div>
-    </div>
-    <div class="form-group">
-      <label>Nombre *</label>
-      <input type="text" id="sectionName" placeholder="Ej: Balcón, Salón, Habitación...">
-    </div>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeSectionModal()">Cancelar</button>
-      <button class="btn-save" onclick="saveSection()">Crear sección</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL EDIT SECTION -->
-<div class="modal-overlay" id="editSectionModal">
-  <div class="modal">
-    <h2>Editar sección</h2>
-    <p class="modal-sub">Puedes renombrar esta sección o eliminarla por completo junto con todas sus plantas.</p>
-    <div class="form-group">
-      <label>Nombre de la sección</label>
-      <input type="text" id="editSectionName" placeholder="Ej: Salón">
-    </div>
-    <div class="delete-confirm">Eliminar sección borrará también todas las plantas dentro de ella.</div>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeEditSectionModal()">Descartar cambios</button>
-      <button class="btn-save" onclick="saveSectionChanges()">Guardar</button>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-danger" onclick="deleteCurrentSection()">Eliminar sección</button>
-    </div>
-  </div>
-</div>
-
 <!-- MODAL DELETE CONFIRM -->
 <div class="modal-overlay" id="deleteModal">
   <div class="modal">
@@ -3207,9 +3090,6 @@ let state = {
     error: '',
     success: '',
   },
-  selectedEmoji: '🌿',
-  selectedSectionEmoji: '🪴',
-  identifiedPlantDraft: null,
   identification: {
     file: null,
     preview: '',
@@ -4654,7 +4534,6 @@ function openPlantCreateView(prefill = null, plantId = null) {
   const existingPlant = plantId ? state.plants.find(item => item.id === plantId) : null;
   state.screenPlantMode = existingPlant ? 'edit' : 'create';
   state.screenPlantDraft = createPlantDraft(prefill, existingPlant);
-  state.selectedEmoji = state.screenPlantDraft.emoji || '🌿';
   state.editingPlantId = existingPlant ? existingPlant.id : null;
   state.currentView = 'plantCreate';
   render();
@@ -4688,7 +4567,6 @@ function setScreenPlantEmoji(emoji) {
     state.screenPlantDraft = createPlantDraft();
   }
   state.screenPlantDraft.emoji = emoji;
-  state.selectedEmoji = emoji;
   render();
 }
 
@@ -4863,63 +4741,6 @@ async function savePlantFromScreen() {
 const plantEmojis = ['🌿','🌱','🌵','🌴','🌳','🌲','🍀','🍃','🌾','🌺','🌸','🌼','🌻','🌹','🌷','💐','🍁','🎋','🎍','🪴','🌿','🌾','🍂','🪻','💜','🍄'];
 const sectionEmojis = ['🌺','🛋️','🛏️','🚿','🍳','🪴','🌿','🏡','🌞','💻','📚','🎭'];
 
-function renderEmojiPicker(containerId, emojis, selectedEmoji, onSelect) {
-  document.getElementById(containerId).innerHTML = emojis.map(e =>
-    `<button class="emoji-btn ${e === selectedEmoji ? 'selected' : ''}" onclick="${onSelect}('${e}')">${e}</button>`
-  ).join('');
-}
-
-function selectPlantEmoji(e) {
-  state.selectedEmoji = e;
-  renderEmojiPicker('emojiPicker', plantEmojis, e, 'selectPlantEmoji');
-}
-
-function selectSectionEmoji(e) {
-  state.selectedSectionEmoji = e;
-  renderEmojiPicker('sectionEmojiPicker', sectionEmojis, e, 'selectSectionEmoji');
-}
-
-function renderIdentificationModal() {
-  const preview = document.getElementById('identifyPreview');
-  const loading = document.getElementById('identifyLoading');
-  const error = document.getElementById('identifyError');
-  const empty = document.getElementById('identifyEmpty');
-  const bestMatch = document.getElementById('identifyBestMatch');
-  const results = document.getElementById('identifyResults');
-  const analyzeButton = document.getElementById('analyzePlantButton');
-
-  preview.style.display = state.identification.preview ? 'block' : 'none';
-  preview.innerHTML = state.identification.preview
-    ? `<img src="${state.identification.preview}" alt="Preview de la planta">`
-    : '';
-
-  loading.style.display = state.identification.loading ? 'block' : 'none';
-  error.style.display = state.identification.error ? 'block' : 'none';
-  error.textContent = state.identification.error;
-
-  empty.style.display = state.identification.emptyMessage ? 'block' : 'none';
-  empty.textContent = state.identification.emptyMessage;
-
-  bestMatch.style.display = state.identification.bestMatch ? 'block' : 'none';
-  bestMatch.innerHTML = state.identification.bestMatch
-    ? `<strong>Mejor coincidencia:</strong> ${escapeHtml(state.identification.bestMatch)}${state.identification.remainingRequests !== null ? `<br><span class="best-match-meta">Quedan ${state.identification.remainingRequests} identificaciones.</span>` : ''}`
-    : '';
-
-  results.style.display = state.identification.results.length ? 'grid' : 'none';
-  results.innerHTML = state.identification.results.map((result, index) => `
-    <button type="button" class="identify-result ${state.identification.selectedIndex === index ? 'selected' : ''}" onclick="selectIdentificationResult(${index})">
-      <div class="identify-result-top">
-        <div class="identify-result-name">${escapeHtml(result.scientificName)}</div>
-        <div class="identify-result-score">${confidenceToPercent(result.confidence)}% confianza</div>
-      </div>
-      <div class="identify-result-sub">${result.commonNames && result.commonNames.length ? escapeHtml(result.commonNames.join(', ')) : 'Elige la opción correcta o crea la planta manualmente.'}</div>
-    </button>
-  `).join('');
-
-  analyzeButton.disabled = state.identification.loading || !state.identification.file;
-  analyzeButton.textContent = state.identification.loading ? 'Analizando planta...' : 'Analizar planta';
-}
-
 function buildIdentifiedPlantDraft(result) {
   if (!result) return null;
   return {
@@ -4936,41 +4757,7 @@ function buildIdentifiedPlantDraft(result) {
 function openIdentifiedPlantDraft(result) {
   const draft = buildIdentifiedPlantDraft(result);
   if (!draft) return;
-  state.identifiedPlantDraft = draft;
   openPlantCreateView(draft);
-}
-
-function openPhotoIdentifyModal() {
-  resetIdentificationState();
-  renderIdentificationModal();
-  document.getElementById('identifyImageInput').value = '';
-  document.getElementById('identifyModal').classList.add('open');
-}
-
-function closePhotoIdentifyModal() {
-  document.getElementById('identifyModal').classList.remove('open');
-}
-
-async function handleIdentificationFileChange(event) {
-  const file = event.target.files && event.target.files[0];
-  if (!file) return;
-
-  state.identification.file = file;
-  state.identification.bestMatch = '';
-  state.identification.results = [];
-  state.identification.selectedIndex = null;
-  state.identification.error = '';
-  state.identification.emptyMessage = '';
-  state.identification.remainingRequests = null;
-
-  try {
-    state.identification.preview = await createPersistableImagePreview(file);
-  } catch (e) {
-    state.identification.preview = '';
-    state.identification.error = 'No pudimos preparar la imagen. Prueba con otra foto.';
-  }
-
-  renderIdentificationModal();
 }
 
 function openDirectScanPicker() {
@@ -5038,140 +4825,6 @@ async function handleDirectScanFileChange(event) {
   }
 }
 
-async function analyzePlantPhoto() {
-  if (!state.identification.file) {
-    state.identification.error = 'Selecciona una imagen antes de analizar.';
-    renderIdentificationModal();
-    return;
-  }
-
-  if (!window.plantIdentificationClient || typeof window.plantIdentificationClient.identifyPlantFromImage !== 'function') {
-    state.identification.error = 'La integración de identificación no está disponible en este momento.';
-    renderIdentificationModal();
-    return;
-  }
-
-  state.identification.loading = true;
-  state.identification.bestMatch = '';
-  state.identification.error = '';
-  state.identification.emptyMessage = '';
-  state.identification.results = [];
-  state.identification.selectedIndex = null;
-  state.identification.remainingRequests = null;
-  renderIdentificationModal();
-
-  try {
-    const response = await window.plantIdentificationClient.identifyPlantFromImage(state.identification.file);
-    const usefulResults = response.results.filter(result => result.confidence >= 15);
-    state.identification.bestMatch = response.bestMatch || '';
-    state.identification.remainingRequests = response.remainingIdentificationRequests;
-    state.identification.results = usefulResults;
-    if (!usefulResults.length) {
-      state.identification.emptyMessage = 'No pudimos identificarla con suficiente confianza. Puedes volver a intentarlo o crear la planta manualmente.';
-    }
-  } catch (e) {
-    state.identification.error = 'No pudimos analizar la foto. Revisa tu conexión, inténtalo de nuevo o crea la planta manualmente.';
-  } finally {
-    state.identification.loading = false;
-    renderIdentificationModal();
-  }
-}
-
-function selectIdentificationResult(index) {
-  state.identification.selectedIndex = index;
-  renderIdentificationModal();
-
-  const result = state.identification.results[index];
-  if (!result) return;
-
-  closePhotoIdentifyModal();
-  openIdentifiedPlantDraft(result);
-}
-
-function createPlantManuallyFromIdentification() {
-  closePhotoIdentifyModal();
-  openPlantCreateView();
-}
-
-// ===== MODALS =====
-function openAddPlantModal(prefill = null) {
-  state.editingPlantId = null;
-  state.selectedEmoji = '🌿';
-  state.identifiedPlantDraft = prefill;
-  document.getElementById('modalTitle').textContent = 'Nueva planta';
-  document.getElementById('modalSub').textContent = 'Añade una planta a tu colección';
-  document.getElementById('plantName').value = prefill?.name || '';
-  document.getElementById('plantSpecies').value = prefill?.species || '';
-  document.getElementById('plantFreq').value = '3';
-  document.getElementById('plantLight').value = '⛅ Luz indirecta';
-  const identifiedNote = document.getElementById('identifiedPlantNote');
-  if (prefill?.identifiedSpecies) {
-    identifiedNote.style.display = 'block';
-    identifiedNote.innerHTML = `<strong>Especie sugerida:</strong> ${escapeHtml(prefill.identifiedSpecies)} con ${confidenceToPercent(prefill.identificationConfidence)}% de confianza. Puedes editarla antes de guardar.`;
-  } else {
-    identifiedNote.style.display = 'none';
-    identifiedNote.textContent = '';
-  }
-  renderEmojiPicker('emojiPicker', plantEmojis, state.selectedEmoji, 'selectPlantEmoji');
-  const sel = document.getElementById('plantSection');
-  sel.innerHTML = renderSectionOptions(state.activeSection !== 'all' ? state.activeSection : '', true);
-  if (state.activeSection !== 'all') sel.value = state.activeSection;
-  document.getElementById('plantModal').classList.add('open');
-}
-
-function openEditPlant(id) {
-  openPlantCreateView(null, id);
-}
-
-function closePlantModal() {
-  if (!state.editingPlantId) state.identifiedPlantDraft = null;
-  document.getElementById('plantModal').classList.remove('open');
-}
-
-async function savePlant() {
-  const name = document.getElementById('plantName').value.trim();
-  const section = document.getElementById('plantSection').value;
-  const species = document.getElementById('plantSpecies').value.trim();
-  const resolvedName = name || species || 'Planta sin nombre';
-
-  let plantToSync = null;
-  if (state.editingPlantId) {
-    const p = state.plants.find(x => x.id === state.editingPlantId);
-    p.name = resolvedName;
-    p.species = species;
-    p.section = section;
-    p.freq = parseInt(document.getElementById('plantFreq').value);
-    p.light = document.getElementById('plantLight').value;
-    p.emoji = state.selectedEmoji;
-    plantToSync = p;
-    showToast(`✏️ ${resolvedName} actualizada`);
-  } else {
-    plantToSync = {
-      ...(state.identifiedPlantDraft || {}),
-      id: createEntityId('plant'),
-      name: resolvedName,
-      species,
-      emoji: state.selectedEmoji,
-      section,
-      freq: parseInt(document.getElementById('plantFreq').value),
-      light: document.getElementById('plantLight').value,
-      waterLog: [],
-    };
-    state.plants.push(plantToSync);
-    showToast(`🌱 ${resolvedName} añadida`);
-  }
-
-  state.identifiedPlantDraft = null;
-  saveState();
-  closePlantModal();
-  render();
-  try {
-    await syncPlantToCloud(plantToSync);
-  } catch (error) {
-    console.error('Failed to sync plant', error);
-    showToast('⚠️ La planta se guardó localmente, pero no pudimos asociarla a tu cuenta');
-  }
-}
 
 function openDeleteModal(id) {
   state.deletingPlantId = id;
@@ -5207,50 +4860,9 @@ async function confirmDelete() {
   if (p) showToast(`🗑️ ${p.name} eliminada`);
 }
 
-function openSectionModal() {
-  openCreateSectionView();
-}
-
-function closeSectionModal() {
-  document.getElementById('sectionModal').classList.remove('open');
-}
-
-async function saveSection() {
-  const name = document.getElementById('sectionName').value.trim();
-  if (!name) { showToast('⚠️ El nombre es obligatorio'); return; }
-  const section = {
-    id: createEntityId('section'),
-    name,
-    icon: state.selectedSectionEmoji,
-    outdoor: ['balcón','terraza','jardín','exterior','patio'].some(w => name.toLowerCase().includes(w)),
-  };
-  state.sections.push(section);
-  saveState();
-  closeSectionModal();
-  render();
-  try {
-    await syncSectionToCloud(section);
-  } catch (error) {
-    console.error('Failed to sync section', error);
-    showToast('⚠️ La sección se creó localmente, pero no pudimos sincronizarla');
-    return;
-  }
-  showToast(`📍 Sección "${name}" creada`);
-}
-
-function openEditSectionModal() {
-  if (state.activeSection === 'all') return;
-  openEditSectionView(state.activeSection);
-}
-
 function editSectionFromSpaces(sectionId) {
   state.activeSection = sectionId;
   openEditSectionView(sectionId);
-}
-
-function closeEditSectionModal() {
-  state.editingSectionId = null;
-  document.getElementById('editSectionModal').classList.remove('open');
 }
 
 async function saveSectionChanges() {
