@@ -103,24 +103,29 @@
   .mobile-brand {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     min-width: 0;
   }
 
   .mobile-brand-icon {
-    width: 18px;
-    height: 20px;
+    width: 28px;
+    height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #345d4c;
-    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  .mobile-brand-icon img {
+    width: 100%;
+    height: 100%;
+    display: block;
   }
 
   .mobile-brand-name {
     font-family: 'DM Sans', sans-serif;
-    font-size: 1.15rem;
-    font-weight: 700;
+    font-size: 1.3rem;
+    font-weight: 600;
     color: #345d4c;
     letter-spacing: -0.03em;
   }
@@ -2619,7 +2624,7 @@
   <div class="app-frame">
     <header class="mobile-topbar">
       <div class="mobile-brand">
-        <div class="mobile-brand-icon">🪴</div>
+        <div class="mobile-brand-icon"><img src="./resources/Header icon.svg" alt="Musgo"></div>
         <div class="mobile-brand-name">Musgo</div>
       </div>
       <div class="screen-kicker" id="topbarBadge">Botanical Care</div>
