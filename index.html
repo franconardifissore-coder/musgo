@@ -2602,7 +2602,7 @@
     width: 18px;
     height: 20px;
     border-radius: 50%;
-    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAAUCAYAAACAl21KAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAAkJJREFUeAGFlDtv01AUx48daG1RRBIJBEkHCxgYGIqKmDOAxAifoEUMMDDQDTFQvkE7MMCAVBiQYIGxokihggFFAYJopzZtqj6lVo7VR+w2D/f8b31dO3aav3R0j+/jd8+951wTtcl13STbU7Y8W9U91l+2MTaDuokn5dgW3e4abV+rBCAYfAnfatRoY98iq75HTqtOpxSV+hIaXexNCvP0RVGU+yEQQ+5x8xl+xd4U1kkAXj/bT5rag89xho3AUb3xsTiIaVbp9as3NPN/1u/bbTpU2l6iRquJT9xlToDYGebWcFoHsZDy/AK9e/ueioXf/hiOu7Jvys9RGdGQiKa2FYFUuZX6+OGTgEqtOKaMCglKAjRwdMF7/qSpyakQRAqRmV5/w22S49blkAFQUoYLFQvF0DGCsm1bbOLfV8OR7oDaPrlY+EMnCZvYthPpj4DK82Xqprg5EZCua5TJXqLHTx5RJ+m6LloUqicLXgWepp4WPZlsltZW1ymVTtHNW4OxoDSPiTWJnhBoGp4s/Tt3b4sW6b9y9TI9f/GM4RkfAjg2wcaockC4ur8rXmXmkc5f1hyntUVfJ7+FsiMF8PDDIdL4+NfOZOTmEwx6IN9anpscHmtpuyIWoY5+TP8kx8vQIEcCEGTo54UhGrYbDKpIkIGoMAdvaWZn2a+roHC5hn6B+rW07BphyDic4G/Eh+F7q77Dv5GaqGCoL9HLR0kFM+VDIgKMbaLLTy0vX3xQSicg7oyO3uE5r/sfWwkZiltzCMNGaJPm7xaSAAAAAElFTkSuQmCC");
+    background-image: url('./resources/calendar drop.svg');
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
@@ -4515,7 +4515,6 @@ function renderCalendar() {
 }
 
 async function calDayClick(dateStr, alreadyWatered) {
-  if (alreadyWatered) return; // already logged
   const plant = state.plants.find(p => p.id === state.calPlantId);
   if (!plant) return;
   const clickDate = parseLocalDate(dateStr);
@@ -4523,21 +4522,31 @@ async function calDayClick(dateStr, alreadyWatered) {
   if (clickDate > todayDate) return; // no future logging
 
   if (!plant.waterLog) plant.waterLog = [];
-  if (!plant.waterLog.includes(dateStr)) {
+  const existingIndex = plant.waterLog.indexOf(dateStr);
+
+  if (existingIndex >= 0) {
+    plant.waterLog.splice(existingIndex, 1);
+  } else {
     plant.waterLog.push(dateStr);
-    saveState();
-    render();
-    renderCalendar();
-    try {
-      await syncPlantToCloud(plant);
-    } catch (error) {
-      showToast('⚠️ El riego se guardó localmente, pero no pudimos sincronizarlo');
-      return;
-    }
-    const d = parseLocalDate(dateStr);
-    const label = dateStr === today() ? 'hoy' : `el ${d.getDate()}/${d.getMonth()+1}`;
-    showToast(`💧 Riego añadido ${label}`);
+    plant.waterLog.sort();
   }
+
+  saveState();
+  render();
+  renderCalendar();
+
+  try {
+    await syncPlantToCloud(plant);
+  } catch (error) {
+    showToast(existingIndex >= 0
+      ? '⚠️ Quitamos el riego localmente, pero no pudimos sincronizarlo'
+      : '⚠️ El riego se guardó localmente, pero no pudimos sincronizarlo');
+    return;
+  }
+
+  const d = parseLocalDate(dateStr);
+  const label = dateStr === today() ? 'hoy' : `el ${d.getDate()}/${d.getMonth()+1}`;
+  showToast(existingIndex >= 0 ? `↩️ Riego quitado ${label}` : `💧 Riego añadido ${label}`);
 }
 
 async function detailCalendarDayClick(dateStr, alreadyWatered) {
