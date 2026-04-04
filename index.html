@@ -846,7 +846,7 @@
     min-height: 54px;
     border: 1px solid rgba(52, 93, 76, 0.08);
     border-radius: 18px;
-    background: #f7f9f6;
+    background: #F3F4F3;
     padding: 14px 16px;
     color: #191c1c;
     font-size: 0.98rem;
@@ -865,12 +865,48 @@
     border: none;
     box-shadow: none;
     overflow: visible;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .detail-actions-card .btn-primary,
+  .detail-actions-card .btn-danger {
+    width: 100%;
+  }
+
+  .detail-actions-card .btn-danger {
+    min-height: 64px;
+    border-radius: 24px;
+    background: transparent;
+  }
+
+  .detail-actions-card .btn-danger::before {
+    width: 17px;
+    height: 17px;
   }
 
   .screen-actions {
     display: flex;
     flex-direction: column;
     gap: 12px;
+  }
+
+  .screen-actions .btn-primary,
+  .screen-actions .btn-danger,
+  .screen-actions .space-delete-action {
+    width: 100%;
+  }
+
+  .screen-actions .btn-danger {
+    min-height: 64px;
+    border-radius: 24px;
+    background: transparent;
+  }
+
+  .screen-actions .btn-danger::before {
+    width: 17px;
+    height: 17px;
   }
 
   .editor-card {
@@ -3856,7 +3892,7 @@ function renderSpacesScreen() {
     return `
       <section class="screen">
         <div class="screen-intro">
-          <h1 class="screen-title" style="color:#345d4c;">Tus Espacios</h1>
+          <h1 class="screen-title">Tus Espacios</h1>
           <p class="screen-subtitle">Organiza tu oasis personal por habitaciones.</p>
         </div>
         ${renderLoadingCard('Estamos recuperando tus espacios y sus plantas.')}
@@ -3868,7 +3904,7 @@ function renderSpacesScreen() {
     return `
       <section class="screen">
         <div class="screen-intro">
-          <h1 class="screen-title" style="color:#345d4c;">Tus Espacios</h1>
+          <h1 class="screen-title">Tus Espacios</h1>
           <p class="screen-subtitle">Organiza tu oasis personal por habitaciones.</p>
         </div>
         ${renderAuthPrompt('Inicia sesión para editar tus espacios y ver cuántas plantas viven en cada uno.')}
@@ -3898,7 +3934,7 @@ function renderSpacesScreen() {
   return `
     <section class="screen">
       <div class="screen-intro">
-        <h1 class="screen-title" style="color:#345d4c;">Tus Espacios</h1>
+        <h1 class="screen-title">Tus Espacios</h1>
         <p class="screen-subtitle">Organiza tu oasis personal por habitaciones.</p>
       </div>
       <div class="spaces-list">
