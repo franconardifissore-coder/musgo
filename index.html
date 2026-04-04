@@ -1588,12 +1588,13 @@
   .btn-cancel,
   .btn-save,
   .btn-water {
-    border-radius: 999px;
-    padding: 13px 20px;
+    border-radius: 24px;
+    min-height: 64px;
+    padding: 16px 24px;
     border: 1px solid transparent;
     cursor: pointer;
     font-weight: 700;
-    font-size: 0.9rem;
+    font-size: 1rem;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1603,16 +1604,16 @@
   .btn-primary,
   .btn-save,
   .btn-water {
-    background: linear-gradient(180deg, #57b673 0%, #469a61 100%);
+    background: linear-gradient(90deg, #345d4c 0%, #4d7663 100%);
     color: #fff;
-    box-shadow: 0 16px 26px rgba(79, 168, 109, 0.24);
+    box-shadow: 0 8px 20px rgba(52, 93, 76, 0.2);
   }
 
   .btn-primary:hover,
   .btn-save:hover,
   .btn-water:hover {
     transform: translateY(-1px);
-    box-shadow: 0 20px 30px rgba(79, 168, 109, 0.28);
+    box-shadow: 0 12px 24px rgba(52, 93, 76, 0.24);
   }
 
   .btn-secondary,
@@ -2427,14 +2428,25 @@
   }
 
   .btn-danger {
-    background: linear-gradient(180deg, #d88366 0%, #c86b4a 100%);
+    min-height: 44px;
+    padding: 10px 16px;
+    border-radius: 0;
+    border: 2px solid #272c29;
+    background: linear-gradient(180deg, #d88366 0%, #cf7657 100%);
     color: #fff;
-    box-shadow: 0 16px 26px rgba(207, 113, 82, 0.22);
+    box-shadow: 0 8px 20px rgba(52, 93, 76, 0.2);
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
   }
 
   .btn-danger:hover {
     transform: translateY(-1px);
-    box-shadow: 0 20px 30px rgba(207, 113, 82, 0.28);
+    box-shadow: 0 12px 24px rgba(52, 93, 76, 0.24);
   }
 
   @keyframes fadeIn {
