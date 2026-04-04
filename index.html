@@ -2556,7 +2556,7 @@
         <div class="mobile-brand-icon">🪴</div>
         <div class="mobile-brand-name">Musgo</div>
       </div>
-      <div class="auth-area topbar-auth" id="authArea"></div>
+      <div class="screen-kicker" id="topbarBadge">Botanical Care</div>
     </header>
     <main class="app-main" id="appMain"></main>
     <nav class="bottom-nav" id="bottomNav"></nav>
@@ -2940,7 +2940,6 @@ function dismissSplash() {
   try {
     window.sessionStorage.setItem('musgo:splash-seen', '1');
   } catch (error) {}
-  renderAuthArea();
   render();
 }
 
@@ -2971,7 +2970,6 @@ function applyAuthState({ session = null, user = null, configured = state.auth.c
     user,
     error,
   };
-  renderAuthArea();
   render();
 
   const nextUserId = user?.id || null;
@@ -3003,8 +3001,6 @@ async function initAuth() {
       user: null,
       error: '',
     };
-    renderAuthArea();
-
     window.addEventListener('musgo:supabase-auth-ready', () => {
       initAuth();
     }, { once: true });
@@ -3103,52 +3099,11 @@ async function deleteSectionFromCloud(sectionId) {
   await window.supabaseData.deleteSection(sectionId);
 }
 
-function renderAuthArea() {
-  const authArea = document.getElementById('authArea');
-  if (!authArea) return;
-
+function renderTopbar() {
   const topbar = document.querySelector('.mobile-topbar');
   if (topbar) {
     topbar.classList.toggle('splash-mode', Boolean(state.splashVisible));
   }
-
-  if (state.splashVisible) {
-    authArea.innerHTML = '';
-    return;
-  }
-
-  if (!state.auth.ready) {
-    authArea.innerHTML = `<div class="auth-status">Preparando acceso...</div>`;
-    return;
-  }
-
-  if (!state.auth.configured) {
-    authArea.innerHTML = `<div class="auth-status">${escapeHtml(state.auth.error || 'Auth no configurado')}</div>`;
-    return;
-  }
-
-  if (!state.auth.user) {
-    authArea.innerHTML = `
-      <button class="btn-secondary btn-auth" type="button" onclick="handleGoogleSignIn()">
-        <span class="google-mark">G</span> Continuar con Google
-      </button>
-    `;
-    return;
-  }
-
-  const avatarUrl = state.auth.user.user_metadata?.avatar_url || '';
-  authArea.innerHTML = `
-    <div class="auth-user">
-      <div class="auth-avatar">
-        ${avatarUrl ? `<img src="${avatarUrl}" alt="${escapeHtml(getUserName(state.auth.user))}">` : escapeHtml(getUserInitial(state.auth.user))}
-      </div>
-      <div class="auth-user-meta">
-        <div class="auth-user-name">${escapeHtml(getUserName(state.auth.user))}</div>
-        <div class="auth-user-email">${escapeHtml(state.auth.user.email || '')}</div>
-      </div>
-    </div>
-    <button class="btn-secondary btn-auth" type="button" onclick="handleSignOut()">Cerrar sesión</button>
-  `;
 }
 
 async function handleGoogleSignIn() {
@@ -3262,8 +3217,8 @@ function renderAuthPrompt(message = 'Inicia sesión para ver y editar tu jardín
     icon: '☁️',
     title: 'Tu jardín está en la nube',
     message,
-    actionLabel: 'Continuar con Google',
-    action: 'handleGoogleSignIn()',
+    actionLabel: 'Ir a perfil',
+    action: "setView('profile')",
   });
 }
 
@@ -3704,10 +3659,17 @@ function renderProfileScreen() {
     return `
       <section class="screen">
         <div class="screen-intro">
+          <div class="screen-kicker">Profile</div>
           <h1 class="screen-title">Perfil</h1>
           <p class="screen-subtitle">Tu cuenta y el resumen de tu colección.</p>
         </div>
-        ${renderAuthPrompt('Inicia sesión para ver tu perfil y gestionar tu colección desde cualquier dispositivo.')}
+        ${renderCardState({
+          icon: '👤',
+          title: 'Accede a tu perfil',
+          message: 'Inicia sesión con Google para ver tu jardín en la nube y gestionarlo desde cualquier dispositivo.',
+          actionLabel: 'Continuar con Google',
+          action: 'handleGoogleSignIn()'
+        })}
       </section>
     `;
   }
@@ -3791,6 +3753,7 @@ function renderCurrentView() {
 }
 
 function render() {
+  renderTopbar();
   renderCurrentView();
   renderBottomNav();
 }
@@ -4576,7 +4539,6 @@ function showToast(msg) {
 // ===== INIT =====
 loadState();
 initSplash();
-renderAuthArea();
 render();
 initAuth();
 </script>
