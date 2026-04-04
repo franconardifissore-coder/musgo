@@ -988,6 +988,71 @@
     background: rgba(79, 168, 109, 0.08);
   }
 
+  .identified-plant-card {
+    border-radius: 28px;
+    background: #ffffff;
+    padding: 14px;
+    box-shadow: 0 16px 36px rgba(52, 93, 76, 0.08);
+    border: 1px solid rgba(52, 93, 76, 0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .identified-plant-visual {
+    width: 100%;
+    aspect-ratio: 1 / 1.12;
+    border-radius: 18px;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at top right, rgba(52, 93, 76, 0.06), transparent 34%),
+      #f7f8f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .identified-plant-visual img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .identified-plant-visual-fallback {
+    font-size: 4rem;
+  }
+
+  .identified-plant-badge {
+    align-self: flex-start;
+    min-height: 30px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: var(--green-light);
+    color: var(--green-dark);
+    font-size: 0.92rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .identified-plant-name {
+    font-size: 1.1rem;
+    line-height: 1.15;
+    font-weight: 800;
+    color: #191c1c;
+    letter-spacing: -0.04em;
+  }
+
+  .identified-plant-species {
+    margin-top: 4px;
+    color: #5d6c60;
+    font-size: 0.98rem;
+    line-height: 1.45;
+    font-style: italic;
+  }
+
   .form-group-inline {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -3057,6 +3122,7 @@ function createPlantDraft(prefill = null, existingPlant = null) {
       light: existingPlant.light || '⛅ Luz indirecta',
       imagePreview: existingPlant.imagePreview || '',
       identifiedSpecies: existingPlant.identifiedSpecies || '',
+      identifiedCommonName: existingPlant.identifiedCommonName || '',
       identificationConfidence: existingPlant.identificationConfidence ?? null,
       identifiedAt: existingPlant.identifiedAt || null,
       waterLog: Array.isArray(existingPlant.waterLog) ? [...existingPlant.waterLog] : [],
@@ -3073,6 +3139,7 @@ function createPlantDraft(prefill = null, existingPlant = null) {
     light: '⛅ Luz indirecta',
     imagePreview: prefill?.imagePreview || '',
     identifiedSpecies: prefill?.identifiedSpecies || '',
+    identifiedCommonName: prefill?.identifiedCommonName || '',
     identificationConfidence: prefill?.identificationConfidence ?? null,
     identifiedAt: prefill?.identifiedAt || null,
     waterLog: [],
@@ -3702,9 +3769,9 @@ function renderPlantCreateScreen() {
   const isEditing = state.screenPlantMode === 'edit';
   const isIdentified = !isEditing && Boolean(draft.identifiedSpecies);
   const sectionName = state.sections.find(section => section.id === draft.section)?.name || 'Sin sección';
-  const identificationLabel = draft.identifiedSpecies
-    ? `Identificada como ${escapeHtml(draft.identifiedSpecies)}`
-    : `Se guardará en ${escapeHtml(sectionName)}`;
+  const identifiedBadge = draft.identificationConfidence !== null && draft.identificationConfidence !== undefined
+    ? `Match con ${confidenceToPercent(draft.identificationConfidence)}% de confianza`
+    : 'Planta identificada';
   return `
     <section class="screen">
       <div class="screen-head">
@@ -3713,68 +3780,92 @@ function renderPlantCreateScreen() {
       <div class="screen-intro">
         ${(isEditing || isIdentified) ? `<div class="screen-kicker">${isEditing ? 'Tu colección' : '¡Lo tenemos!'}</div>` : ''}
         <h1 class="screen-title">${isEditing ? 'Editar planta' : (isIdentified ? 'Planta identificada' : 'Crear planta')}</h1>
-        <p class="screen-subtitle">${isEditing ? 'Actualiza la ficha de tu planta.' : (isIdentified ? 'Revisa los datos, elige su frecuencia y ubícala en un espacio antes de guardarla.' : 'Completa manualmente la ficha y guárdala en tu colección.')}</p>
+        ${isIdentified ? '' : `<p class="screen-subtitle">${isEditing ? 'Actualiza la ficha de tu planta.' : 'Completa manualmente la ficha y guárdala en tu colección.'}</p>`}
       </div>
-      <div class="editor-hero">
-        <div class="editor-hero-emoji">${escapeHtml(draft.emoji || '🌿')}</div>
-        <div class="editor-hero-title">${escapeHtml((draft.name || draft.species || (isEditing ? 'Tu planta' : 'Nueva ficha')).trim())}</div>
-        <div class="editor-hero-copy">${identificationLabel}</div>
-      </div>
-      <div class="editor-card">
-        <div class="editor-preview-card">
-          <div class="editor-preview-visual">${draft.imagePreview ? `<img src="${draft.imagePreview}" alt="${escapeHtml(draft.name || draft.species || 'Planta')}">` : escapeHtml(draft.emoji || '🌿')}</div>
+      ${isIdentified ? `
+        <div class="identified-plant-card">
+          <div class="identified-plant-visual">
+            ${draft.imagePreview
+              ? `<img src="${draft.imagePreview}" alt="${escapeHtml(draft.identifiedSpecies || draft.species || 'Planta identificada')}">`
+              : `<div class="identified-plant-visual-fallback">${escapeHtml(draft.emoji || '🌿')}</div>`
+            }
+          </div>
+          <div class="identified-plant-badge">${escapeHtml(identifiedBadge)}</div>
           <div>
-            <div class="editor-preview-title">${escapeHtml(draft.name || draft.species || 'Nueva planta')}</div>
-            <div class="editor-preview-copy">${isEditing ? 'Edita los datos de esta ficha para mantener tu jardín al día.' : 'Ajusta los datos esenciales antes de guardarla en tu colección.'}</div>
+            <div class="identified-plant-name">${escapeHtml(draft.identifiedSpecies || draft.species || 'Planta identificada')}</div>
+            ${draft.identifiedCommonName ? `<div class="identified-plant-species">${escapeHtml(draft.identifiedCommonName)}</div>` : ''}
           </div>
         </div>
-        ${draft.identifiedSpecies ? `<div class="editor-note">Sugerencia IA: <strong>${escapeHtml(draft.identifiedSpecies)}</strong>${draft.identificationConfidence !== null && draft.identificationConfidence !== undefined ? ` · ${confidenceToPercent(draft.identificationConfidence)}% confianza` : ''}</div>` : ''}
-        <div class="editor-section">
-          <div class="editor-section-title">Identidad</div>
-          <div class="form-group">
-            <label>Icono</label>
-            <div class="emoji-row">
-              ${plantEmojis.slice(0, 12).map(emoji => `<button class="emoji-pill ${draft.emoji === emoji ? 'active' : ''}" type="button" onclick="setScreenPlantEmoji('${emoji}')">${emoji}</button>`).join('')}
-            </div>
-          </div>
-          <div class="form-group-inline">
-            <div class="form-group">
-              <label>Nombre</label>
-              <input class="editor-input" type="text" value="${escapeHtml(draft.name || '')}" placeholder="Ej: Monstera del salón" oninput="updateScreenPlantField('name', this.value)">
-            </div>
-            <div class="form-group">
-              <label>Especie</label>
-              <input class="editor-input" type="text" value="${escapeHtml(draft.species || '')}" placeholder="Ej: Monstera deliciosa" oninput="updateScreenPlantField('species', this.value)">
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Sección</label>
-            <select class="editor-select" onchange="updateScreenPlantField('section', this.value)">
-              ${state.sections.map(section => `<option value="${section.id}" ${draft.section === section.id ? 'selected' : ''}>${escapeHtml(section.icon)} ${escapeHtml(section.name)}</option>`).join('')}
-            </select>
-          </div>
+        <div class="form-group">
+          <label>Frecuencia de riego</label>
+          <select class="editor-select" onchange="updateScreenPlantField('freq', Number(this.value))">
+            <option value="" ${draft.freq ? '' : 'selected'} disabled>Selecciona una frecuencia</option>
+            ${[1,2,3,5,7,14,30].map(freq => `<option value="${freq}" ${Number(draft.freq) === freq ? 'selected' : ''}>${freq === 1 ? 'Cada día' : `Cada ${freq} días`}</option>`).join('')}
+          </select>
         </div>
-        <div class="editor-section">
-          <div class="editor-section-title">Cuidados</div>
-          <div class="form-group-inline">
+        <div class="form-group">
+          <label>Espacio</label>
+          <select class="editor-select" onchange="updateScreenPlantField('section', this.value)">
+            <option value="" ${draft.section ? '' : 'selected'} disabled>Ubica tu planta en un espacio</option>
+            ${state.sections.map(section => `<option value="${section.id}" ${draft.section === section.id ? 'selected' : ''}>${escapeHtml(section.name)}</option>`).join('')}
+          </select>
+        </div>
+      ` : `
+        <div class="editor-card">
+          <div class="editor-preview-card">
+            <div class="editor-preview-visual">${draft.imagePreview ? `<img src="${draft.imagePreview}" alt="${escapeHtml(draft.name || draft.species || 'Planta')}">` : escapeHtml(draft.emoji || '🌿')}</div>
+            <div>
+              <div class="editor-preview-title">${escapeHtml(draft.name || draft.species || 'Nueva planta')}</div>
+              <div class="editor-preview-copy">${isEditing ? 'Edita los datos de esta ficha para mantener tu jardín al día.' : 'Ajusta los datos esenciales antes de guardarla en tu colección.'}</div>
+            </div>
+          </div>
+          <div class="editor-section">
+            <div class="editor-section-title">Identidad</div>
             <div class="form-group">
-              <label>Frecuencia de riego</label>
-              <select class="editor-select" onchange="updateScreenPlantField('freq', Number(this.value))">
-                ${[1,2,3,5,7,14,30].map(freq => `<option value="${freq}" ${Number(draft.freq) === freq ? 'selected' : ''}>${freq === 1 ? 'Cada día' : `Cada ${freq} días`}</option>`).join('')}
+              <label>Icono</label>
+              <div class="emoji-row">
+                ${plantEmojis.slice(0, 12).map(emoji => `<button class="emoji-pill ${draft.emoji === emoji ? 'active' : ''}" type="button" onclick="setScreenPlantEmoji('${emoji}')">${emoji}</button>`).join('')}
+              </div>
+            </div>
+            <div class="form-group-inline">
+              <div class="form-group">
+                <label>Nombre</label>
+                <input class="editor-input" type="text" value="${escapeHtml(draft.name || '')}" placeholder="Ej: Monstera del salón" oninput="updateScreenPlantField('name', this.value)">
+              </div>
+              <div class="form-group">
+                <label>Especie</label>
+                <input class="editor-input" type="text" value="${escapeHtml(draft.species || '')}" placeholder="Ej: Monstera deliciosa" oninput="updateScreenPlantField('species', this.value)">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Sección</label>
+              <select class="editor-select" onchange="updateScreenPlantField('section', this.value)">
+                ${state.sections.map(section => `<option value="${section.id}" ${draft.section === section.id ? 'selected' : ''}>${escapeHtml(section.icon)} ${escapeHtml(section.name)}</option>`).join('')}
               </select>
             </div>
-            <div class="form-group">
-              <label>Luz</label>
-              <select class="editor-select" onchange="updateScreenPlantField('light', this.value)">
-                ${['☀️ Sol directo','⛅ Luz indirecta','🌥️ Sombra parcial','🌑 Poca luz'].map(light => `<option value="${light}" ${draft.light === light ? 'selected' : ''}>${escapeHtml(light)}</option>`).join('')}
-              </select>
+          </div>
+          <div class="editor-section">
+            <div class="editor-section-title">Cuidados</div>
+            <div class="form-group-inline">
+              <div class="form-group">
+                <label>Frecuencia de riego</label>
+                <select class="editor-select" onchange="updateScreenPlantField('freq', Number(this.value))">
+                  ${[1,2,3,5,7,14,30].map(freq => `<option value="${freq}" ${Number(draft.freq) === freq ? 'selected' : ''}>${freq === 1 ? 'Cada día' : `Cada ${freq} días`}</option>`).join('')}
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Luz</label>
+                <select class="editor-select" onchange="updateScreenPlantField('light', this.value)">
+                  ${['☀️ Sol directo','⛅ Luz indirecta','🌥️ Sombra parcial','🌑 Poca luz'].map(light => `<option value="${light}" ${draft.light === light ? 'selected' : ''}>${escapeHtml(light)}</option>`).join('')}
+                </select>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      `}
       <div class="screen-actions">
         <button class="btn-primary" type="button" onclick="savePlantFromScreen()">${isEditing ? 'Guardar cambios' : 'Guardar'}</button>
-        <button class="btn-secondary" type="button" onclick="cancelPlantCreateView()">Descartar cambios</button>
+        ${isIdentified ? '' : `<button class="btn-secondary" type="button" onclick="cancelPlantCreateView()">Descartar cambios</button>`}
       </div>
     </section>
   `;
@@ -4454,6 +4545,7 @@ function buildIdentifiedPlantDraft(result) {
     name: '',
     imagePreview: getPersistableImagePreview(state.identification.preview),
     identifiedSpecies: result.scientificName,
+    identifiedCommonName: result.commonNames && result.commonNames.length ? result.commonNames[0] : '',
     identificationConfidence: result.confidence / 100,
     identifiedAt: new Date().toISOString(),
   };
