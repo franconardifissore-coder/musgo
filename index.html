@@ -3162,15 +3162,27 @@ let state = {
 function daysAgo(n) {
   const d = new Date();
   d.setDate(d.getDate() - n);
-  return d.toISOString().split('T')[0];
+  return formatLocalDate(d);
 }
 
 function today() {
-  return new Date().toISOString().split('T')[0];
+  return formatLocalDate(new Date());
+}
+
+function formatLocalDate(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function parseLocalDate(dateStr) {
+  const [year, month, day] = String(dateStr).split('-').map(Number);
+  return new Date(year, (month || 1) - 1, day || 1);
 }
 
 function daysBetween(dateStr) {
-  const then = new Date(dateStr);
+  const then = parseLocalDate(dateStr);
   const now = new Date();
   then.setHours(0,0,0,0);
   now.setHours(0,0,0,0);
@@ -4312,11 +4324,11 @@ const MONTH_NAMES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','A
 
 function getCalendarMonthData(plant, year, month) {
   const todayStr = today();
-  const todayDate = new Date(todayStr);
+  const todayDate = parseLocalDate(todayStr);
   const wateredSet = new Set((plant.waterLog || []).filter(d => {
-    const dt = new Date(d);
+    const dt = parseLocalDate(d);
     return dt.getFullYear() === year && dt.getMonth() === month;
-  }).map(d => new Date(d).getDate()));
+  }).map(d => parseLocalDate(d).getDate()));
 
   const firstDay = new Date(year, month, 1);
   let startDow = firstDay.getDay();
@@ -4326,7 +4338,7 @@ function getCalendarMonthData(plant, year, month) {
   const lw = lastWatered(plant);
   const projectedWaterDays = new Set();
   if (lw) {
-    let cursor = new Date(lw);
+    let cursor = parseLocalDate(lw);
     cursor.setHours(0,0,0,0);
     const monthEnd = new Date(year, month + 1, 0);
     monthEnd.setHours(23,59,59,999);
@@ -4346,7 +4358,7 @@ function getCalendarMonthData(plant, year, month) {
 
   for (let d = 1; d <= daysInMonth; d++) {
     const cellDate = new Date(year, month, d);
-    const cellStr = cellDate.toISOString().split('T')[0];
+    const cellStr = formatLocalDate(cellDate);
     const isToday = cellStr === todayStr;
     const isWatered = wateredSet.has(d);
     const isProjected = projectedWaterDays.has(d);
@@ -4488,8 +4500,8 @@ async function calDayClick(dateStr, alreadyWatered) {
   if (alreadyWatered) return; // already logged
   const plant = state.plants.find(p => p.id === state.calPlantId);
   if (!plant) return;
-  const clickDate = new Date(dateStr);
-  const todayDate = new Date(today());
+  const clickDate = parseLocalDate(dateStr);
+  const todayDate = parseLocalDate(today());
   if (clickDate > todayDate) return; // no future logging
 
   if (!plant.waterLog) plant.waterLog = [];
@@ -4504,7 +4516,7 @@ async function calDayClick(dateStr, alreadyWatered) {
       showToast('⚠️ El riego se guardó localmente, pero no pudimos sincronizarlo');
       return;
     }
-    const d = new Date(dateStr);
+    const d = parseLocalDate(dateStr);
     const label = dateStr === today() ? 'hoy' : `el ${d.getDate()}/${d.getMonth()+1}`;
     showToast(`💧 Riego añadido ${label}`);
   }
