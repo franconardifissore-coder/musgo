@@ -1310,65 +1310,42 @@
     padding: 22px;
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 20px;
   }
 
-  .space-editor-preview {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 16px;
-    border-radius: 22px;
-    background: #f5f7f4;
+  .space-emoji-grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 10px;
   }
 
-  .space-editor-icon {
-    width: 62px;
-    height: 62px;
-    border-radius: 20px;
-    background: #ffffff;
-    display: flex;
+  .space-emoji-button {
+    min-height: 50px;
+    border: none;
+    border-radius: 14px;
+    background: #f3f4f3;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.8rem;
-    box-shadow: 0 10px 18px rgba(31, 52, 37, 0.06);
+    font-size: 1.3rem;
+    cursor: pointer;
+    transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
   }
 
-  .space-editor-title {
-    font-size: 1.18rem;
-    font-weight: 800;
-    color: #191c1c;
+  .space-emoji-button.active {
+    background: #dff0e6;
+    box-shadow: inset 0 0 0 1px rgba(52, 93, 76, 0.2);
   }
 
-  .space-editor-subtitle {
+  .space-editor-hint {
     color: #5d6c60;
     font-size: 0.9rem;
-    line-height: 1.5;
-    margin-top: 4px;
+    line-height: 1.55;
   }
 
-  .danger-panel {
-    border-radius: 22px;
-    padding: 16px;
-    background: rgba(207, 113, 82, 0.08);
-    border: 1px solid rgba(207, 113, 82, 0.18);
+  .space-delete-action {
     display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .danger-panel-title {
-    color: #a04f35;
-    font-size: 0.84rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  .danger-panel-copy {
-    color: #7a4f40;
-    font-size: 0.9rem;
-    line-height: 1.5;
+    justify-content: center;
   }
 
   .detail-actions-card {
@@ -3888,7 +3865,7 @@ function renderSpacesScreen() {
       </div>
       <div class="spaces-list">
         ${spaces}
-        <button class="add-plant-card-mobile" type="button" onclick="openSectionModal()" style="width:100%;min-height:180px;">
+        <button class="add-plant-card-mobile" type="button" onclick="openCreateSectionView()" style="width:100%;min-height:180px;">
           <span class="add-circle">＋</span>
           <span class="add-label">Añadir Nuevo Espacio</span>
         </button>
@@ -3913,36 +3890,41 @@ function renderEditSpaceScreen() {
     `;
   }
 
+  const isEditing = Boolean(state.editingSectionId);
+  const title = isEditing ? 'Editar espacio' : 'Nueva sección';
+  const subtitle = isEditing
+    ? 'Actualiza el nombre del espacio y el emoji que mejor lo representa.'
+    : 'Define un espacio de tu casa para organizar tus plantas.';
+
   return `
     <section class="screen">
       <div class="screen-head">
         ${renderBackButton('Espacios', 'spaces')}
       </div>
       <div class="screen-intro">
-        <h1 class="screen-title">Editar espacio</h1>
-        <p class="screen-subtitle">Actualiza el nombre del espacio o elimínalo por completo junto con las plantas que contiene.</p>
+        <h1 class="screen-title">${title}</h1>
+        <p class="screen-subtitle">${subtitle}</p>
       </div>
       <div class="space-editor-card">
-        <div class="space-editor-preview">
-          <div class="space-editor-icon">${escapeHtml(draft.icon || '🪴')}</div>
-          <div>
-            <div class="space-editor-title">${escapeHtml(draft.name || 'Espacio sin nombre')}</div>
-            <div class="space-editor-subtitle">${draft.plantCount} planta${draft.plantCount === 1 ? '' : 's'} viven aquí mismo.</div>
+        <div class="form-group">
+          <label>Elige un emoji que lo represente</label>
+          <div class="space-emoji-grid">
+            ${sectionEmojis.map(emoji => `
+              <button class="space-emoji-button ${draft.icon === emoji ? 'active' : ''}" type="button" onclick="setScreenSectionEmoji('${emoji}')">${emoji}</button>
+            `).join('')}
           </div>
         </div>
         <div class="form-group">
           <label>Nombre del espacio</label>
           <input class="editor-input" type="text" value="${escapeHtml(draft.name || '')}" placeholder="Ej: Salón, Cocina, Balcón..." oninput="updateScreenSectionName(this.value)">
         </div>
-        <div class="danger-panel">
-          <div class="danger-panel-title">Zona delicada</div>
-          <div class="danger-panel-copy">Eliminar este espacio borrará también ${draft.plantCount === 0 ? 'cualquier planta futura asociada.' : `las ${draft.plantCount} planta${draft.plantCount === 1 ? '' : 's'} que contiene.`}</div>
-        </div>
+        <div class="space-editor-hint">Utiliza nombres cortos para identificar r&aacute;pidamente d&oacute;nde se encuentran tus plantas.</div>
       </div>
       <div class="screen-actions">
         <button class="btn-primary" type="button" onclick="saveSectionFromScreen()">Guardar</button>
-        <button class="btn-secondary" type="button" onclick="cancelEditSectionView()">Descartar cambios</button>
-        <button class="btn-danger" type="button" onclick="deleteSectionFromScreen()">Eliminar sección</button>
+        <div class="space-delete-action">
+          <button class="btn-danger" type="button" onclick="${isEditing ? 'deleteSectionFromScreen()' : 'cancelEditSectionView()'}">Eliminar</button>
+        </div>
       </div>
     </section>
   `;
@@ -4606,6 +4588,13 @@ function openEditSectionView(sectionId) {
   render();
 }
 
+function openCreateSectionView() {
+  state.editingSectionId = null;
+  state.screenSectionDraft = createSectionDraft();
+  state.currentView = 'editSpace';
+  render();
+}
+
 function cancelEditSectionView() {
   state.screenSectionDraft = null;
   state.editingSectionId = null;
@@ -4615,6 +4604,12 @@ function cancelEditSectionView() {
 function updateScreenSectionName(value) {
   if (!state.screenSectionDraft) return;
   state.screenSectionDraft.name = value;
+}
+
+function setScreenSectionEmoji(emoji) {
+  if (!state.screenSectionDraft) return;
+  state.screenSectionDraft.icon = emoji;
+  render();
 }
 
 async function waterPlant(id) {
@@ -5103,10 +5098,7 @@ async function confirmDelete() {
 }
 
 function openSectionModal() {
-  state.selectedSectionEmoji = '🪴';
-  document.getElementById('sectionName').value = '';
-  renderEmojiPicker('sectionEmojiPicker', sectionEmojis, '🪴', 'selectSectionEmoji');
-  document.getElementById('sectionModal').classList.add('open');
+  openCreateSectionView();
 }
 
 function closeSectionModal() {
@@ -5156,14 +5148,14 @@ async function saveSectionChanges() {
   const section = state.sections.find(item => item.id === sectionId);
   if (!section) return;
 
-  const modalInput = document.getElementById('editSectionName');
-  const nextName = ((state.screenSectionDraft?.name ?? modalInput?.value) || '').trim();
+  const nextName = ((state.screenSectionDraft?.name) || '').trim();
   if (!nextName) {
     showToast('⚠️ El nombre es obligatorio');
     return;
   }
 
   section.name = nextName;
+  section.icon = state.screenSectionDraft?.icon || section.icon || '🪴';
   section.outdoor = ['balcón','terraza','jardín','exterior','patio'].some(w => nextName.toLowerCase().includes(w));
   state.screenSectionDraft = null;
   state.editingSectionId = null;
@@ -5181,7 +5173,41 @@ async function saveSectionChanges() {
 }
 
 async function saveSectionFromScreen() {
-  await saveSectionChanges();
+  const draft = state.screenSectionDraft;
+  if (!draft) return;
+
+  const nextName = (draft.name || '').trim();
+  if (!nextName) {
+    showToast('⚠️ El nombre es obligatorio');
+    return;
+  }
+
+  if (state.editingSectionId) {
+    await saveSectionChanges();
+    return;
+  }
+
+  const section = {
+    id: createEntityId('section'),
+    name: nextName,
+    icon: draft.icon || '🪴',
+    outdoor: ['balcón','terraza','jardín','exterior','patio'].some(w => nextName.toLowerCase().includes(w)),
+  };
+
+  state.sections.push(section);
+  state.screenSectionDraft = null;
+  state.editingSectionId = null;
+  setView('spaces');
+
+  try {
+    await syncSectionToCloud(section);
+  } catch (error) {
+    console.error('Failed to sync created section from screen', error);
+    showToast('⚠️ La sección se creó localmente, pero no pudimos sincronizarla');
+    return;
+  }
+
+  showToast(`📍 Sección "${nextName}" creada`);
 }
 
 async function deleteCurrentSection() {
