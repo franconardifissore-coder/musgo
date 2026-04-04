@@ -3838,8 +3838,15 @@ function renderPlantsScreen() {
     `;
   }
 
-  const all = { id: 'all', name: 'Todos' };
-  const tabs = [all, ...state.sections.map(section => ({ id: section.id, name: section.name }))];
+  const all = { id: 'all', name: 'Todos', label: 'Todos' };
+  const tabs = [
+    all,
+    ...state.sections.map(section => ({
+      id: section.id,
+      name: section.name,
+      label: `${section.icon || '🪴'} ${section.name}`,
+    })),
+  ];
   const plants = getFilteredPlants();
 
   const tiles = plants.map(plant => {
@@ -3866,7 +3873,7 @@ function renderPlantsScreen() {
         <p class="screen-subtitle">Bienvenid@ a tu colección</p>
       </div>
       <div class="chip-row">
-        ${tabs.map(tab => `<button class="filter-chip ${state.activeSection === tab.id ? 'active' : ''}" onclick="setSection('${tab.id}')">${escapeHtml(tab.name)}</button>`).join('')}
+        ${tabs.map(tab => `<button class="filter-chip ${state.activeSection === tab.id ? 'active' : ''}" onclick="setSection('${tab.id}')">${escapeHtml(tab.label || tab.name)}</button>`).join('')}
       </div>
       ${plants.length ? `
         <div class="plants-grid-mobile">
