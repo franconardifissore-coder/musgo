@@ -2313,7 +2313,7 @@
   .identify-state,
   .delete-confirm {
     padding: 15px 16px;
-    border-radius: 20px;
+    border-radius: 18px;
     line-height: 1.55;
     font-size: 0.86rem;
   }
@@ -2357,11 +2357,19 @@
     color: var(--text);
   }
 
-  .identify-state.error,
-  .delete-confirm {
+  .identify-state.error {
     background: rgba(255, 244, 239, 0.88);
     border: 1px solid rgba(207, 113, 82, 0.12);
     color: var(--danger);
+  }
+
+  .delete-confirm {
+    background: #f8f8f7;
+    border: 1px solid rgba(52, 93, 76, 0.06);
+    color: #191c1c;
+    font-size: 0.98rem;
+    font-weight: 700;
+    padding: 20px 18px;
   }
 
   .identify-state.empty {
@@ -3026,7 +3034,7 @@
 <div class="modal-overlay" id="deleteModal">
   <div class="modal">
     <h2>Eliminar planta</h2>
-    <p class="modal-sub">¿Seguro que quieres eliminar esta planta?</p>
+    <p class="modal-sub">¿Estás segur@ que deseas eliminar esta planta?</p>
     <div class="delete-confirm" id="deleteConfirmName"></div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeDeleteModal()">Cancelar</button>
@@ -5068,7 +5076,7 @@ async function savePlant() {
 function openDeleteModal(id) {
   state.deletingPlantId = id;
   const p = state.plants.find(x => x.id === id);
-  document.getElementById('deleteConfirmName').textContent = p ? `${p.emoji} ${p.name}` : '';
+  document.getElementById('deleteConfirmName').textContent = p ? `${p.name}` : '';
   document.getElementById('deleteModal').classList.add('open');
 }
 
