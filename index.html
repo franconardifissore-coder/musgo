@@ -53,13 +53,14 @@
 
   body {
     font-family: 'DM Sans', sans-serif;
-    min-height: 100vh;
+    min-height: 100dvh;
     color: var(--text);
     background: #F9F9F8;
+    overflow-x: hidden;
   }
 
   .app-shell {
-    min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     justify-content: center;
     padding: 0;
@@ -68,16 +69,15 @@
 
   .app-frame {
     width: min(100%, 430px);
-    height: 100vh;
-    min-height: 100vh;
+    min-height: 100dvh;
+    height: auto;
     display: flex;
     flex-direction: column;
     border-radius: 0;
     background: #F9F9F8;
     border: none;
     box-shadow: none;
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow: visible;
     backdrop-filter: none;
   }
 
