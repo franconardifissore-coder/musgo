@@ -3365,7 +3365,7 @@ function createPlantDraft(prefill = null, existingPlant = null) {
       name: existingPlant.name || '',
       species: existingPlant.species || '',
       emoji: existingPlant.emoji || '🌿',
-      section: existingPlant.section || (state.sections[0]?.id || ''),
+      section: existingPlant.section || '',
       freq: existingPlant.freq || 3,
       light: existingPlant.light || '⛅ Luz indirecta',
       imagePreview: existingPlant.imagePreview || '',
@@ -3382,7 +3382,7 @@ function createPlantDraft(prefill = null, existingPlant = null) {
     name: prefill?.name || '',
     species: prefill?.species || '',
     emoji: prefill?.emoji || '🌿',
-    section: state.activeSection !== 'all' ? state.activeSection : (state.sections[0]?.id || ''),
+    section: state.activeSection !== 'all' ? state.activeSection : '',
     freq: 3,
     light: '⛅ Luz indirecta',
     imagePreview: prefill?.imagePreview || '',
@@ -3410,6 +3410,19 @@ function getPreviousMainView(fallback = 'plants') {
 function renderBackButton(label = 'Volver', targetView = null) {
   const destination = targetView || getPreviousMainView();
   return `<button class="screen-back" type="button" onclick="setView('${destination}')">← ${escapeHtml(label)}</button>`;
+}
+
+function renderSectionOptions(selectedSection = '', includePlaceholder = false) {
+  const options = [];
+  if (includePlaceholder) {
+    options.push(`<option value="" ${selectedSection ? '' : 'selected'}>Sin asignar</option>`);
+  } else {
+    options.push(`<option value="" ${selectedSection ? '' : 'selected'}>Sin asignar</option>`);
+  }
+  options.push(...state.sections.map(section => (
+    `<option value="${section.id}" ${selectedSection === section.id ? 'selected' : ''}>${escapeHtml(section.icon)} ${escapeHtml(section.name)}</option>`
+  )));
+  return options.join('');
 }
 
 function goBackToMainView(fallback = 'plants') {
@@ -4124,8 +4137,7 @@ function renderPlantCreateScreen() {
         <div class="form-group">
           <label>Espacio</label>
           <select class="editor-select" onchange="updateScreenPlantField('section', this.value)">
-            <option value="" ${draft.section ? '' : 'selected'} disabled>Ubica tu planta en un espacio</option>
-            ${state.sections.map(section => `<option value="${section.id}" ${draft.section === section.id ? 'selected' : ''}>${escapeHtml(section.name)}</option>`).join('')}
+            ${renderSectionOptions(draft.section, true)}
           </select>
         </div>
       ` : isManualCreate ? `
@@ -4150,8 +4162,7 @@ function renderPlantCreateScreen() {
         <div class="form-group">
           <label>Espacio</label>
           <select class="editor-select" onchange="updateScreenPlantField('section', this.value)">
-            <option value="" ${draft.section ? '' : 'selected'} disabled>Ubica tu planta en un espacio</option>
-            ${state.sections.map(section => `<option value="${section.id}" ${draft.section === section.id ? 'selected' : ''}>${escapeHtml(section.name)}</option>`).join('')}
+            ${renderSectionOptions(draft.section, true)}
           </select>
         </div>
       ` : `
@@ -4184,7 +4195,7 @@ function renderPlantCreateScreen() {
             <div class="form-group">
               <label>Sección</label>
               <select class="editor-select" onchange="updateScreenPlantField('section', this.value)">
-                ${state.sections.map(section => `<option value="${section.id}" ${draft.section === section.id ? 'selected' : ''}>${escapeHtml(section.icon)} ${escapeHtml(section.name)}</option>`).join('')}
+                ${renderSectionOptions(draft.section)}
               </select>
             </div>
           </div>
@@ -4260,7 +4271,7 @@ function renderPlantDetailScreen() {
         <div class="detail-field">
           <label>Espacio</label>
           <select class="detail-select" onchange="updateDetailPlantField('section', this.value)">
-            ${state.sections.map(section => `<option value="${section.id}" ${draft.section === section.id ? 'selected' : ''}>${escapeHtml(section.name)}</option>`).join('')}
+            ${renderSectionOptions(draft.section)}
           </select>
         </div>
       </div>
@@ -4630,7 +4641,7 @@ function openPlantDetail(plantId) {
   state.detailDraft = {
     name: plant.name || '',
     freq: Number(plant.freq) || 3,
-    section: plant.section || (state.sections[0]?.id || ''),
+    section: plant.section || '',
   };
   state.calPlantId = plantId;
   state.calYear = new Date().getFullYear();
@@ -4744,10 +4755,6 @@ async function savePlantDetail() {
   const plant = state.plants.find(item => item.id === state.detailPlantId);
   const draft = state.detailDraft;
   if (!plant || !draft) return;
-  if (!draft.section) {
-    showToast('⚠️ Elige un espacio');
-    return;
-  }
 
   plant.name = (draft.name || '').trim() || plant.species || 'Planta sin nombre';
   plant.freq = Number(draft.freq) || 3;
@@ -4805,10 +4812,6 @@ async function savePlantFromScreen() {
   const draft = state.screenPlantDraft || createPlantDraft();
   const isIdentifiedFlow = state.screenPlantMode !== 'edit' && Boolean(draft.identifiedSpecies);
   const isManualCreateFlow = state.screenPlantMode !== 'edit' && !Boolean(draft.identifiedSpecies);
-  if (!draft.section) {
-    showToast('⚠️ Elige una sección');
-    return;
-  }
 
   const resolvedName = (draft.name || '').trim() || (draft.species || '').trim() || 'Planta sin nombre';
   let plantToSync;
@@ -5111,7 +5114,7 @@ function openAddPlantModal(prefill = null) {
   }
   renderEmojiPicker('emojiPicker', plantEmojis, state.selectedEmoji, 'selectPlantEmoji');
   const sel = document.getElementById('plantSection');
-  sel.innerHTML = state.sections.map(s => `<option value="${s.id}">${s.icon} ${s.name}</option>`).join('');
+  sel.innerHTML = renderSectionOptions(state.activeSection !== 'all' ? state.activeSection : '', true);
   if (state.activeSection !== 'all') sel.value = state.activeSection;
   document.getElementById('plantModal').classList.add('open');
 }
@@ -5128,7 +5131,6 @@ function closePlantModal() {
 async function savePlant() {
   const name = document.getElementById('plantName').value.trim();
   const section = document.getElementById('plantSection').value;
-  if (!section) { showToast('⚠️ Elige una sección'); return; }
   const species = document.getElementById('plantSpecies').value.trim();
   const resolvedName = name || species || 'Planta sin nombre';
 
