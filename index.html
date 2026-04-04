@@ -55,7 +55,7 @@
     font-family: 'DM Sans', sans-serif;
     min-height: 100vh;
     color: var(--text);
-    background: #ffffff;
+    background: #F9F9F8;
   }
 
   .app-shell {
@@ -63,7 +63,7 @@
     display: flex;
     justify-content: center;
     padding: 0;
-    background: #ffffff;
+    background: #F9F9F8;
   }
 
   .app-frame {
@@ -73,10 +73,11 @@
     display: flex;
     flex-direction: column;
     border-radius: 0;
-    background: #ffffff;
+    background: #F9F9F8;
     border: none;
     box-shadow: none;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
     backdrop-filter: none;
   }
 
@@ -89,10 +90,8 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    background: rgba(255, 255, 255, 0.96);
-    backdrop-filter: blur(6px);
-    position: sticky;
-    top: 0;
+    background: #F9F9F8;
+    position: relative;
     z-index: 5;
     border: none;
     border-radius: 0;
@@ -176,12 +175,12 @@
   }
 
   .mobile-topbar.splash-mode {
-    background: #ffffff;
+    background: #F9F9F8;
   }
 
   .app-main {
-    flex: 1;
-    overflow-y: auto;
+    flex: 0 0 auto;
+    overflow: visible;
     padding: 12px 28px 40px;
   }
 
