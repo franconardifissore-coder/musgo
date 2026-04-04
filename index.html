@@ -325,15 +325,16 @@
     padding: 18px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
     flex: 1;
   }
 
   .plant-tile-name {
-    font-size: 1rem;
+    font-size: 1.05rem;
     font-weight: 800;
     color: #191c1c;
-    line-height: 1.35;
+    line-height: 1.2;
+    letter-spacing: -0.03em;
   }
 
   .plant-tile-meta {
@@ -342,11 +343,30 @@
     line-height: 1.45;
   }
 
+  .plant-tile-subtitle {
+    color: #889489;
+    font-size: 0.76rem;
+    line-height: 1.35;
+  }
+
+  .plant-tile-info-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .plant-tile-last {
+    color: #5d6c60;
+    font-size: 0.8rem;
+    line-height: 1.35;
+  }
+
   .plant-tile-actions {
     margin-top: auto;
     display: flex;
     gap: 8px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
   }
 
   .plant-tile-action {
@@ -363,6 +383,17 @@
   .plant-tile-action.primary {
     background: #345d4c;
     color: #fff;
+    flex: 1;
+  }
+
+  .plant-tile-action.icon {
+    width: 42px;
+    min-width: 42px;
+    min-height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
   }
 
   .add-plant-card-mobile {
@@ -764,6 +795,77 @@
     line-height: 1.6;
   }
 
+  .detail-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    padding: 6px;
+    border-radius: 999px;
+    background: #f5f7f4;
+  }
+
+  .detail-tab {
+    min-height: 42px;
+    border-radius: 999px;
+    border: none;
+    background: transparent;
+    color: #708172;
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+
+  .detail-tab.active {
+    background: #ffffff;
+    color: #345d4c;
+    box-shadow: 0 8px 18px rgba(31, 52, 37, 0.06);
+  }
+
+  .detail-info-card {
+    padding: 18px;
+    border-radius: 22px;
+    background: #f5f7f4;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .detail-info-title {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #191c1c;
+    letter-spacing: -0.02em;
+  }
+
+  .detail-info-copy {
+    color: #5d6c60;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .detail-gallery {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .detail-gallery-item {
+    aspect-ratio: 1;
+    border-radius: 18px;
+    overflow: hidden;
+    background: linear-gradient(180deg, #eef3ee 0%, #e6ece5 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #345d4c;
+    font-size: 1.8rem;
+  }
+
+  .detail-gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
   .detail-grid,
   .profile-stats {
     display: grid;
@@ -806,6 +908,66 @@
     display: flex;
     flex-direction: column;
     gap: 18px;
+  }
+
+  .editor-preview-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px;
+    border-radius: 24px;
+    background: #f5f7f4;
+  }
+
+  .editor-preview-visual {
+    width: 78px;
+    height: 78px;
+    border-radius: 24px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    overflow: hidden;
+    box-shadow: 0 12px 20px rgba(31, 52, 37, 0.06);
+  }
+
+  .editor-preview-visual img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .editor-preview-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #191c1c;
+    letter-spacing: -0.02em;
+  }
+
+  .editor-preview-copy {
+    margin-top: 4px;
+    color: #5d6c60;
+    font-size: 0.84rem;
+    line-height: 1.45;
+  }
+
+  .editor-section {
+    padding: 18px;
+    border-radius: 24px;
+    background: #ffffff;
+    border: 1px solid rgba(52, 93, 76, 0.08);
+    box-shadow: 0 10px 24px rgba(31, 52, 37, 0.04);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .editor-section-title {
+    color: #191c1c;
+    font-size: 0.98rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
   }
 
   .editor-hero {
@@ -3287,11 +3449,14 @@ function renderPlantsScreen() {
         </button>
         <div class="plant-tile-body">
           <button class="plant-tile-name" type="button" onclick="openPlantDetail('${plant.id}')" style="border:none;background:none;padding:0;text-align:left;">${escapeHtml(plant.name || plant.species || 'Planta sin nombre')}</button>
-          <div class="plant-tile-meta">${escapeHtml(plant.species || 'Sin especie definida')} · ${escapeHtml(lastText)}</div>
+          <div class="plant-tile-subtitle">${escapeHtml(plant.species || 'Sin especie definida')}</div>
+          <div class="plant-tile-info-row">
+            <div class="plant-tile-last">${escapeHtml(lastText)}</div>
+          </div>
           <div class="plant-tile-actions">
             <button class="plant-tile-action primary" type="button" onclick="waterPlant('${plant.id}')">${wateredToday(plant) ? 'Regada' : 'Regar'}</button>
-            <button class="plant-tile-action" type="button" onclick="openCalendarModal('${plant.id}')">Calendario</button>
-            <button class="plant-tile-action" type="button" onclick="openEditPlant('${plant.id}')">Editar</button>
+            <button class="plant-tile-action icon" type="button" onclick="openCalendarModal('${plant.id}')">🗓</button>
+            <button class="plant-tile-action icon" type="button" onclick="openEditPlant('${plant.id}')">✎</button>
           </div>
         </div>
       </article>
@@ -3524,41 +3689,54 @@ function renderPlantCreateScreen() {
         <div class="editor-hero-copy">${identificationLabel}</div>
       </div>
       <div class="editor-card">
+        <div class="editor-preview-card">
+          <div class="editor-preview-visual">${draft.imagePreview ? `<img src="${draft.imagePreview}" alt="${escapeHtml(draft.name || draft.species || 'Planta')}">` : escapeHtml(draft.emoji || '🌿')}</div>
+          <div>
+            <div class="editor-preview-title">${escapeHtml(draft.name || draft.species || 'Nueva planta')}</div>
+            <div class="editor-preview-copy">${isEditing ? 'Edita los datos de esta ficha para mantener tu jardín al día.' : 'Ajusta los datos esenciales antes de guardarla en tu colección.'}</div>
+          </div>
+        </div>
         ${draft.identifiedSpecies ? `<div class="editor-note">Sugerencia IA: <strong>${escapeHtml(draft.identifiedSpecies)}</strong>${draft.identificationConfidence !== null && draft.identificationConfidence !== undefined ? ` · ${confidenceToPercent(draft.identificationConfidence)}% confianza` : ''}</div>` : ''}
-        <div class="form-group">
-          <label>Icono</label>
-          <div class="emoji-row">
-            ${plantEmojis.slice(0, 12).map(emoji => `<button class="emoji-pill ${draft.emoji === emoji ? 'active' : ''}" type="button" onclick="setScreenPlantEmoji('${emoji}')">${emoji}</button>`).join('')}
-          </div>
-        </div>
-        <div class="form-group-inline">
+        <div class="editor-section">
+          <div class="editor-section-title">Identidad</div>
           <div class="form-group">
-            <label>Nombre</label>
-            <input class="editor-input" type="text" value="${escapeHtml(draft.name || '')}" placeholder="Ej: Monstera del salón" oninput="updateScreenPlantField('name', this.value)">
+            <label>Icono</label>
+            <div class="emoji-row">
+              ${plantEmojis.slice(0, 12).map(emoji => `<button class="emoji-pill ${draft.emoji === emoji ? 'active' : ''}" type="button" onclick="setScreenPlantEmoji('${emoji}')">${emoji}</button>`).join('')}
+            </div>
+          </div>
+          <div class="form-group-inline">
+            <div class="form-group">
+              <label>Nombre</label>
+              <input class="editor-input" type="text" value="${escapeHtml(draft.name || '')}" placeholder="Ej: Monstera del salón" oninput="updateScreenPlantField('name', this.value)">
+            </div>
+            <div class="form-group">
+              <label>Especie</label>
+              <input class="editor-input" type="text" value="${escapeHtml(draft.species || '')}" placeholder="Ej: Monstera deliciosa" oninput="updateScreenPlantField('species', this.value)">
+            </div>
           </div>
           <div class="form-group">
-            <label>Especie</label>
-            <input class="editor-input" type="text" value="${escapeHtml(draft.species || '')}" placeholder="Ej: Monstera deliciosa" oninput="updateScreenPlantField('species', this.value)">
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Sección</label>
-          <select class="editor-select" onchange="updateScreenPlantField('section', this.value)">
-            ${state.sections.map(section => `<option value="${section.id}" ${draft.section === section.id ? 'selected' : ''}>${escapeHtml(section.icon)} ${escapeHtml(section.name)}</option>`).join('')}
-          </select>
-        </div>
-        <div class="form-group-inline">
-          <div class="form-group">
-            <label>Frecuencia de riego</label>
-            <select class="editor-select" onchange="updateScreenPlantField('freq', Number(this.value))">
-              ${[1,2,3,5,7,14,30].map(freq => `<option value="${freq}" ${Number(draft.freq) === freq ? 'selected' : ''}>${freq === 1 ? 'Cada día' : `Cada ${freq} días`}</option>`).join('')}
+            <label>Sección</label>
+            <select class="editor-select" onchange="updateScreenPlantField('section', this.value)">
+              ${state.sections.map(section => `<option value="${section.id}" ${draft.section === section.id ? 'selected' : ''}>${escapeHtml(section.icon)} ${escapeHtml(section.name)}</option>`).join('')}
             </select>
           </div>
-          <div class="form-group">
-            <label>Luz</label>
-            <select class="editor-select" onchange="updateScreenPlantField('light', this.value)">
-              ${['☀️ Sol directo','⛅ Luz indirecta','🌥️ Sombra parcial','🌑 Poca luz'].map(light => `<option value="${light}" ${draft.light === light ? 'selected' : ''}>${escapeHtml(light)}</option>`).join('')}
-            </select>
+        </div>
+        <div class="editor-section">
+          <div class="editor-section-title">Cuidados</div>
+          <div class="form-group-inline">
+            <div class="form-group">
+              <label>Frecuencia de riego</label>
+              <select class="editor-select" onchange="updateScreenPlantField('freq', Number(this.value))">
+                ${[1,2,3,5,7,14,30].map(freq => `<option value="${freq}" ${Number(draft.freq) === freq ? 'selected' : ''}>${freq === 1 ? 'Cada día' : `Cada ${freq} días`}</option>`).join('')}
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Luz</label>
+              <select class="editor-select" onchange="updateScreenPlantField('light', this.value)">
+                ${['☀️ Sol directo','⛅ Luz indirecta','🌥️ Sombra parcial','🌑 Poca luz'].map(light => `<option value="${light}" ${draft.light === light ? 'selected' : ''}>${escapeHtml(light)}</option>`).join('')}
+              </select>
+            </div>
           </div>
         </div>
       </div>
@@ -3611,7 +3789,15 @@ function renderPlantDetailScreen() {
             <div class="detail-name">${escapeHtml(plant.name || plant.species || 'Planta sin nombre')}</div>
             <div class="detail-species">${escapeHtml(plant.species || 'Sin especie definida')}</div>
           </div>
-          <div class="detail-description">Un rincón vivo dentro de ${escapeHtml(section ? section.name : 'tu colección')}. Desde aquí puedes revisar su ritmo de riego, editar la ficha o consultar su calendario.</div>
+          <div class="detail-tabs">
+            <button class="detail-tab active" type="button">Información</button>
+            <button class="detail-tab" type="button">Cuidados</button>
+            <button class="detail-tab" type="button">Ficha</button>
+          </div>
+          <div class="detail-info-card">
+            <div class="detail-info-title">Resumen de hoy</div>
+            <div class="detail-info-copy">Un rincón vivo dentro de ${escapeHtml(section ? section.name : 'tu colección')}. Desde aquí puedes revisar su ritmo de riego, editar la ficha o consultar su calendario.</div>
+          </div>
           <div class="detail-grid">
             <div class="detail-chip">
               <div class="detail-chip-label">Último riego</div>
@@ -3628,6 +3814,14 @@ function renderPlantDetailScreen() {
             <div class="detail-chip">
               <div class="detail-chip-label">Sección</div>
               <div class="detail-chip-value">${escapeHtml(section ? `${section.icon} ${section.name}` : 'Sin sección')}</div>
+            </div>
+          </div>
+          <div class="detail-info-card">
+            <div class="detail-info-title">Photo Gallery</div>
+            <div class="detail-gallery">
+              <div class="detail-gallery-item">${plant.imagePreview ? `<img src="${plant.imagePreview}" alt="${escapeHtml(plant.name || 'Planta')}">` : escapeHtml(plant.emoji || '🪴')}</div>
+              <div class="detail-gallery-item">${escapeHtml(plant.emoji || '🪴')}</div>
+              <div class="detail-gallery-item">${escapeHtml(section?.icon || '🌿')}</div>
             </div>
           </div>
         </div>
