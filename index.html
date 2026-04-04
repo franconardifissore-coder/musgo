@@ -1053,6 +1053,55 @@
     font-style: italic;
   }
 
+  .manual-plant-card {
+    min-height: 280px;
+    border-radius: 28px;
+    border: 1px solid rgba(52, 93, 76, 0.22);
+    background:
+      radial-gradient(circle at top right, rgba(52, 93, 76, 0.06), transparent 30%),
+      radial-gradient(circle at bottom left, rgba(198, 235, 212, 0.26), transparent 34%),
+      #f7f8f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    text-align: center;
+  }
+
+  .manual-plant-card-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .manual-plant-card-icon {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 14px 24px rgba(31, 52, 37, 0.07);
+    font-size: 2.8rem;
+    color: var(--green-dark);
+  }
+
+  .manual-plant-card-title {
+    font-size: 1.4rem;
+    line-height: 1.15;
+    font-weight: 800;
+    color: var(--green-dark);
+    letter-spacing: -0.04em;
+  }
+
+  .manual-plant-card-copy {
+    color: #5d6c60;
+    font-size: 0.94rem;
+    line-height: 1.4;
+  }
+
   .form-group-inline {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -3768,6 +3817,7 @@ function renderPlantCreateScreen() {
   const draft = state.screenPlantDraft || createPlantDraft();
   const isEditing = state.screenPlantMode === 'edit';
   const isIdentified = !isEditing && Boolean(draft.identifiedSpecies);
+  const isManualCreate = !isEditing && !isIdentified;
   const sectionName = state.sections.find(section => section.id === draft.section)?.name || 'Sin sección';
   const identifiedBadge = draft.identificationConfidence !== null && draft.identificationConfidence !== undefined
     ? `Match con ${confidenceToPercent(draft.identificationConfidence)}% de confianza`
@@ -3780,7 +3830,7 @@ function renderPlantCreateScreen() {
       <div class="screen-intro">
         ${(isEditing || isIdentified) ? `<div class="screen-kicker">${isEditing ? 'Tu colección' : '¡Lo tenemos!'}</div>` : ''}
         <h1 class="screen-title">${isEditing ? 'Editar planta' : (isIdentified ? 'Planta identificada' : 'Crear planta')}</h1>
-        ${isIdentified ? '' : `<p class="screen-subtitle">${isEditing ? 'Actualiza la ficha de tu planta.' : 'Completa manualmente la ficha y guárdala en tu colección.'}</p>`}
+        ${(isIdentified || isManualCreate) ? '' : `<p class="screen-subtitle">${isEditing ? 'Actualiza la ficha de tu planta.' : 'Completa manualmente la ficha y guárdala en tu colección.'}</p>`}
       </div>
       ${isIdentified ? `
         <div class="identified-plant-card">
@@ -3795,6 +3845,32 @@ function renderPlantCreateScreen() {
             <div class="identified-plant-name">${escapeHtml(draft.identifiedSpecies || draft.species || 'Planta identificada')}</div>
             ${draft.identifiedCommonName ? `<div class="identified-plant-species">${escapeHtml(draft.identifiedCommonName)}</div>` : ''}
           </div>
+        </div>
+        <div class="form-group">
+          <label>Frecuencia de riego</label>
+          <select class="editor-select" onchange="updateScreenPlantField('freq', Number(this.value))">
+            <option value="" ${draft.freq ? '' : 'selected'} disabled>Selecciona una frecuencia</option>
+            ${[1,2,3,5,7,14,30].map(freq => `<option value="${freq}" ${Number(draft.freq) === freq ? 'selected' : ''}>${freq === 1 ? 'Cada día' : `Cada ${freq} días`}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Espacio</label>
+          <select class="editor-select" onchange="updateScreenPlantField('section', this.value)">
+            <option value="" ${draft.section ? '' : 'selected'} disabled>Ubica tu planta en un espacio</option>
+            ${state.sections.map(section => `<option value="${section.id}" ${draft.section === section.id ? 'selected' : ''}>${escapeHtml(section.name)}</option>`).join('')}
+          </select>
+        </div>
+      ` : isManualCreate ? `
+        <div class="manual-plant-card">
+          <div class="manual-plant-card-inner">
+            <div class="manual-plant-card-icon">🪴</div>
+            <div class="manual-plant-card-title">Agrega tu planta</div>
+            <div class="manual-plant-card-copy">Dale un nombre bonito</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Nombre de la planta</label>
+          <input class="editor-input" type="text" value="${escapeHtml(draft.name || '')}" placeholder="Ej. Monstera deliciosa" oninput="updateScreenPlantField('name', this.value)">
         </div>
         <div class="form-group">
           <label>Frecuencia de riego</label>
@@ -3865,7 +3941,7 @@ function renderPlantCreateScreen() {
       `}
       <div class="screen-actions">
         <button class="btn-primary" type="button" onclick="savePlantFromScreen()">${isEditing ? 'Guardar cambios' : 'Guardar'}</button>
-        ${isIdentified ? '' : `<button class="btn-secondary" type="button" onclick="cancelPlantCreateView()">Descartar cambios</button>`}
+        ${(isIdentified || isManualCreate) ? '' : `<button class="btn-secondary" type="button" onclick="cancelPlantCreateView()">Descartar cambios</button>`}
       </div>
     </section>
   `;
@@ -4428,6 +4504,7 @@ async function waterSection(sectionId) {
 async function savePlantFromScreen() {
   const draft = state.screenPlantDraft || createPlantDraft();
   const isIdentifiedFlow = state.screenPlantMode !== 'edit' && Boolean(draft.identifiedSpecies);
+  const isManualCreateFlow = state.screenPlantMode !== 'edit' && !Boolean(draft.identifiedSpecies);
   if (!draft.section) {
     showToast('⚠️ Elige una sección');
     return;
@@ -4451,8 +4528,8 @@ async function savePlantFromScreen() {
       ...(draft || {}),
       id: createEntityId('plant'),
       name: resolvedName,
-      species: (draft.species || '').trim(),
-      emoji: draft.emoji || '🌿',
+      species: isManualCreateFlow ? '' : (draft.species || '').trim(),
+      emoji: isManualCreateFlow ? '🪴' : (draft.emoji || '🌿'),
       section: draft.section,
       freq: Number(draft.freq) || 3,
       light: draft.light || '⛅ Luz indirecta',
@@ -4461,11 +4538,11 @@ async function savePlantFromScreen() {
     state.plants.push(plantToSync);
   }
 
-  state.detailPlantId = isIdentifiedFlow ? null : plantToSync.id;
+  state.detailPlantId = (isIdentifiedFlow || isManualCreateFlow) ? null : plantToSync.id;
   state.detailDraft = null;
   state.screenPlantDraft = null;
   state.editingPlantId = null;
-  state.currentView = isIdentifiedFlow ? 'plants' : 'plantDetail';
+  state.currentView = (isIdentifiedFlow || isManualCreateFlow) ? 'plants' : 'plantDetail';
   render();
 
   try {
