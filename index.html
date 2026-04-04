@@ -495,6 +495,11 @@
     align-items: center;
     justify-content: center;
     padding: 32px;
+    cursor: pointer;
+  }
+
+  .scan-box.is-loading {
+    pointer-events: none;
   }
 
   .scan-box-inner {
@@ -503,6 +508,22 @@
     align-items: center;
     gap: 16px;
     text-align: center;
+  }
+
+  .scan-box-preview {
+    width: 168px;
+    height: 168px;
+    border-radius: 24px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 12px 24px rgba(31, 52, 37, 0.06);
+  }
+
+  .scan-box-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 
   .scan-box-icon {
@@ -536,6 +557,10 @@
     font-size: 0.95rem;
     line-height: 1.45;
     max-width: 24ch;
+  }
+
+  .scan-box-copy.is-loading {
+    max-width: 28ch;
   }
 
   .scan-secondary {
@@ -3483,7 +3508,7 @@ function renderPlantsScreen() {
       ${plants.length ? `
         <div class="plants-grid-mobile">
           ${tiles}
-          <button class="add-plant-card-mobile" type="button" onclick="openPhotoIdentifyModal()">
+          <button class="add-plant-card-mobile" type="button" onclick="setView('scan')">
             <span class="add-circle">＋</span>
             <span class="add-label">Agregar planta</span>
           </button>
@@ -3494,7 +3519,7 @@ function renderPlantsScreen() {
           title: 'Sin plantas todavía',
           message: 'Empieza una nueva ficha desde el flujo de escaneo o créala manualmente desde allí.',
           actionLabel: 'Añadir planta',
-          action: 'openPhotoIdentifyModal()'
+          action: "setView('scan')"
         })}
       `}
     </section>
@@ -3643,6 +3668,14 @@ function renderScanScreen() {
     `;
   }
 
+  const scanPreview = state.identification.preview
+    ? `<div class="scan-box-preview"><img src="${state.identification.preview}" alt="Preview de la planta"></div>`
+    : `<div class="scan-box-icon"><img src="./resources/scanner icon.svg" alt="Escanear planta"></div>`;
+  const scanTitle = state.identification.loading ? 'Analizando planta...' : 'Escanear planta';
+  const scanCopy = state.identification.loading
+    ? 'Estamos revisando la imagen para identificar tu planta automáticamente.'
+    : 'Saca una foto y te devolveremos la planta identificada en cuanto la detectemos.';
+
   return `
     <section class="screen">
       <div class="screen-intro">
@@ -3650,11 +3683,12 @@ function renderScanScreen() {
         <p class="screen-subtitle">Enfoca tu planta para identificarla automáticamente o cárgala manualmente.</p>
       </div>
       <div class="scan-panel">
-        <button class="scan-box" type="button" onclick="openPhotoIdentifyModal()">
+        <input type="file" id="scanImageInput" accept="image/*" capture="environment" style="display:none" onchange="handleDirectScanFileChange(event)">
+        <button class="scan-box ${state.identification.loading ? 'is-loading' : ''}" type="button" onclick="openDirectScanPicker()">
           <div class="scan-box-inner">
-            <div class="scan-box-icon"><img src="./resources/scanner icon.svg" alt="Escanear planta"></div>
-            <div class="scan-box-title">Escanear planta</div>
-            <div class="scan-box-copy">Saca una foto, revisa las especies sugeridas y crea la ficha en un solo flujo.</div>
+            ${scanPreview}
+            <div class="scan-box-title">${scanTitle}</div>
+            <div class="scan-box-copy ${state.identification.loading ? 'is-loading' : ''}">${scanCopy}</div>
           </div>
         </button>
         <button class="scan-secondary" type="button" onclick="openPlantCreateView()">Crear manualmente</button>
@@ -3666,6 +3700,7 @@ function renderScanScreen() {
 function renderPlantCreateScreen() {
   const draft = state.screenPlantDraft || createPlantDraft();
   const isEditing = state.screenPlantMode === 'edit';
+  const isIdentified = !isEditing && Boolean(draft.identifiedSpecies);
   const sectionName = state.sections.find(section => section.id === draft.section)?.name || 'Sin sección';
   const identificationLabel = draft.identifiedSpecies
     ? `Identificada como ${escapeHtml(draft.identifiedSpecies)}`
@@ -3676,9 +3711,9 @@ function renderPlantCreateScreen() {
         ${renderBackButton(isEditing ? 'Detalle' : 'Scan', isEditing ? 'plantDetail' : 'scan')}
       </div>
       <div class="screen-intro">
-        <div class="screen-kicker">${isEditing ? 'Tu colección' : 'Nueva planta'}</div>
-        <h1 class="screen-title">${isEditing ? 'Editar planta' : 'Crear planta'}</h1>
-        <p class="screen-subtitle">${isEditing ? 'Actualiza la ficha de tu planta.' : 'Completa manualmente la ficha y guárdala en tu colección.'}</p>
+        ${(isEditing || isIdentified) ? `<div class="screen-kicker">${isEditing ? 'Tu colección' : '¡Lo tenemos!'}</div>` : ''}
+        <h1 class="screen-title">${isEditing ? 'Editar planta' : (isIdentified ? 'Planta identificada' : 'Crear planta')}</h1>
+        <p class="screen-subtitle">${isEditing ? 'Actualiza la ficha de tu planta.' : (isIdentified ? 'Revisa los datos, elige su frecuencia y ubícala en un espacio antes de guardarla.' : 'Completa manualmente la ficha y guárdala en tu colección.')}</p>
       </div>
       <div class="editor-hero">
         <div class="editor-hero-emoji">${escapeHtml(draft.emoji || '🌿')}</div>
@@ -4412,6 +4447,25 @@ function renderIdentificationModal() {
   analyzeButton.textContent = state.identification.loading ? 'Analizando planta...' : 'Analizar planta';
 }
 
+function buildIdentifiedPlantDraft(result) {
+  if (!result) return null;
+  return {
+    species: result.scientificName,
+    name: '',
+    imagePreview: getPersistableImagePreview(state.identification.preview),
+    identifiedSpecies: result.scientificName,
+    identificationConfidence: result.confidence / 100,
+    identifiedAt: new Date().toISOString(),
+  };
+}
+
+function openIdentifiedPlantDraft(result) {
+  const draft = buildIdentifiedPlantDraft(result);
+  if (!draft) return;
+  state.identifiedPlantDraft = draft;
+  openPlantCreateView(draft);
+}
+
 function openPhotoIdentifyModal() {
   resetIdentificationState();
   renderIdentificationModal();
@@ -4443,6 +4497,71 @@ async function handleIdentificationFileChange(event) {
   }
 
   renderIdentificationModal();
+}
+
+function openDirectScanPicker() {
+  if (state.identification.loading) return;
+  resetIdentificationState();
+  render();
+  const input = document.getElementById('scanImageInput');
+  if (!input) return;
+  input.value = '';
+  input.click();
+}
+
+async function handleDirectScanFileChange(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+
+  state.identification.file = file;
+  state.identification.bestMatch = '';
+  state.identification.results = [];
+  state.identification.selectedIndex = null;
+  state.identification.error = '';
+  state.identification.emptyMessage = '';
+  state.identification.remainingRequests = null;
+
+  try {
+    state.identification.preview = await fileToDataUrl(file);
+  } catch (error) {
+    state.identification.preview = '';
+    showToast('⚠️ No pudimos preparar la imagen. Prueba con otra foto.');
+    render();
+    return;
+  }
+
+  if (!window.plantIdentificationClient || typeof window.plantIdentificationClient.identifyPlantFromImage !== 'function') {
+    showToast('⚠️ La integración de identificación no está disponible en este momento.');
+    render();
+    return;
+  }
+
+  state.identification.loading = true;
+  render();
+
+  try {
+    const response = await window.plantIdentificationClient.identifyPlantFromImage(file);
+    const usefulResults = response.results.filter(result => result.confidence >= 15);
+    state.identification.bestMatch = response.bestMatch || '';
+    state.identification.remainingRequests = response.remainingIdentificationRequests;
+    state.identification.results = usefulResults;
+
+    if (!usefulResults.length) {
+      state.identification.emptyMessage = 'No pudimos identificarla con suficiente confianza. Puedes volver a intentarlo o crear la planta manualmente.';
+      showToast('⚠️ No pudimos identificar la planta con suficiente confianza');
+      render();
+      return;
+    }
+
+    openIdentifiedPlantDraft(usefulResults[0]);
+  } catch (error) {
+    state.identification.error = 'No pudimos analizar la foto. Revisa tu conexión o vuelve a intentarlo.';
+    showToast('⚠️ No pudimos analizar la foto');
+    render();
+  } finally {
+    state.identification.loading = false;
+    render();
+  }
 }
 
 async function analyzePlantPhoto() {
@@ -4491,17 +4610,8 @@ function selectIdentificationResult(index) {
   const result = state.identification.results[index];
   if (!result) return;
 
-  state.identifiedPlantDraft = {
-    species: result.scientificName,
-    name: '',
-    imagePreview: getPersistableImagePreview(state.identification.preview),
-    identifiedSpecies: result.scientificName,
-    identificationConfidence: result.confidence / 100,
-    identifiedAt: new Date().toISOString(),
-  };
-
   closePhotoIdentifyModal();
-  openPlantCreateView(state.identifiedPlantDraft);
+  openIdentifiedPlantDraft(result);
 }
 
 function createPlantManuallyFromIdentification() {
