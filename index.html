@@ -601,8 +601,8 @@
   .menu-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(22, 35, 27, 0.16);
-    backdrop-filter: blur(8px);
+    background: rgba(22, 35, 27, 0.1);
+    backdrop-filter: blur(6px);
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.22s ease, visibility 0.22s ease;
@@ -618,12 +618,12 @@
     position: absolute;
     top: 78px;
     right: 18px;
-    width: min(280px, calc(100% - 36px));
-    border-radius: 28px;
-    background: rgba(255, 255, 255, 0.96);
-    border: 1px solid rgba(255, 255, 255, 0.82);
-    box-shadow: 0 22px 60px rgba(31, 52, 37, 0.16);
-    padding: 18px;
+    width: min(340px, calc(100% - 36px));
+    border-radius: 30px;
+    background: rgba(255, 255, 255, 0.98);
+    border: 1px solid rgba(52, 93, 76, 0.06);
+    box-shadow: 0 24px 64px rgba(31, 52, 37, 0.14);
+    padding: 20px;
     transform: translateY(-8px) scale(0.98);
     transform-origin: top right;
     transition: transform 0.22s ease;
@@ -636,18 +636,19 @@
   .menu-list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
   }
 
   .menu-item {
+    width: 100%;
     border: none;
     background: transparent;
-    border-radius: 20px;
-    min-height: 58px;
+    border-radius: 24px;
+    min-height: 72px;
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 10px 12px;
+    gap: 16px;
+    padding: 12px 16px;
     cursor: pointer;
     text-align: left;
     color: #345d4c;
@@ -658,19 +659,20 @@
   }
 
   .menu-item-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 16px;
-    background: rgba(255, 255, 255, 0.84);
+    width: 48px;
+    height: 48px;
+    border-radius: 18px;
+    background: #ffffff;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    box-shadow: 0 6px 14px rgba(31, 52, 37, 0.05);
   }
 
   .menu-item-icon img {
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
     display: block;
   }
 
@@ -688,7 +690,7 @@
   }
 
   .menu-item-copy strong {
-    font-size: 0.96rem;
+    font-size: 1rem;
     font-weight: 700;
     color: #345d4c;
     letter-spacing: -0.02em;
