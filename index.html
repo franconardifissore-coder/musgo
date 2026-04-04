@@ -3519,7 +3519,9 @@ async function deleteSectionFromCloud(sectionId) {
 function renderTopbar() {
   const topbar = document.querySelector('.mobile-topbar');
   const menuButton = document.getElementById('topbarMenuButton');
+  const isMainView = ['plants', 'scan', 'spaces', 'profile'].includes(state.currentView);
   if (topbar) {
+    topbar.style.display = (state.splashVisible || isMainView) ? 'flex' : 'none';
     topbar.classList.toggle('splash-mode', Boolean(state.splashVisible));
   }
   if (menuButton) {
