@@ -3678,10 +3678,6 @@ function renderSpacesScreen() {
           </div>
           <div class="space-card-icon">${escapeHtml(section.icon || '🪴')}</div>
         </div>
-        <div class="space-card-badge">${plantsInSection.length ? 'Con vida vegetal' : 'Listo para empezar'}</div>
-        <div>
-          <div class="space-card-count">${plantsInSection.length ? 'Organiza, riega y mantén este rincón al día desde una sola vista.' : 'Añade tus primeras plantas a este espacio para empezar a seguir su cuidado.'}</div>
-        </div>
         <div class="space-card-actions">
           <button class="space-card-button secondary" type="button" onclick="editSectionFromSpaces('${section.id}')">Editar</button>
           <button class="space-card-button primary" type="button" onclick="waterSection('${section.id}')">Regar todo</button>
