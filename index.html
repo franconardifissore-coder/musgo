@@ -3565,7 +3565,7 @@ function renderMenu() {
   }
 
   const items = [
-    { id: 'dashboard', icon: './resources/Navbar/Home.svg', label: 'Dashboard' },
+    { id: 'dashboard', icon: './resources/Navbar/Home.svg', label: 'Inicio' },
     { id: 'plants', icon: './resources/Navbar/plants icon.svg', label: 'Plantas' },
     { id: 'scan', icon: './resources/Navbar/Scanner icon.svg', label: 'Escanner' },
     { id: 'spaces', icon: './resources/Navbar/Spaces icon.svg', label: 'Espacios' },
@@ -4107,7 +4107,7 @@ function renderScanScreen() {
     return `
       <section class="screen">
         <div class="screen-intro">
-          <h1 class="screen-title">Scanea tu planta</h1>
+          <h1 class="screen-title">Agrega una planta</h1>
           <p class="screen-subtitle">Enfoca tu planta para identificarla automáticamente o cárgala manualmente.</p>
         </div>
         ${renderLoadingCard('Estamos preparando tu cuenta para crear nuevas plantas.')}
@@ -4119,7 +4119,7 @@ function renderScanScreen() {
     return `
       <section class="screen">
         <div class="screen-intro">
-          <h1 class="screen-title">Scanea tu planta</h1>
+          <h1 class="screen-title">Agrega una planta</h1>
           <p class="screen-subtitle">Enfoca tu planta para identificarla automáticamente o cárgala manualmente.</p>
         </div>
         ${renderAuthPrompt('Inicia sesión para identificar plantas y guardarlas directamente en tu colección.')}
@@ -4133,12 +4133,12 @@ function renderScanScreen() {
   const scanTitle = state.identification.loading ? 'Analizando planta...' : 'Escanear planta';
   const scanCopy = state.identification.loading
     ? 'Estamos revisando la imagen para identificar tu planta automáticamente.'
-    : 'Saca una foto y te devolveremos la planta identificada en cuanto la detectemos.';
+    : 'Reconocimiento con AI';
 
   return `
     <section class="screen">
       <div class="screen-intro">
-        <h1 class="screen-title">Scanea tu planta</h1>
+        <h1 class="screen-title">Agrega una planta</h1>
         <p class="screen-subtitle">Enfoca tu planta para identificarla automáticamente o cárgala manualmente.</p>
       </div>
       <div class="scan-panel">
