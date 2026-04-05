@@ -4507,6 +4507,9 @@ async function detailCalendarDayClick(dateStr, alreadyWatered) {
 // ===== ACTIONS =====
 function setView(view) {
   state.menuOpen = false;
+  if (view === 'scan') {
+    resetIdentificationState();
+  }
   state.currentView = view;
   if (['plants', 'scan', 'spaces', 'profile'].includes(view)) {
     state.previousMainView = view;
@@ -4723,6 +4726,9 @@ async function savePlantFromScreen() {
   state.detailDraft = null;
   state.screenPlantDraft = null;
   state.editingPlantId = null;
+  if (isIdentifiedFlow) {
+    resetIdentificationState();
+  }
   state.currentView = (isIdentifiedFlow || isManualCreateFlow) ? 'plants' : 'plantDetail';
   render();
 
