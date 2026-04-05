@@ -863,6 +863,31 @@
     text-align: center;
   }
 
+  .dashboard-summary-card {
+    background: #fff;
+    border-radius: 24px;
+    padding: 28px 20px 20px;
+    box-shadow: 0 14px 34px rgba(52, 93, 76, 0.07);
+    border: 1px solid rgba(52, 93, 76, 0.06);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    text-align: center;
+  }
+
+  .dashboard-summary-button {
+    width: min(100%, 248px);
+    min-height: 52px;
+    border-radius: 999px;
+    border: 1px solid #345D4C;
+    background: transparent;
+    color: #345D4C;
+    font-size: 0.98rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
   .detail-card,
   .profile-card,
   .editor-card,
@@ -4175,11 +4200,11 @@ function renderDashboardScreen() {
         <h1 class="screen-title">Tu vista diaria</h1>
         <p class="screen-subtitle">Mira tu jardín y las acciones que tienes que realizar.</p>
       </div>
-      <div class="view-empty">
+      <div class="dashboard-summary-card">
         <div class="view-empty-title" style="font-size:3.1rem;line-height:1;color:#345D4C;">${thirstyCount}</div>
-        <div class="view-empty-copy" style="margin-top:14px;font-size:1.05rem;color:#191c1c;">Plantas necesitan riego hoy</div>
+        <div class="view-empty-copy" style="margin-top:0;font-size:1.05rem;color:#191c1c;">Plantas que necesitan riego hoy</div>
+        <button class="dashboard-summary-button" type="button" onclick="openThirstyPlantsView()">Ver todo</button>
       </div>
-      <button class="scan-secondary" type="button" onclick="openThirstyPlantsView()">Ver todo</button>
       <div class="dashboard-chart-card">
         <div class="dashboard-chart-legend">
           <div class="dashboard-chart-legend-item">
