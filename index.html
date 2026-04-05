@@ -1105,6 +1105,16 @@
     font-style: italic;
   }
 
+  .identified-plant-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .identified-plant-form .form-group {
+    margin-bottom: 0;
+  }
+
   .manual-plant-card {
     min-height: 280px;
     border-radius: 28px;
@@ -4019,18 +4029,24 @@ function renderPlantCreateScreen() {
             ${draft.identifiedCommonName ? `<div class="identified-plant-species">${escapeHtml(draft.identifiedCommonName)}</div>` : ''}
           </div>
         </div>
-        <div class="form-group">
-          <label>Frecuencia de riego</label>
-          <select class="editor-select" onchange="updateScreenPlantField('freq', Number(this.value))">
-            <option value="" ${draft.freq ? '' : 'selected'} disabled>Selecciona una frecuencia</option>
-            ${[1,2,3,5,7,14,30].map(freq => `<option value="${freq}" ${Number(draft.freq) === freq ? 'selected' : ''}>${freq === 1 ? 'Cada día' : `Cada ${freq} días`}</option>`).join('')}
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Espacio</label>
-          <select class="editor-select" onchange="updateScreenPlantField('section', this.value)">
-            ${renderSectionOptions(draft.section, true)}
-          </select>
+        <div class="identified-plant-form">
+          <div class="form-group">
+            <label>Nombre de la planta</label>
+            <input class="editor-input" type="text" value="${escapeHtml(draft.name || draft.identifiedSpecies || draft.species || '')}" placeholder="Ej. Ficus lyrata" oninput="updateScreenPlantField('name', this.value)">
+          </div>
+          <div class="form-group">
+            <label>Frecuencia de riego</label>
+            <select class="editor-select" onchange="updateScreenPlantField('freq', Number(this.value))">
+              <option value="" ${draft.freq ? '' : 'selected'} disabled>Selecciona una frecuencia</option>
+              ${[1,2,3,5,7,14,30].map(freq => `<option value="${freq}" ${Number(draft.freq) === freq ? 'selected' : ''}>${freq === 1 ? 'Cada día' : `Cada ${freq} días`}</option>`).join('')}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Espacio</label>
+            <select class="editor-select" onchange="updateScreenPlantField('section', this.value)">
+              ${renderSectionOptions(draft.section, true)}
+            </select>
+          </div>
         </div>
       ` : isManualCreate ? `
         <div class="manual-plant-card">
@@ -4771,7 +4787,7 @@ function buildIdentifiedPlantDraft(result) {
   if (!result) return null;
   return {
     species: result.scientificName,
-    name: '',
+    name: result.scientificName || '',
     imagePreview: getPersistableImagePreview(state.identification.preview),
     identifiedSpecies: result.scientificName,
     identifiedCommonName: result.commonNames && result.commonNames.length ? result.commonNames[0] : '',
