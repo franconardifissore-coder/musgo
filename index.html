@@ -787,6 +787,82 @@
     font-size: 0.92rem;
   }
 
+  .dashboard-chart-card {
+    background: #fff;
+    border-radius: 24px;
+    padding: 22px 18px 20px;
+    box-shadow: 0 14px 34px rgba(52, 93, 76, 0.07);
+    border: 1px solid rgba(52, 93, 76, 0.06);
+  }
+
+  .dashboard-chart-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+
+  .dashboard-chart-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #191c1c;
+    font-size: 0.92rem;
+    line-height: 1.2;
+  }
+
+  .dashboard-chart-legend-item img {
+    width: 18px;
+    height: 18px;
+    display: block;
+    flex-shrink: 0;
+  }
+
+  .dashboard-bars {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 14px;
+    align-items: end;
+  }
+
+  .dashboard-bar-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .dashboard-bar-stack {
+    width: 20px;
+    height: 162px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+    border-radius: 10px;
+    background: #f3f4f3;
+  }
+
+  .dashboard-bar-segment {
+    width: 100%;
+  }
+
+  .dashboard-bar-segment.watered {
+    background: #345D4C;
+  }
+
+  .dashboard-bar-segment.thirsty {
+    background: #9F402D;
+  }
+
+  .dashboard-bar-label {
+    color: #191c1c;
+    font-size: 0.92rem;
+    line-height: 1.1;
+    text-align: center;
+  }
+
   .detail-card,
   .profile-card,
   .editor-card,
@@ -3824,6 +3900,40 @@ function getPlantWaterStatus(plant) {
   };
 }
 
+function addDaysToDate(date, days) {
+  const next = new Date(date);
+  next.setDate(next.getDate() + days);
+  return next;
+}
+
+function countPlantsNeedingWaterOnDate(dateStr) {
+  const targetDate = parseLocalDate(dateStr);
+  return state.plants.filter(plant => {
+    const lw = lastWatered(plant);
+    if (!lw) return true;
+    const lastDate = parseLocalDate(lw);
+    const diffDays = Math.floor((targetDate - lastDate) / 86400000);
+    return diffDays >= Number(plant.freq || 3);
+  }).length;
+}
+
+function getDashboardWaterProjection(daysCount = 5) {
+  const baseDate = parseLocalDate(today());
+  const totalPlants = state.plants.length;
+  return Array.from({ length: daysCount }, (_, index) => {
+    const date = addDaysToDate(baseDate, index);
+    const dateStr = formatLocalDate(date);
+    const thirsty = countPlantsNeedingWaterOnDate(dateStr);
+    return {
+      dateStr,
+      label: index === 0 ? 'Hoy' : `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}`,
+      watered: Math.max(totalPlants - thirsty, 0),
+      thirsty,
+      total: totalPlants,
+    };
+  });
+}
+
 function renderPlantTiles(plants = []) {
   return plants.map(plant => {
     const status = getPlantWaterStatus(plant);
@@ -4056,6 +4166,8 @@ function renderDashboardScreen() {
 
   const thirstyPlants = state.plants.filter(needsWater);
   const thirstyCount = thirstyPlants.length;
+  const projection = getDashboardWaterProjection(5);
+  const maxTotal = Math.max(...projection.map(item => item.total), 1);
 
   return `
     <section class="screen">
@@ -4068,6 +4180,33 @@ function renderDashboardScreen() {
         <div class="view-empty-copy" style="margin-top:14px;font-size:1.05rem;color:#191c1c;">Plantas necesitan riego hoy</div>
       </div>
       <button class="scan-secondary" type="button" onclick="openThirstyPlantsView()">Ver todo</button>
+      <div class="dashboard-chart-card">
+        <div class="dashboard-chart-legend">
+          <div class="dashboard-chart-legend-item">
+            <img src="./resources/Riegos/Riego full.svg" alt="">
+            <span>Plantas regadas</span>
+          </div>
+          <div class="dashboard-chart-legend-item">
+            <img src="./resources/Riegos/Riego empty.svg" alt="">
+            <span>Necesitan riego</span>
+          </div>
+        </div>
+        <div class="dashboard-bars">
+          ${projection.map(item => {
+            const wateredHeight = item.total ? (item.watered / maxTotal) * 162 : 0;
+            const thirstyHeight = item.total ? (item.thirsty / maxTotal) * 162 : 0;
+            return `
+              <div class="dashboard-bar-col">
+                <div class="dashboard-bar-stack">
+                  <div class="dashboard-bar-segment watered" style="height:${wateredHeight}px;"></div>
+                  <div class="dashboard-bar-segment thirsty" style="height:${thirstyHeight}px;"></div>
+                </div>
+                <div class="dashboard-bar-label">${item.label}</div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
     </section>
   `;
 }
