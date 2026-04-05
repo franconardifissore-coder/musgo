@@ -3136,8 +3136,8 @@
 <!-- MODAL DELETE CONFIRM -->
 <div class="modal-overlay" id="deleteModal">
   <div class="modal">
-    <h2>Eliminar planta</h2>
-    <p class="modal-sub">¿Estás segur@ que deseas eliminar esta planta?</p>
+    <h2 id="deleteModalTitle">Eliminar planta</h2>
+    <p class="modal-sub" id="deleteModalSubtitle">¿Estás segur@ que deseas eliminar esta planta?</p>
     <div class="delete-confirm" id="deleteConfirmName"></div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeDeleteModal()">Cancelar</button>
@@ -3228,6 +3228,7 @@ let state = {
   editingPlantId: null,
   detailPlantId: null,
   deletingPlantId: null,
+  deletingSectionId: null,
   screenPlantMode: 'create',
   screenPlantDraft: null,
   screenSectionDraft: null,
@@ -3636,7 +3637,7 @@ async function deletePlantFromCloud(plantId) {
 
 async function deleteSectionFromCloud(sectionId) {
   if (!isCloudSyncEnabled()) return;
-  await window.supabaseData.deletePlantsBySection(sectionId);
+  await window.supabaseData.clearPlantSection(sectionId);
   await window.supabaseData.deleteSection(sectionId);
 }
 
@@ -5207,17 +5208,37 @@ async function handleDirectScanFileChange(event) {
 
 
 function openDeleteModal(id) {
+  state.deletingSectionId = null;
   state.deletingPlantId = id;
   const p = state.plants.find(x => x.id === id);
+  document.getElementById('deleteModalTitle').textContent = 'Eliminar planta';
+  document.getElementById('deleteModalSubtitle').textContent = '¿Estás segur@ que deseas eliminar esta planta?';
   document.getElementById('deleteConfirmName').textContent = p ? `${p.name}` : '';
   document.getElementById('deleteModal').classList.add('open');
 }
 
+function openDeleteSectionModal(sectionId) {
+  state.deletingPlantId = null;
+  state.deletingSectionId = sectionId;
+  const section = state.sections.find(x => x.id === sectionId);
+  document.getElementById('deleteModalTitle').textContent = 'Eliminar espacio';
+  document.getElementById('deleteModalSubtitle').textContent = '¿Estás segur@ que deseas eliminar este espacio?';
+  document.getElementById('deleteConfirmName').textContent = section ? `${section.name}` : '';
+  document.getElementById('deleteModal').classList.add('open');
+}
+
 function closeDeleteModal() {
+  state.deletingPlantId = null;
+  state.deletingSectionId = null;
   document.getElementById('deleteModal').classList.remove('open');
 }
 
 async function confirmDelete() {
+  if (state.deletingSectionId) {
+    await deleteCurrentSection();
+    closeDeleteModal();
+    return;
+  }
   if (!state.deletingPlantId) return;
   const p = state.plants.find(x => x.id === state.deletingPlantId);
   const plantId = state.deletingPlantId;
@@ -5316,12 +5337,10 @@ async function deleteCurrentSection() {
   const sectionId = state.editingSectionId || state.activeSection;
   const section = state.sections.find(item => item.id === sectionId);
   if (!section) return;
-
-  const confirmed = window.confirm(`Eliminar la sección "${section.name}" también borrará todas sus plantas. ¿Quieres continuar?`);
-  if (!confirmed) return;
-
-  const plantIds = state.plants.filter(plant => plant.section === sectionId).map(plant => plant.id);
-  state.plants = state.plants.filter(plant => plant.section !== sectionId);
+  const affectedPlants = state.plants.filter(plant => plant.section === sectionId);
+  affectedPlants.forEach(plant => {
+    plant.section = '';
+  });
   state.sections = state.sections.filter(item => item.id !== sectionId);
   state.activeSection = 'all';
   state.screenSectionDraft = null;
@@ -5338,11 +5357,13 @@ async function deleteCurrentSection() {
     return;
   }
 
-  showToast(`🗑️ Sección "${section.name}" eliminada${plantIds.length ? ` con ${plantIds.length} planta${plantIds.length === 1 ? '' : 's'}` : ''}`);
+  showToast(`🗑️ Espacio "${section.name}" eliminado${affectedPlants.length ? ` y ${affectedPlants.length} planta${affectedPlants.length === 1 ? '' : 's'} quedaron sin asignar` : ''}`);
 }
 
 async function deleteSectionFromScreen() {
-  await deleteCurrentSection();
+  const sectionId = state.editingSectionId || state.activeSection;
+  if (!sectionId) return;
+  openDeleteSectionModal(sectionId);
 }
 
 document.querySelectorAll('.modal-overlay').forEach(el => {
