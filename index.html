@@ -351,39 +351,25 @@
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    min-height: calc(1.08em * 2);
   }
 
   .plant-tile-last {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 8px;
     color: #4b564d;
     font-size: 0.95rem;
     line-height: 1.35;
-    min-height: 24px;
+    min-height: calc(1.35em * 2);
   }
 
-  .plant-tile-status-dot {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
+  .plant-tile-status-icon {
+    width: 18px;
+    height: 18px;
     flex-shrink: 0;
-  }
-
-  .plant-tile-status-dot.is-dark {
-    background: #345D4C;
-  }
-
-  .plant-tile-status-dot.is-light {
-    background: #C6EBD4;
-  }
-
-  .plant-tile-status-dot.is-gray {
-    background: #D9D9D9;
-  }
-
-  .plant-tile-status-dot.is-red {
-    background: #9F402D;
+    margin-top: 2px;
+    display: block;
   }
 
   .plant-tile-water-button {
@@ -3804,37 +3790,37 @@ function getPlantWaterStatus(plant) {
   const last = lastWatered(plant);
   if (!last) {
     return {
-      tone: 'gray',
       text: 'Sin riegos registrados',
+      icon: './resources/Riegos/Riego unkown.svg',
     };
   }
 
   const daysSinceLastWater = daysBetween(last);
   if (daysSinceLastWater > Number(plant.freq || 3)) {
     return {
-      tone: 'red',
-      text: `Riego atrasado: ${daysSinceLastWater} día${daysSinceLastWater === 1 ? '' : 's'}`,
+      text: `${daysSinceLastWater} día${daysSinceLastWater === 1 ? '' : 's'} de atraso`,
+      icon: './resources/Riegos/Riego empty.svg',
     };
   }
 
   const daysUntilNext = Number(plant.freq || 3) - daysSinceLastWater;
   if (daysUntilNext <= 0) {
     return {
-      tone: 'dark',
       text: 'Regar hoy',
+      icon: './resources/Riegos/Riego partial.svg',
     };
   }
 
   if (daysUntilNext === 1) {
     return {
-      tone: 'dark',
       text: 'Regar mañana',
+      icon: './resources/Riegos/Riego partial.svg',
     };
   }
 
   return {
-    tone: 'light',
     text: `Regar en ${daysUntilNext} días`,
+    icon: './resources/Riegos/Riego full.svg',
   };
 }
 
@@ -3849,7 +3835,7 @@ function renderPlantTiles(plants = []) {
         <div class="plant-tile-body">
           <button class="plant-tile-name" type="button" onclick="openPlantDetail('${plant.id}')" style="border:none;background:none;padding:0;text-align:left;">${escapeHtml(plant.name || plant.species || 'Planta sin nombre')}</button>
           <div class="plant-tile-last">
-            <span class="plant-tile-status-dot is-${status.tone}"></span>
+            <img class="plant-tile-status-icon" src="${status.icon}" alt="">
             <span>${escapeHtml(status.text)}</span>
           </div>
           <button class="plant-tile-water-button" type="button" onclick="event.stopPropagation(); waterPlant('${plant.id}')">Regar</button>
