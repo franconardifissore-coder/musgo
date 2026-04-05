@@ -3067,8 +3067,8 @@ let state = {
     { id: 'p4', name: 'Potus', species: 'Epipremnum aureum', emoji: '🍃', section: 's3', freq: 5, light: '🌥️ Sombra parcial', waterLog: [daysAgo(2), daysAgo(7), daysAgo(12)] },
     { id: 'p5', name: 'Helecho', species: 'Nephrolepis exaltata', emoji: '🌱', section: 's2', freq: 2, light: '🌥️ Sombra parcial', waterLog: [daysAgo(3), daysAgo(5), daysAgo(7)] },
   ],
-  currentView: 'plants',
-  previousMainView: 'plants',
+  currentView: 'dashboard',
+  previousMainView: 'dashboard',
   activeSection: 'all',
   auth: {
     ready: false,
@@ -3116,6 +3116,8 @@ let state = {
   calYear: new Date().getFullYear(),
   calMonth: new Date().getMonth(),
 };
+
+const MAIN_VIEWS = ['dashboard', 'plants', 'scan', 'spaces', 'profile'];
 
 function daysAgo(n) {
   const d = new Date();
@@ -3294,7 +3296,7 @@ function createSectionDraft(existingSection = null) {
 }
 
 function getPreviousMainView(fallback = 'plants') {
-  return ['plants', 'scan', 'spaces', 'profile'].includes(state.previousMainView) ? state.previousMainView : fallback;
+  return MAIN_VIEWS.includes(state.previousMainView) ? state.previousMainView : fallback;
 }
 
 function renderBackButton(label = 'Volver', targetView = null) {
@@ -3499,7 +3501,7 @@ async function deleteSectionFromCloud(sectionId) {
 function renderTopbar() {
   const topbar = document.querySelector('.mobile-topbar');
   const menuButton = document.getElementById('topbarMenuButton');
-  const isMainView = ['plants', 'scan', 'spaces', 'profile'].includes(state.currentView);
+  const isMainView = MAIN_VIEWS.includes(state.currentView);
   if (topbar) {
     topbar.style.display = (state.splashVisible || isMainView) ? 'flex' : 'none';
     topbar.classList.toggle('splash-mode', Boolean(state.splashVisible));
@@ -3522,12 +3524,13 @@ function renderMenu() {
   }
 
   const items = [
+    { id: 'dashboard', icon: './resources/Header icon.svg', label: 'Dashboard' },
     { id: 'plants', icon: './resources/Navbar/plants icon.svg', label: 'Plantas' },
     { id: 'scan', icon: './resources/Navbar/Scanner icon.svg', label: 'Escanner' },
     { id: 'spaces', icon: './resources/Navbar/Spaces icon.svg', label: 'Espacios' },
     { id: 'profile', icon: './resources/Navbar/Profile icon.svg', label: 'Perfil' },
   ];
-  const activeView = ['plants', 'scan', 'spaces', 'profile'].includes(state.currentView)
+  const activeView = MAIN_VIEWS.includes(state.currentView)
     ? state.currentView
     : getPreviousMainView();
 
@@ -3942,6 +3945,51 @@ function renderEditSpaceScreen() {
   `;
 }
 
+function renderDashboardScreen() {
+  if (!state.auth.ready || state.cloud.loading) {
+    return `
+      <section class="screen">
+        <div class="screen-intro">
+          <h1 class="screen-title">Tu vista diaria</h1>
+          <p class="screen-subtitle">Mira tu jardín y las acciones que tienes que realizar.</p>
+        </div>
+        ${renderLoadingCard('Estamos preparando el resumen de hoy para tu colección.')}
+      </section>
+    `;
+  }
+
+  if (state.auth.configured && !state.auth.user) {
+    return `
+      <section class="screen">
+        <div class="screen-intro">
+          <h1 class="screen-title">Tu vista diaria</h1>
+          <p class="screen-subtitle">Mira tu jardín y las acciones que tienes que realizar.</p>
+        </div>
+        ${renderAuthPrompt('Inicia sesión para ver un resumen diario de tu jardín y las próximas acciones de riego.')}
+      </section>
+    `;
+  }
+
+  return `
+    <section class="screen">
+      <div class="screen-intro">
+        <h1 class="screen-title">Tu vista diaria</h1>
+        <p class="screen-subtitle">Mira tu jardín y las acciones que tienes que realizar.</p>
+      </div>
+      <div class="view-empty">
+        <div class="view-empty-icon">📋</div>
+        <div class="view-empty-title">Resumen diario en construcción</div>
+        <div class="view-empty-copy">Aquí aparecerán las plantas que debes revisar hoy, el ritmo de riego de los próximos días y accesos rápidos para cuidar tu jardín.</div>
+      </div>
+      <div class="view-empty">
+        <div class="view-empty-icon">💧</div>
+        <div class="view-empty-title">Próximas acciones</div>
+        <div class="view-empty-copy">Prepararemos una vista con riegos de hoy, mañana y pasado para que puedas anticiparte sin salir del dashboard.</div>
+      </div>
+    </section>
+  `;
+}
+
 function renderScanScreen() {
   if (!state.auth.ready || state.cloud.loading) {
     return `
@@ -4282,6 +4330,10 @@ function renderCurrentView() {
     appMain.innerHTML = renderSplashScreen();
     return;
   }
+  if (state.currentView === 'dashboard') {
+    appMain.innerHTML = renderDashboardScreen();
+    return;
+  }
   if (state.currentView === 'spaces') {
     appMain.innerHTML = renderSpacesScreen();
     return;
@@ -4539,7 +4591,7 @@ function setView(view) {
     resetIdentificationState();
   }
   state.currentView = view;
-  if (['plants', 'scan', 'spaces', 'profile'].includes(view)) {
+  if (MAIN_VIEWS.includes(view)) {
     state.previousMainView = view;
   }
   render();
