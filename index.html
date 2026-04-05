@@ -3309,6 +3309,18 @@ function goBackToMainView(fallback = 'plants') {
   setView(getPreviousMainView(fallback));
 }
 
+function scrollPageToTop() {
+  const applyScrollTop = () => {
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  };
+  applyScrollTop();
+  window.requestAnimationFrame(() => {
+    applyScrollTop();
+  });
+}
+
 function dismissSplash() {
   if (!state.splashVisible) return;
   state.splashVisible = false;
@@ -4515,6 +4527,7 @@ function setView(view) {
     state.previousMainView = view;
   }
   render();
+  scrollPageToTop();
 }
 
 function openPlantDetail(plantId) {
@@ -4531,6 +4544,7 @@ function openPlantDetail(plantId) {
   state.calMonth = new Date().getMonth();
   state.currentView = 'plantDetail';
   render();
+  scrollPageToTop();
 }
 
 function openPlantCreateView(prefill = null, plantId = null) {
@@ -4540,6 +4554,7 @@ function openPlantCreateView(prefill = null, plantId = null) {
   state.editingPlantId = existingPlant ? existingPlant.id : null;
   state.currentView = 'plantCreate';
   render();
+  scrollPageToTop();
 }
 
 function cancelPlantCreateView() {
@@ -4548,6 +4563,7 @@ function cancelPlantCreateView() {
   if (state.screenPlantMode === 'edit' && state.detailPlantId) {
     state.currentView = 'plantDetail';
     render();
+    scrollPageToTop();
     return;
   }
   goBackToMainView('scan');
@@ -4577,6 +4593,7 @@ function setSection(id) {
   state.activeSection = id;
   state.currentView = 'plants';
   render();
+  scrollPageToTop();
 }
 
 function openEditSectionView(sectionId) {
@@ -4586,6 +4603,7 @@ function openEditSectionView(sectionId) {
   state.screenSectionDraft = createSectionDraft(section);
   state.currentView = 'editSpace';
   render();
+  scrollPageToTop();
 }
 
 function openCreateSectionView() {
@@ -4593,6 +4611,7 @@ function openCreateSectionView() {
   state.screenSectionDraft = createSectionDraft();
   state.currentView = 'editSpace';
   render();
+  scrollPageToTop();
 }
 
 function cancelEditSectionView() {
@@ -4731,6 +4750,7 @@ async function savePlantFromScreen() {
   }
   state.currentView = (isIdentifiedFlow || isManualCreateFlow) ? 'plants' : 'plantDetail';
   render();
+  scrollPageToTop();
 
   try {
     await syncPlantToCloud(plantToSync);
