@@ -3745,6 +3745,25 @@ function renderSplashScreen() {
   `;
 }
 
+function renderPlantTiles(plants = []) {
+  return plants.map(plant => {
+    const last = lastWatered(plant);
+    const days = last ? daysBetween(last) : null;
+    const lastText = days === null ? 'Último riego pendiente' : days === 0 ? 'Último riego hoy' : `Último riego hace ${days} día${days === 1 ? '' : 's'}`;
+    return `
+      <article class="plant-tile">
+        <button class="plant-tile-visual" type="button" onclick="openPlantDetail('${plant.id}')" style="border:none;padding:0;">
+          ${plant.imagePreview ? `<img src="${plant.imagePreview}" alt="${escapeHtml(plant.name || plant.species || 'Planta')}">` : `<div class="plant-tile-emoji">${escapeHtml(plant.emoji || '🪴')}</div>`}
+        </button>
+        <div class="plant-tile-body">
+          <button class="plant-tile-name" type="button" onclick="openPlantDetail('${plant.id}')" style="border:none;background:none;padding:0;text-align:left;">${escapeHtml(plant.name || plant.species || 'Planta sin nombre')}</button>
+          <div class="plant-tile-last">${escapeHtml(lastText)}</div>
+        </div>
+      </article>
+    `;
+  }).join('');
+}
+
 function renderPlantsScreen() {
   if (!state.auth.ready || state.cloud.loading) {
     return `
@@ -3780,23 +3799,7 @@ function renderPlantsScreen() {
     })),
   ];
   const plants = getFilteredPlants();
-
-  const tiles = plants.map(plant => {
-    const last = lastWatered(plant);
-    const days = last ? daysBetween(last) : null;
-    const lastText = days === null ? 'Último riego pendiente' : days === 0 ? 'Último riego hoy' : `Último riego hace ${days} día${days === 1 ? '' : 's'}`;
-    return `
-      <article class="plant-tile">
-        <button class="plant-tile-visual" type="button" onclick="openPlantDetail('${plant.id}')" style="border:none;padding:0;">
-          ${plant.imagePreview ? `<img src="${plant.imagePreview}" alt="${escapeHtml(plant.name || plant.species || 'Planta')}">` : `<div class="plant-tile-emoji">${escapeHtml(plant.emoji || '🪴')}</div>`}
-        </button>
-        <div class="plant-tile-body">
-          <button class="plant-tile-name" type="button" onclick="openPlantDetail('${plant.id}')" style="border:none;background:none;padding:0;text-align:left;">${escapeHtml(plant.name || plant.species || 'Planta sin nombre')}</button>
-          <div class="plant-tile-last">${escapeHtml(lastText)}</div>
-        </div>
-      </article>
-    `;
-  }).join('');
+  const tiles = renderPlantTiles(plants);
 
   return `
     <section class="screen">
@@ -3970,6 +3973,9 @@ function renderDashboardScreen() {
     `;
   }
 
+  const thirstyPlants = state.plants.filter(needsWater);
+  const thirstyCount = thirstyPlants.length;
+
   return `
     <section class="screen">
       <div class="screen-intro">
@@ -3977,15 +3983,40 @@ function renderDashboardScreen() {
         <p class="screen-subtitle">Mira tu jardín y las acciones que tienes que realizar.</p>
       </div>
       <div class="view-empty">
-        <div class="view-empty-icon">📋</div>
-        <div class="view-empty-title">Resumen diario en construcción</div>
-        <div class="view-empty-copy">Aquí aparecerán las plantas que debes revisar hoy, el ritmo de riego de los próximos días y accesos rápidos para cuidar tu jardín.</div>
+        <div class="view-empty-title" style="font-size:3.1rem;line-height:1;color:#345D4C;">${thirstyCount}</div>
+        <div class="view-empty-copy" style="margin-top:14px;font-size:1.05rem;color:#191c1c;">Plantas necesitan riego hoy</div>
       </div>
-      <div class="view-empty">
-        <div class="view-empty-icon">💧</div>
-        <div class="view-empty-title">Próximas acciones</div>
-        <div class="view-empty-copy">Prepararemos una vista con riegos de hoy, mañana y pasado para que puedas anticiparte sin salir del dashboard.</div>
+      <button class="scan-secondary" type="button" onclick="openThirstyPlantsView()">Ver todo</button>
+    </section>
+  `;
+}
+
+function renderThirstyPlantsScreen() {
+  const thirstyPlants = state.plants.filter(needsWater);
+  const tiles = renderPlantTiles(thirstyPlants);
+
+  return `
+    <section class="screen">
+      <div class="screen-head">
+        ${renderBackButton('Vista diaria', 'dashboard')}
       </div>
+      <div class="screen-intro">
+        <h1 class="screen-title">Plantas con sed</h1>
+        <p class="screen-subtitle">Estas plantas necesitan un riego hoy</p>
+      </div>
+      ${thirstyPlants.length ? `
+        <div class="plants-grid-mobile">
+          ${tiles}
+        </div>
+      ` : `
+        ${renderCardState({
+          icon: '💧',
+          title: 'Nada para regar hoy',
+          message: 'Tu jardín está al día por ahora. Vuelve más tarde para revisar las próximas acciones.',
+          actionLabel: 'Volver al dashboard',
+          action: "setView('dashboard')"
+        })}
+      `}
     </section>
   `;
 }
@@ -4346,6 +4377,10 @@ function renderCurrentView() {
     appMain.innerHTML = renderProfileScreen();
     return;
   }
+  if (state.currentView === 'thirstyPlants') {
+    appMain.innerHTML = renderThirstyPlantsScreen();
+    return;
+  }
   if (state.currentView === 'plantDetail') {
     appMain.innerHTML = renderPlantDetailScreen();
     return;
@@ -4611,6 +4646,12 @@ function openPlantDetail(plantId) {
   state.calYear = new Date().getFullYear();
   state.calMonth = new Date().getMonth();
   state.currentView = 'plantDetail';
+  render();
+  scrollPageToTop();
+}
+
+function openThirstyPlantsView() {
+  state.currentView = 'thirstyPlants';
   render();
   scrollPageToTop();
 }
