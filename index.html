@@ -354,9 +354,64 @@
   }
 
   .plant-tile-last {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     color: #4b564d;
-    font-size: 0.98rem;
-    line-height: 1.45;
+    font-size: 0.95rem;
+    line-height: 1.35;
+    min-height: 24px;
+  }
+
+  .plant-tile-status-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .plant-tile-status-dot.is-dark {
+    background: #345D4C;
+  }
+
+  .plant-tile-status-dot.is-light {
+    background: #C6EBD4;
+  }
+
+  .plant-tile-status-dot.is-gray {
+    background: #D9D9D9;
+  }
+
+  .plant-tile-status-dot.is-red {
+    background: #9F402D;
+  }
+
+  .plant-tile-water-button {
+    margin-top: 6px;
+    min-height: 42px;
+    width: 100%;
+    border: none;
+    border-radius: 999px;
+    background: #F3F4F3;
+    color: #345D4C;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.92rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .plant-tile-water-button::before {
+    content: '';
+    width: 16px;
+    height: 16px;
+    background-image: url('./resources/Drop icon.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    flex-shrink: 0;
   }
 
   .add-plant-card-mobile {
@@ -3745,11 +3800,47 @@ function renderSplashScreen() {
   `;
 }
 
+function getPlantWaterStatus(plant) {
+  const last = lastWatered(plant);
+  if (!last) {
+    return {
+      tone: 'gray',
+      text: 'Sin riegos registrados',
+    };
+  }
+
+  const daysSinceLastWater = daysBetween(last);
+  if (daysSinceLastWater > Number(plant.freq || 3)) {
+    return {
+      tone: 'red',
+      text: `Riego atrasado: ${daysSinceLastWater} día${daysSinceLastWater === 1 ? '' : 's'}`,
+    };
+  }
+
+  const daysUntilNext = Number(plant.freq || 3) - daysSinceLastWater;
+  if (daysUntilNext <= 0) {
+    return {
+      tone: 'dark',
+      text: 'Regar hoy',
+    };
+  }
+
+  if (daysUntilNext === 1) {
+    return {
+      tone: 'dark',
+      text: 'Regar mañana',
+    };
+  }
+
+  return {
+    tone: 'light',
+    text: `Regar en ${daysUntilNext} días`,
+  };
+}
+
 function renderPlantTiles(plants = []) {
   return plants.map(plant => {
-    const last = lastWatered(plant);
-    const days = last ? daysBetween(last) : null;
-    const lastText = days === null ? 'Último riego pendiente' : days === 0 ? 'Último riego hoy' : `Último riego hace ${days} día${days === 1 ? '' : 's'}`;
+    const status = getPlantWaterStatus(plant);
     return `
       <article class="plant-tile">
         <button class="plant-tile-visual" type="button" onclick="openPlantDetail('${plant.id}')" style="border:none;padding:0;">
@@ -3757,7 +3848,11 @@ function renderPlantTiles(plants = []) {
         </button>
         <div class="plant-tile-body">
           <button class="plant-tile-name" type="button" onclick="openPlantDetail('${plant.id}')" style="border:none;background:none;padding:0;text-align:left;">${escapeHtml(plant.name || plant.species || 'Planta sin nombre')}</button>
-          <div class="plant-tile-last">${escapeHtml(lastText)}</div>
+          <div class="plant-tile-last">
+            <span class="plant-tile-status-dot is-${status.tone}"></span>
+            <span>${escapeHtml(status.text)}</span>
+          </div>
+          <button class="plant-tile-water-button" type="button" onclick="event.stopPropagation(); waterPlant('${plant.id}')">Regar</button>
         </div>
       </article>
     `;
