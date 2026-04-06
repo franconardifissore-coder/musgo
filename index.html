@@ -675,9 +675,33 @@
     }
 
     .plants-grid-mobile {
-      grid-template-columns: repeat(auto-fit, minmax(160px, 190px));
-      gap: 24px;
-      justify-content: start;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .plant-tile {
+      min-width: 0;
+    }
+
+    .plant-tile-visual {
+      height: 170px;
+    }
+
+    .plant-tile-body {
+      padding: 16px 14px 18px;
+    }
+
+    .plant-tile-name {
+      font-size: 1rem;
+    }
+
+    .plant-tile-last {
+      font-size: 0.88rem;
+    }
+
+    .plant-tile-water-button {
+      min-height: 38px;
+      font-size: 0.86rem;
     }
 
     .spaces-list {
