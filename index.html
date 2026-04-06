@@ -2036,6 +2036,21 @@
     letter-spacing: -0.01em;
   }
 
+  .inline-loading {
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 28px 12px 36px;
+    text-align: center;
+  }
+
+  .inline-loading .splash-note {
+    max-width: 30ch;
+  }
+
   button,
   input,
   select,
@@ -4297,11 +4312,12 @@ function renderAuthPrompt(message = 'Inicia sesión para ver y editar tu jardín
 }
 
 function renderLoadingCard(message = 'Estamos recuperando tus plantas y secciones.') {
-  return renderCardState({
-    icon: '🌿',
-    title: 'Cargando tu jardín',
-    message,
-  });
+  return `
+    <div class="inline-loading">
+      <div class="splash-spinner" aria-hidden="true"></div>
+      <div class="splash-note">${escapeHtml(message || 'Fotosíntesis en progreso…')}</div>
+    </div>
+  `;
 }
 
 function renderLandingScreen() {
