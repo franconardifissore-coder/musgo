@@ -706,6 +706,13 @@
     }
   }
 
+  @media (min-width: 1100px) {
+    .profile-card,
+    .profile-actions {
+      max-width: 504px;
+    }
+  }
+
   .screen-subtitle {
     color: #40493d;
     font-size: 0.95rem;
@@ -1513,6 +1520,10 @@
   .screen-actions .btn-danger::before {
     width: 17px;
     height: 17px;
+  }
+
+  .profile-actions {
+    width: 100%;
   }
 
   .editor-card {
@@ -5108,8 +5119,7 @@ function renderProfileScreen() {
           </div>
         </div>
       </div>
-      <div class="screen-actions">
-        <button class="btn-primary" type="button" onclick="setView('scan')">Añadir planta</button>
+      <div class="screen-actions profile-actions">
         <button class="btn-secondary" type="button" onclick="handleSignOut()">Cerrar sesión</button>
       </div>
     </section>
