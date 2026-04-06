@@ -502,6 +502,76 @@
     color: #647267;
   }
 
+  @media (min-width: 760px) {
+    .app-shell {
+      padding: 0 24px 32px;
+    }
+
+    .app-frame {
+      width: min(100%, 1120px);
+    }
+
+    .mobile-topbar {
+      padding: 24px 32px 18px;
+    }
+
+    .app-main {
+      padding: 18px 32px 56px;
+    }
+
+    .screen {
+      gap: 28px;
+    }
+
+    .screen-title {
+      font-size: 2.5rem;
+    }
+
+    .screen-subtitle {
+      max-width: 62ch;
+      font-size: 1rem;
+    }
+
+    .chip-row {
+      flex-wrap: wrap;
+      overflow: visible;
+      padding-bottom: 0;
+    }
+
+    .plants-grid-mobile {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 22px;
+    }
+
+    .spaces-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 22px;
+    }
+
+    .dashboard-chart-card,
+    .dashboard-summary-card,
+    .profile-card,
+    .space-card,
+    .view-empty,
+    .space-editor-card {
+      border-radius: 28px;
+    }
+
+    .scan-panel {
+      max-width: 560px;
+    }
+
+    .detail-calendar-wrap {
+      max-width: 520px;
+    }
+
+    .menu-drawer {
+      right: 32px;
+      width: 280px;
+    }
+  }
+
   @media (min-width: 900px) {
     .landing-screen {
       gap: 36px;
@@ -523,6 +593,53 @@
 
     .landing-feature-list {
       grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .app-shell {
+      padding: 0 32px 40px;
+    }
+
+    .app-frame {
+      width: min(100%, 1280px);
+    }
+
+    .mobile-topbar {
+      padding: 26px 40px 20px;
+    }
+
+    .app-main {
+      padding: 18px 40px 72px;
+    }
+
+    .plants-grid-mobile {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 24px;
+    }
+
+    .spaces-list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 24px;
+    }
+
+    .dashboard-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 360px) minmax(0, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .dashboard-chart-card {
+      min-height: 100%;
+    }
+
+    .profile-card {
+      max-width: 720px;
+    }
+
+    .scan-panel {
+      max-width: 620px;
     }
   }
 
@@ -4512,36 +4629,38 @@ function renderDashboardScreen() {
         <h1 class="screen-title">Tu vista diaria</h1>
         <p class="screen-subtitle">Mira tu jardín y las acciones que tienes que realizar.</p>
       </div>
-      <div class="dashboard-summary-card">
-        <div class="view-empty-title" style="font-size:3.1rem;line-height:1;color:#345D4C;">${thirstyCount}</div>
-        <div class="view-empty-copy" style="margin-top:0;font-size:1.05rem;color:#191c1c;">Plantas que necesitan riego hoy</div>
-        <button class="dashboard-summary-button" type="button" onclick="openThirstyPlantsView()">Ver todo</button>
-      </div>
-      <div class="dashboard-chart-card">
-        <div class="dashboard-chart-legend">
-          <div class="dashboard-chart-legend-item">
-            <img src="./resources/Riegos/Riego full.svg" alt="">
-            <span>Plantas regadas</span>
-          </div>
-          <div class="dashboard-chart-legend-item">
-            <img src="./resources/Riegos/Riego empty.svg" alt="">
-            <span>Necesitan riego</span>
-          </div>
+      <div class="dashboard-layout">
+        <div class="dashboard-summary-card">
+          <div class="view-empty-title" style="font-size:3.1rem;line-height:1;color:#345D4C;">${thirstyCount}</div>
+          <div class="view-empty-copy" style="margin-top:0;font-size:1.05rem;color:#191c1c;">Plantas que necesitan riego hoy</div>
+          <button class="dashboard-summary-button" type="button" onclick="openThirstyPlantsView()">Ver todo</button>
         </div>
-        <div class="dashboard-bars">
-          ${projection.map(item => {
-            const wateredHeight = item.total ? (item.watered / maxTotal) * 162 : 0;
-            const thirstyHeight = item.total ? (item.thirsty / maxTotal) * 162 : 0;
-            return `
-              <div class="dashboard-bar-col">
-                <div class="dashboard-bar-stack">
-                  <div class="dashboard-bar-segment thirsty" style="height:${thirstyHeight}px;"></div>
-                  <div class="dashboard-bar-segment watered" style="height:${wateredHeight}px;"></div>
+        <div class="dashboard-chart-card">
+          <div class="dashboard-chart-legend">
+            <div class="dashboard-chart-legend-item">
+              <img src="./resources/Riegos/Riego full.svg" alt="">
+              <span>Plantas regadas</span>
+            </div>
+            <div class="dashboard-chart-legend-item">
+              <img src="./resources/Riegos/Riego empty.svg" alt="">
+              <span>Necesitan riego</span>
+            </div>
+          </div>
+          <div class="dashboard-bars">
+            ${projection.map(item => {
+              const wateredHeight = item.total ? (item.watered / maxTotal) * 162 : 0;
+              const thirstyHeight = item.total ? (item.thirsty / maxTotal) * 162 : 0;
+              return `
+                <div class="dashboard-bar-col">
+                  <div class="dashboard-bar-stack">
+                    <div class="dashboard-bar-segment thirsty" style="height:${thirstyHeight}px;"></div>
+                    <div class="dashboard-bar-segment watered" style="height:${wateredHeight}px;"></div>
+                  </div>
+                  <div class="dashboard-bar-label">${item.label}</div>
                 </div>
-                <div class="dashboard-bar-label">${item.label}</div>
-              </div>
-            `;
-          }).join('')}
+              `;
+            }).join('')}
+          </div>
         </div>
       </div>
     </section>
