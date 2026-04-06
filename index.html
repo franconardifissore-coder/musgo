@@ -258,6 +258,274 @@
     letter-spacing: -0.05em;
   }
 
+  .landing-screen {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .landing-hero {
+    display: grid;
+    gap: 22px;
+    padding: 6px 0 4px;
+  }
+
+  .landing-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .landing-eyebrow {
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(52, 93, 76, 0.68);
+  }
+
+  .landing-title {
+    font-size: 3.2rem;
+    line-height: 0.93;
+    letter-spacing: -0.08em;
+    color: #191c1c;
+    font-weight: 800;
+  }
+
+  .landing-subtitle {
+    max-width: 18ch;
+    font-size: 1.06rem;
+    line-height: 1.45;
+    color: #4f5b52;
+  }
+
+  .landing-cta {
+    width: fit-content;
+    min-width: 164px;
+  }
+
+  .landing-mockup {
+    position: relative;
+    padding: 18px 14px;
+    border-radius: 34px;
+    background:
+      radial-gradient(circle at 22% 18%, rgba(198, 235, 212, 0.82), transparent 42%),
+      linear-gradient(180deg, #ffffff 0%, #f6faf5 100%);
+    border: 1px solid rgba(52, 93, 76, 0.09);
+    box-shadow: 0 28px 48px rgba(31, 52, 37, 0.08);
+    overflow: hidden;
+  }
+
+  .landing-phone {
+    position: relative;
+    margin: 0 auto;
+    width: min(100%, 292px);
+    border-radius: 34px;
+    border: 8px solid #141716;
+    background: #ffffff;
+    box-shadow: 0 16px 36px rgba(20, 23, 22, 0.18);
+    overflow: hidden;
+  }
+
+  .landing-phone-notch {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 106px;
+    height: 22px;
+    border-radius: 999px;
+    background: #101413;
+    z-index: 2;
+  }
+
+  .landing-phone-screen {
+    padding: 42px 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-height: 420px;
+    background: linear-gradient(180deg, #f8fbf7 0%, #ffffff 100%);
+  }
+
+  .landing-phone-card {
+    border-radius: 24px;
+    background: #ffffff;
+    border: 1px solid rgba(52, 93, 76, 0.08);
+    box-shadow: 0 16px 28px rgba(31, 52, 37, 0.05);
+    padding: 18px;
+  }
+
+  .landing-phone-card.hero {
+    min-height: 182px;
+    display: flex;
+    align-items: flex-end;
+    background:
+      radial-gradient(circle at 82% 18%, rgba(198, 235, 212, 0.72), transparent 28%),
+      linear-gradient(180deg, #f3faf2 0%, #ffffff 100%);
+  }
+
+  .landing-phone-card.hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .landing-phone-metric {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .landing-phone-metric-value {
+    font-size: 2.4rem;
+    line-height: 1;
+    font-weight: 800;
+    color: #345D4C;
+    letter-spacing: -0.06em;
+  }
+
+  .landing-phone-metric-label {
+    font-size: 0.9rem;
+    color: #4f5b52;
+    max-width: 14ch;
+    line-height: 1.35;
+  }
+
+  .landing-phone-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .landing-mini-card {
+    border-radius: 20px;
+    background: #f7f8f6;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 122px;
+  }
+
+  .landing-mini-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    background: rgba(198, 235, 212, 0.55);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #345D4C;
+    font-size: 1.2rem;
+  }
+
+  .landing-mini-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #1f3425;
+    line-height: 1.2;
+  }
+
+  .landing-mini-copy {
+    font-size: 0.8rem;
+    line-height: 1.4;
+    color: #607064;
+  }
+
+  .landing-section {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .landing-section-head {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .landing-section-title {
+    font-size: 1.38rem;
+    font-weight: 800;
+    color: #191c1c;
+    letter-spacing: -0.04em;
+  }
+
+  .landing-section-copy {
+    color: #5a685e;
+    font-size: 0.96rem;
+    line-height: 1.5;
+  }
+
+  .landing-feature-list {
+    display: grid;
+    gap: 12px;
+  }
+
+  .landing-feature {
+    padding: 18px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(52, 93, 76, 0.08);
+    box-shadow: 0 16px 26px rgba(31, 52, 37, 0.045);
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 14px;
+    align-items: start;
+  }
+
+  .landing-feature-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
+    background: rgba(198, 235, 212, 0.48);
+    color: #345D4C;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+  }
+
+  .landing-feature-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1f3425;
+    margin-bottom: 4px;
+  }
+
+  .landing-feature-copy {
+    font-size: 0.88rem;
+    line-height: 1.45;
+    color: #647267;
+  }
+
+  @media (min-width: 900px) {
+    .landing-screen {
+      gap: 36px;
+    }
+
+    .landing-hero {
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 380px);
+      align-items: center;
+      gap: 28px;
+    }
+
+    .landing-title {
+      font-size: 4.2rem;
+    }
+
+    .landing-subtitle {
+      max-width: 24ch;
+    }
+
+    .landing-feature-list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
   .screen-subtitle {
     color: #40493d;
     font-size: 0.95rem;
@@ -3875,6 +4143,75 @@ function renderLoadingCard(message = 'Estamos recuperando tus plantas y seccione
   });
 }
 
+function renderLandingScreen() {
+  return `
+    <section class="screen landing-screen">
+      <div class="landing-hero">
+        <div class="landing-copy">
+          <div class="landing-eyebrow">Botanical care · AI plant tracking</div>
+          <h1 class="landing-title">Tu jard&iacute;n, m&aacute;s simple y m&aacute;s inteligente.</h1>
+          <p class="landing-subtitle">Organiza tus plantas, identif&iacute;calas con AI y revisa tus riegos desde una experiencia tranquila, r&aacute;pida y pensada para el d&iacute;a a d&iacute;a.</p>
+          <button class="btn-primary landing-cta" type="button" onclick="setView('profile')">Acceder</button>
+        </div>
+        <div class="landing-mockup">
+          <div class="landing-phone">
+            <div class="landing-phone-notch"></div>
+            <div class="landing-phone-screen">
+              <div class="landing-phone-card hero">
+                <div class="landing-phone-metric">
+                  <div class="landing-phone-metric-value">12</div>
+                  <div class="landing-phone-metric-label">Plantas que necesitan atenci&oacute;n hoy</div>
+                </div>
+              </div>
+              <div class="landing-phone-grid">
+                <div class="landing-mini-card">
+                  <div class="landing-mini-icon">📷</div>
+                  <div class="landing-mini-title">Reconocimiento con AI</div>
+                  <div class="landing-mini-copy">Escanea una foto y convierte el resultado en una ficha lista para guardar.</div>
+                </div>
+                <div class="landing-mini-card">
+                  <div class="landing-mini-icon">📊</div>
+                  <div class="landing-mini-title">Stats de riego</div>
+                  <div class="landing-mini-copy">Visualiza tu carga de riego diaria y anticipa lo que viene los pr&oacute;ximos d&iacute;as.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="landing-section">
+        <div class="landing-section-head">
+          <h2 class="landing-section-title">Preparada para crecer</h2>
+          <p class="landing-section-copy">La base ya est&aacute; lista para sumar m&aacute;s contenido, pero por ahora deja claro qu&eacute; hace Musgo y por qu&eacute; te ahorra tiempo.</p>
+        </div>
+        <div class="landing-feature-list">
+          <article class="landing-feature">
+            <div class="landing-feature-icon">🌿</div>
+            <div>
+              <div class="landing-feature-title">Carga plantas con reconocimiento de AI</div>
+              <div class="landing-feature-copy">Sube una foto, recibe una identificaci&oacute;n sugerida y crea la planta con sus datos precompletados.</div>
+            </div>
+          </article>
+          <article class="landing-feature">
+            <div class="landing-feature-icon">💧</div>
+            <div>
+              <div class="landing-feature-title">Stats y calendario de riego</div>
+              <div class="landing-feature-copy">Entiende qu&eacute; toca hoy, qu&eacute; se atrasa y c&oacute;mo evoluciona tu carga de riego durante la semana.</div>
+            </div>
+          </article>
+          <article class="landing-feature">
+            <div class="landing-feature-icon">🏡</div>
+            <div>
+              <div class="landing-feature-title">Espacios para ahorrar tiempo</div>
+              <div class="landing-feature-copy">Agrupa plantas por rinc&oacute;n, localiza antes lo que tienes que hacer y mant&eacute;n tu casa mejor organizada.</div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
 function renderSplashScreen() {
   return `
     <section class="splash-screen" onclick="dismissSplash()">
@@ -4605,6 +4942,10 @@ function renderCurrentView() {
   if (!appMain) return;
   if (state.splashVisible) {
     appMain.innerHTML = renderSplashScreen();
+    return;
+  }
+  if (state.auth.ready && state.auth.configured && !state.auth.user && state.currentView !== 'profile') {
+    appMain.innerHTML = renderLandingScreen();
     return;
   }
   if (state.currentView === 'dashboard') {
