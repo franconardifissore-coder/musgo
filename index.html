@@ -605,12 +605,71 @@
       width: min(100%, 1280px);
     }
 
+    .app-frame.desktop-sidebar-layout {
+      display: grid;
+      grid-template-columns: 248px minmax(0, 1fr);
+      grid-template-rows: auto 1fr;
+      column-gap: 28px;
+      align-items: start;
+    }
+
     .mobile-topbar {
+      grid-column: 1 / -1;
       padding: 26px 40px 20px;
+    }
+
+    .topbar-menu-button {
+      display: none;
     }
 
     .app-main {
       padding: 18px 40px 72px;
+    }
+
+    .app-frame.desktop-sidebar-layout .app-main {
+      grid-column: 2;
+      grid-row: 2;
+    }
+
+    .menu-overlay {
+      display: none;
+    }
+
+    .app-frame.desktop-sidebar-layout .menu-overlay {
+      position: sticky;
+      top: 110px;
+      inset: auto;
+      grid-column: 1;
+      grid-row: 2;
+      display: block;
+      opacity: 1;
+      visibility: visible;
+      background: transparent;
+      backdrop-filter: none;
+      z-index: 1;
+      align-self: start;
+      pointer-events: none;
+    }
+
+    .app-frame.desktop-sidebar-layout .menu-overlay:not(.open) {
+      display: none;
+    }
+
+    .menu-drawer {
+      width: min(240px, calc(100% - 36px));
+      border-radius: 22px;
+      box-shadow: 0 18px 44px rgba(31, 52, 37, 0.12);
+    }
+
+    .app-frame.desktop-sidebar-layout .menu-drawer {
+      position: relative;
+      top: auto;
+      right: auto;
+      width: 100%;
+      transform: none;
+      border-radius: 26px;
+      box-shadow: 0 18px 38px rgba(31, 52, 37, 0.08);
+      pointer-events: auto;
     }
 
     .plants-grid-mobile {
@@ -4007,21 +4066,28 @@ async function deleteSectionFromCloud(sectionId) {
 function renderTopbar() {
   const topbar = document.querySelector('.mobile-topbar');
   const menuButton = document.getElementById('topbarMenuButton');
+  const appFrame = document.querySelector('.app-frame');
   const isMainView = MAIN_VIEWS.includes(state.currentView);
+  const hasDesktopSidebar = window.innerWidth >= 1100 && isMainView && !state.splashVisible;
   if (topbar) {
     topbar.style.display = (state.splashVisible || isMainView) ? 'flex' : 'none';
     topbar.classList.toggle('splash-mode', Boolean(state.splashVisible));
   }
+  if (appFrame) {
+    appFrame.classList.toggle('desktop-sidebar-layout', hasDesktopSidebar);
+  }
   if (menuButton) {
-    menuButton.classList.toggle('is-open', Boolean(state.menuOpen));
-    menuButton.setAttribute('aria-expanded', state.menuOpen ? 'true' : 'false');
-    menuButton.setAttribute('aria-label', state.menuOpen ? 'Cerrar menú' : 'Abrir menú');
+    menuButton.classList.toggle('is-open', Boolean(state.menuOpen) && !hasDesktopSidebar);
+    menuButton.setAttribute('aria-expanded', hasDesktopSidebar ? 'true' : (state.menuOpen ? 'true' : 'false'));
+    menuButton.setAttribute('aria-label', hasDesktopSidebar ? 'Menú visible' : (state.menuOpen ? 'Cerrar menú' : 'Abrir menú'));
   }
 }
 
 function renderMenu() {
   const overlay = document.getElementById('menuOverlay');
   if (!overlay) return;
+  const isMainView = MAIN_VIEWS.includes(state.currentView);
+  const forceDesktopSidebar = window.innerWidth >= 1100 && isMainView && !state.splashVisible;
 
   if (state.splashVisible) {
     overlay.classList.remove('open');
@@ -4054,7 +4120,7 @@ function renderMenu() {
       </div>
     </div>
   `;
-  overlay.classList.toggle('open', Boolean(state.menuOpen));
+  overlay.classList.toggle('open', forceDesktopSidebar || Boolean(state.menuOpen));
 }
 
 function toggleMenu() {
