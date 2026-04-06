@@ -712,6 +712,10 @@
     .profile-actions {
       max-width: 504px;
     }
+
+    .plant-detail-layout {
+      max-width: 380px;
+    }
   }
 
   .screen-subtitle {
@@ -1357,6 +1361,12 @@
     box-shadow: 0 14px 34px rgba(52, 93, 76, 0.07);
     overflow: hidden;
     border: 1px solid rgba(52, 93, 76, 0.06);
+  }
+
+  .plant-detail-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
   }
 
   .profile-stats {
@@ -5018,28 +5028,30 @@ function renderPlantDetailScreen() {
       <div class="screen-intro">
         <h1 class="screen-title">Detalle de planta</h1>
       </div>
-      ${renderInlinePlantCalendar(plant)}
-      <div class="detail-form-card">
-        <div class="detail-field">
-          <label>Nombre</label>
-          <input class="detail-input" type="text" value="${escapeHtml(draft.name || '')}" oninput="updateDetailPlantField('name', this.value)">
+      <div class="plant-detail-layout">
+        ${renderInlinePlantCalendar(plant)}
+        <div class="detail-form-card">
+          <div class="detail-field">
+            <label>Nombre</label>
+            <input class="detail-input" type="text" value="${escapeHtml(draft.name || '')}" oninput="updateDetailPlantField('name', this.value)">
+          </div>
+          <div class="detail-field">
+            <label>Frecuencia de riego</label>
+            <select class="detail-select" onchange="updateDetailPlantField('freq', Number(this.value))">
+              ${[1,2,3,5,7,14,30].map(freq => `<option value="${freq}" ${Number(draft.freq) === freq ? 'selected' : ''}>${freq === 1 ? 'Cada día' : `Cada ${freq} días`}</option>`).join('')}
+            </select>
+          </div>
+          <div class="detail-field">
+            <label>Espacio</label>
+            <select class="detail-select" onchange="updateDetailPlantField('section', this.value)">
+              ${renderSectionOptions(draft.section)}
+            </select>
+          </div>
         </div>
-        <div class="detail-field">
-          <label>Frecuencia de riego</label>
-          <select class="detail-select" onchange="updateDetailPlantField('freq', Number(this.value))">
-            ${[1,2,3,5,7,14,30].map(freq => `<option value="${freq}" ${Number(draft.freq) === freq ? 'selected' : ''}>${freq === 1 ? 'Cada día' : `Cada ${freq} días`}</option>`).join('')}
-          </select>
+        <div class="detail-actions-card">
+          <button class="btn-danger" type="button" onclick="openDeleteModal('${plant.id}')">Eliminar</button>
+          <button class="btn-primary" type="button" onclick="savePlantDetail()">Guardar</button>
         </div>
-        <div class="detail-field">
-          <label>Espacio</label>
-          <select class="detail-select" onchange="updateDetailPlantField('section', this.value)">
-            ${renderSectionOptions(draft.section)}
-          </select>
-        </div>
-      </div>
-      <div class="detail-actions-card">
-        <button class="btn-danger" type="button" onclick="openDeleteModal('${plant.id}')">Eliminar</button>
-        <button class="btn-primary" type="button" onclick="savePlantDetail()">Guardar</button>
       </div>
     </section>
   `;
