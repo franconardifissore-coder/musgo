@@ -863,9 +863,12 @@
     }
 
     .app-frame.desktop-sidebar-layout .app-main > .screen > .spaces-list {
-      width: fit-content;
+      display: grid;
+      grid-template-columns: 600px;
+      width: 600px;
       min-width: 600px;
       max-width: 600px;
+      justify-content: center;
     }
   }
 
