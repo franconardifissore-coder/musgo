@@ -1535,7 +1535,6 @@
 
   .detail-card,
   .profile-card,
-  .editor-card,
   .space-editor-card,
   .detail-actions-card,
   .detail-calendar-card,
@@ -1742,73 +1741,6 @@
     text-align: right;
   }
 
-  .editor-card {
-    padding: 22px;
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-  }
-
-  .editor-preview-card {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 18px;
-    border-radius: 24px;
-    background: #f5f7f4;
-  }
-
-  .editor-preview-visual {
-    width: 78px;
-    height: 78px;
-    border-radius: 24px;
-    background: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2.2rem;
-    overflow: hidden;
-    box-shadow: 0 12px 20px rgba(31, 52, 37, 0.06);
-  }
-
-  .editor-preview-visual img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .editor-preview-title {
-    font-size: 1.05rem;
-    font-weight: 800;
-    color: #191c1c;
-    letter-spacing: -0.02em;
-  }
-
-  .editor-preview-copy {
-    margin-top: 4px;
-    color: #5d6c60;
-    font-size: 0.84rem;
-    line-height: 1.45;
-  }
-
-  .editor-section {
-    padding: 18px;
-    border-radius: 24px;
-    background: #ffffff;
-    border: 1px solid rgba(52, 93, 76, 0.08);
-    box-shadow: 0 10px 24px rgba(31, 52, 37, 0.04);
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .editor-section-title {
-    color: #191c1c;
-    font-size: 0.98rem;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-  }
-
   .editor-hero {
     padding: 28px 24px 22px;
     border-radius: 28px;
@@ -1996,25 +1928,6 @@
     background: #f9fbf8;
     padding: 14px 16px;
     color: #191c1c;
-  }
-
-  .emoji-row {
-    display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    gap: 8px;
-  }
-
-  .emoji-pill {
-    border: none;
-    border-radius: 16px;
-    background: #f3f4f3;
-    min-height: 48px;
-    font-size: 1.2rem;
-    cursor: pointer;
-  }
-
-  .emoji-pill.active {
-    background: #c6ebd4;
   }
 
   .profile-head {
@@ -3862,11 +3775,8 @@
   .space-card,
   .detail-card,
   .profile-card,
-  .editor-card,
   .space-editor-card,
   .detail-calendar-grid,
-  .editor-preview-card,
-  .editor-section,
   .editor-hero,
   .identified-plant-card,
   .manual-plant-card,
@@ -3970,18 +3880,8 @@
 <script>
 // ===== STATE =====
 let state = {
-  sections: [
-    { id: 's1', name: 'Balcón', icon: '🌺', outdoor: true },
-    { id: 's2', name: 'Salón', icon: '🛋️', outdoor: false },
-    { id: 's3', name: 'Habitación', icon: '🛏️', outdoor: false },
-  ],
-  plants: [
-    { id: 'p1', name: 'Monstera', species: 'Monstera deliciosa', emoji: '🌿', section: 's2', freq: 7, light: '⛅ Luz indirecta', waterLog: [daysAgo(1), daysAgo(8), daysAgo(15)] },
-    { id: 'p2', name: 'Cactus del balcón', species: 'Cereus peruvianus', emoji: '🌵', section: 's1', freq: 14, light: '☀️ Sol directo', waterLog: [daysAgo(5), daysAgo(19)] },
-    { id: 'p3', name: 'Lavanda', species: 'Lavandula angustifolia', emoji: '💜', section: 's1', freq: 3, light: '☀️ Sol directo', waterLog: [daysAgo(4), daysAgo(7), daysAgo(10)] },
-    { id: 'p4', name: 'Potus', species: 'Epipremnum aureum', emoji: '🍃', section: 's3', freq: 5, light: '🌥️ Sombra parcial', waterLog: [daysAgo(2), daysAgo(7), daysAgo(12)] },
-    { id: 'p5', name: 'Helecho', species: 'Nephrolepis exaltata', emoji: '🌱', section: 's2', freq: 2, light: '🌥️ Sombra parcial', waterLog: [daysAgo(3), daysAgo(5), daysAgo(7)] },
-  ],
+  sections: [],
+  plants: [],
   currentView: 'dashboard',
   previousMainView: 'dashboard',
   activeSection: 'all',
@@ -3998,11 +3898,9 @@ let state = {
     error: '',
   },
   editingSectionId: null,
-  editingPlantId: null,
   detailPlantId: null,
   deletingPlantId: null,
   deletingSectionId: null,
-  screenPlantMode: 'create',
   screenPlantDraft: null,
   screenSectionDraft: null,
   detailDraft: null,
@@ -4045,12 +3943,6 @@ function shouldRenderLanding() {
 
 function shouldRenderAuthScreen() {
   return isUnauthenticatedExperience() && state.currentView === 'auth';
-}
-
-function daysAgo(n) {
-  const d = new Date();
-  d.setDate(d.getDate() - n);
-  return formatLocalDate(d);
 }
 
 function today() {
@@ -4178,25 +4070,7 @@ function createEntityId(prefix = 'id') {
   return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
-function createPlantDraft(prefill = null, existingPlant = null) {
-  if (existingPlant) {
-    return {
-      id: existingPlant.id,
-      name: existingPlant.name || '',
-      species: existingPlant.species || '',
-      emoji: existingPlant.emoji || '🌿',
-      section: existingPlant.section || '',
-      freq: existingPlant.freq || 3,
-      light: existingPlant.light || '⛅ Luz indirecta',
-      imagePreview: existingPlant.imagePreview || '',
-      identifiedSpecies: existingPlant.identifiedSpecies || '',
-      identifiedCommonName: existingPlant.identifiedCommonName || '',
-      identificationConfidence: existingPlant.identificationConfidence ?? null,
-      identifiedAt: existingPlant.identifiedAt || null,
-      waterLog: Array.isArray(existingPlant.waterLog) ? [...existingPlant.waterLog] : [],
-    };
-  }
-
+function createPlantDraft(prefill = null) {
   return {
     id: null,
     name: prefill?.name || '',
@@ -4204,7 +4078,6 @@ function createPlantDraft(prefill = null, existingPlant = null) {
     emoji: prefill?.emoji || '🌿',
     section: state.activeSection !== 'all' ? state.activeSection : '',
     freq: 3,
-    light: '⛅ Luz indirecta',
     imagePreview: prefill?.imagePreview || '',
     identifiedSpecies: prefill?.identifiedSpecies || '',
     identifiedCommonName: prefill?.identifiedCommonName || '',
@@ -5292,22 +5165,18 @@ function renderScanScreen() {
 
 function renderPlantCreateScreen() {
   const draft = state.screenPlantDraft || createPlantDraft();
-  const isEditing = state.screenPlantMode === 'edit';
-  const isIdentified = !isEditing && Boolean(draft.identifiedSpecies);
-  const isManualCreate = !isEditing && !isIdentified;
-  const sectionName = state.sections.find(section => section.id === draft.section)?.name || 'Sin sección';
+  const isIdentified = Boolean(draft.identifiedSpecies);
   const identifiedBadge = draft.identificationConfidence !== null && draft.identificationConfidence !== undefined
     ? `Match con ${confidenceToPercent(draft.identificationConfidence)}% de confianza`
     : 'Planta identificada';
   return `
     <section class="screen">
       <div class="screen-head">
-        ${renderBackButton(isEditing ? 'Detalle' : 'Scan', isEditing ? 'plantDetail' : 'scan')}
+        ${renderBackButton('Scan', 'scan')}
       </div>
       <div class="screen-intro">
-        ${(isEditing || isIdentified) ? `<div class="screen-kicker">${isEditing ? 'Tu colección' : '¡Lo tenemos!'}</div>` : ''}
-        <h1 class="screen-title">${isEditing ? 'Editar planta' : (isIdentified ? 'Planta identificada' : 'Crear planta')}</h1>
-        ${(isIdentified || isManualCreate) ? '' : `<p class="screen-subtitle">${isEditing ? 'Actualiza la ficha de tu planta.' : 'Completa manualmente la ficha y guárdala en tu colección.'}</p>`}
+        ${isIdentified ? `<div class="screen-kicker">¡Lo tenemos!</div>` : ''}
+        <h1 class="screen-title">${isIdentified ? 'Planta identificada' : 'Crear planta'}</h1>
       </div>
       ${isIdentified ? `
         <div class="identified-plant-card">
@@ -5342,7 +5211,7 @@ function renderPlantCreateScreen() {
             </select>
           </div>
         </div>
-      ` : isManualCreate ? `
+      ` : `
         <div class="manual-plant-card">
           <div class="manual-plant-card-inner">
             <div class="manual-plant-card-icon">🪴</div>
@@ -5367,62 +5236,9 @@ function renderPlantCreateScreen() {
             ${renderSectionOptions(draft.section, true)}
           </select>
         </div>
-      ` : `
-        <div class="editor-card">
-          <div class="editor-preview-card">
-            <div class="editor-preview-visual">${draft.imagePreview ? `<img src="${draft.imagePreview}" alt="${escapeHtml(draft.name || draft.species || 'Planta')}">` : escapeHtml(draft.emoji || '🌿')}</div>
-            <div>
-              <div class="editor-preview-title">${escapeHtml(draft.name || draft.species || 'Nueva planta')}</div>
-              <div class="editor-preview-copy">${isEditing ? 'Edita los datos de esta ficha para mantener tu jardín al día.' : 'Ajusta los datos esenciales antes de guardarla en tu colección.'}</div>
-            </div>
-          </div>
-          <div class="editor-section">
-            <div class="editor-section-title">Identidad</div>
-            <div class="form-group">
-              <label>Icono</label>
-              <div class="emoji-row">
-                ${plantEmojis.slice(0, 12).map(emoji => `<button class="emoji-pill ${draft.emoji === emoji ? 'active' : ''}" type="button" onclick="setScreenPlantEmoji('${emoji}')">${emoji}</button>`).join('')}
-              </div>
-            </div>
-            <div class="form-group-inline">
-              <div class="form-group">
-                <label>Nombre</label>
-                <input class="editor-input" type="text" value="${escapeHtml(draft.name || '')}" placeholder="Ej: Monstera del salón" oninput="updateScreenPlantField('name', this.value)">
-              </div>
-              <div class="form-group">
-                <label>Especie</label>
-                <input class="editor-input" type="text" value="${escapeHtml(draft.species || '')}" placeholder="Ej: Monstera deliciosa" oninput="updateScreenPlantField('species', this.value)">
-              </div>
-            </div>
-            <div class="form-group">
-              <label>Sección</label>
-              <select class="editor-select" onchange="updateScreenPlantField('section', this.value)">
-                ${renderSectionOptions(draft.section)}
-              </select>
-            </div>
-          </div>
-          <div class="editor-section">
-            <div class="editor-section-title">Cuidados</div>
-            <div class="form-group-inline">
-              <div class="form-group">
-                <label>Frecuencia de riego</label>
-                <select class="editor-select" onchange="updateScreenPlantField('freq', Number(this.value))">
-                  ${[1,2,3,5,7,14,30].map(freq => `<option value="${freq}" ${Number(draft.freq) === freq ? 'selected' : ''}>${freq === 1 ? 'Cada día' : `Cada ${freq} días`}</option>`).join('')}
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Luz</label>
-                <select class="editor-select" onchange="updateScreenPlantField('light', this.value)">
-                  ${['☀️ Sol directo','⛅ Luz indirecta','🌥️ Sombra parcial','🌑 Poca luz'].map(light => `<option value="${light}" ${draft.light === light ? 'selected' : ''}>${escapeHtml(light)}</option>`).join('')}
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
       `}
       <div class="screen-actions">
-        <button class="btn-primary" type="button" onclick="savePlantFromScreen()">${isEditing ? 'Guardar cambios' : 'Guardar'}</button>
-        ${(isIdentified || isManualCreate) ? '' : `<button class="btn-secondary" type="button" onclick="cancelPlantCreateView()">Descartar cambios</button>`}
+        <button class="btn-primary" type="button" onclick="savePlantFromScreen()">Guardar</button>
       </div>
     </section>
   `;
@@ -5850,11 +5666,8 @@ function openThirstyPlantsView() {
   scrollPageToTop();
 }
 
-function openPlantCreateView(prefill = null, plantId = null) {
-  const existingPlant = plantId ? state.plants.find(item => item.id === plantId) : null;
-  state.screenPlantMode = existingPlant ? 'edit' : 'create';
-  state.screenPlantDraft = createPlantDraft(prefill, existingPlant);
-  state.editingPlantId = existingPlant ? existingPlant.id : null;
+function openPlantCreateView(prefill = null) {
+  state.screenPlantDraft = createPlantDraft(prefill);
   state.currentView = 'plantCreate';
   render();
   scrollPageToTop();
@@ -5862,13 +5675,6 @@ function openPlantCreateView(prefill = null, plantId = null) {
 
 function cancelPlantCreateView() {
   state.screenPlantDraft = null;
-  state.editingPlantId = null;
-  if (state.screenPlantMode === 'edit' && state.detailPlantId) {
-    state.currentView = 'plantDetail';
-    render();
-    scrollPageToTop();
-    return;
-  }
   goBackToMainView('scan');
 }
 
@@ -5882,14 +5688,6 @@ function updateScreenPlantField(field, value) {
 function updateDetailPlantField(field, value) {
   if (!state.detailDraft) return;
   state.detailDraft[field] = value;
-}
-
-function setScreenPlantEmoji(emoji) {
-  if (!state.screenPlantDraft) {
-    state.screenPlantDraft = createPlantDraft();
-  }
-  state.screenPlantDraft.emoji = emoji;
-  render();
 }
 
 function setSection(id) {
@@ -6013,45 +5811,29 @@ async function waterSection(sectionId) {
 
 async function savePlantFromScreen() {
   const draft = state.screenPlantDraft || createPlantDraft();
-  const isIdentifiedFlow = state.screenPlantMode !== 'edit' && Boolean(draft.identifiedSpecies);
-  const isManualCreateFlow = state.screenPlantMode !== 'edit' && !Boolean(draft.identifiedSpecies);
+  const isIdentifiedFlow = Boolean(draft.identifiedSpecies);
+  const isManualCreateFlow = !isIdentifiedFlow;
 
   const resolvedName = (draft.name || '').trim() || (draft.species || '').trim() || 'Planta sin nombre';
-  let plantToSync;
+  const plantToSync = {
+    ...(draft || {}),
+    id: createEntityId('plant'),
+    name: resolvedName,
+    species: isManualCreateFlow ? '' : (draft.species || '').trim(),
+    emoji: isManualCreateFlow ? '🪴' : (draft.emoji || '🌿'),
+    section: draft.section,
+    freq: Number(draft.freq) || 3,
+    waterLog: Array.isArray(draft.waterLog) ? draft.waterLog : [],
+  };
+  state.plants.push(plantToSync);
 
-  if (state.screenPlantMode === 'edit' && draft.id) {
-    const existing = state.plants.find(item => item.id === draft.id);
-    if (!existing) return;
-    existing.name = resolvedName;
-    existing.species = (draft.species || '').trim();
-    existing.emoji = draft.emoji || '🌿';
-    existing.section = draft.section;
-    existing.freq = Number(draft.freq) || 3;
-    existing.light = draft.light || '⛅ Luz indirecta';
-    plantToSync = existing;
-  } else {
-    plantToSync = {
-      ...(draft || {}),
-      id: createEntityId('plant'),
-      name: resolvedName,
-      species: isManualCreateFlow ? '' : (draft.species || '').trim(),
-      emoji: isManualCreateFlow ? '🪴' : (draft.emoji || '🌿'),
-      section: draft.section,
-      freq: Number(draft.freq) || 3,
-      light: draft.light || '⛅ Luz indirecta',
-      waterLog: Array.isArray(draft.waterLog) ? draft.waterLog : [],
-    };
-    state.plants.push(plantToSync);
-  }
-
-  state.detailPlantId = (isIdentifiedFlow || isManualCreateFlow) ? null : plantToSync.id;
+  state.detailPlantId = null;
   state.detailDraft = null;
   state.screenPlantDraft = null;
-  state.editingPlantId = null;
   if (isIdentifiedFlow) {
     resetIdentificationState();
   }
-  state.currentView = (isIdentifiedFlow || isManualCreateFlow) ? 'plants' : 'plantDetail';
+  state.currentView = 'plants';
   render();
   scrollPageToTop();
 
@@ -6066,8 +5848,6 @@ async function savePlantFromScreen() {
   showToast(`🌱 ${resolvedName} guardada`);
 }
 
-// ===== EMOJIS =====
-const plantEmojis = ['🌿','🌱','🌵','🌴','🌳','🌲','🍀','🍃','🌾','🌺','🌸','🌼','🌻','🌹','🌷','💐','🍁','🎋','🎍','🪴','🌿','🌾','🍂','🪻','💜','🍄'];
 const sectionEmojis = ['🌺','🛋️','🛏️','🚿','🍳','🪴','🌿','🏡','🌞','💻','📚','🎭'];
 
 function buildIdentifiedPlantDraft(result) {
