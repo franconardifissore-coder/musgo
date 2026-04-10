@@ -3735,11 +3735,11 @@
 <div class="app-shell">
   <div class="app-frame">
     <header class="mobile-topbar">
-      <div class="mobile-brand">
+      <div class="mobile-brand" id="topbarBrand" role="button" tabindex="0" onclick="handleTopbarBrandClick()" onkeydown="handleTopbarBrandKeydown(event)">
         <div class="mobile-brand-icon"><img src="./resources/newlogo small.png" alt="Musgo"></div>
         <div class="mobile-brand-name">Musgo</div>
       </div>
-      <button class="topbar-menu-button" id="topbarMenuButton" type="button" aria-label="Abrir menú" aria-expanded="false" onclick="toggleMenu()">
+      <button class="topbar-menu-button" id="topbarMenuButton" type="button" aria-label="Abrir menú" aria-expanded="false" onclick="handleTopbarAction()">
         <span class="topbar-menu-lines">
           <span></span>
           <span></span>
@@ -4284,22 +4284,75 @@ async function deleteSectionFromCloud(sectionId) {
 function renderTopbar() {
   const topbar = document.querySelector('.mobile-topbar');
   const menuButton = document.getElementById('topbarMenuButton');
+  const brand = document.getElementById('topbarBrand');
   const appFrame = document.querySelector('.app-frame');
   const isMainView = MAIN_VIEWS.includes(state.currentView);
   const showPublicLanding = shouldRenderLanding();
   const showPublicAuth = shouldRenderAuthScreen();
   const hasDesktopSidebar = window.innerWidth >= 1100 && isMainView && !state.splashVisible && !showPublicLanding && !showPublicAuth;
   if (topbar) {
-    topbar.style.display = (state.splashVisible || (isMainView && !showPublicLanding && !showPublicAuth)) ? 'flex' : 'none';
+    topbar.style.display = (state.splashVisible || isMainView || showPublicLanding || showPublicAuth) ? 'flex' : 'none';
     topbar.classList.toggle('splash-mode', Boolean(state.splashVisible));
   }
   if (appFrame) {
     appFrame.classList.toggle('desktop-sidebar-layout', hasDesktopSidebar);
   }
+  if (brand) {
+    const brandIsClickable = showPublicLanding || showPublicAuth;
+    brand.style.cursor = brandIsClickable ? 'pointer' : 'default';
+    brand.setAttribute('aria-disabled', brandIsClickable ? 'false' : 'true');
+  }
   if (menuButton) {
-    menuButton.classList.toggle('is-open', Boolean(state.menuOpen) && !hasDesktopSidebar);
+    const isPublicHeader = showPublicLanding || showPublicAuth;
+    menuButton.classList.toggle('is-open', Boolean(state.menuOpen) && !hasDesktopSidebar && !isPublicHeader);
     menuButton.setAttribute('aria-expanded', hasDesktopSidebar ? 'true' : (state.menuOpen ? 'true' : 'false'));
-    menuButton.setAttribute('aria-label', hasDesktopSidebar ? 'Menú visible' : (state.menuOpen ? 'Cerrar menú' : 'Abrir menú'));
+    if (showPublicLanding) {
+      menuButton.style.display = 'inline-flex';
+      menuButton.classList.remove('is-open');
+      menuButton.innerHTML = '<span style="font-size:16px;font-weight:700;color:#345d4c;line-height:1;">Ingresar</span>';
+      menuButton.setAttribute('aria-label', 'Ir a acceso');
+    } else if (showPublicAuth) {
+      menuButton.style.display = 'none';
+      menuButton.innerHTML = `
+        <span class="topbar-menu-lines">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+      `;
+    } else {
+      menuButton.style.display = hasDesktopSidebar ? 'none' : 'inline-flex';
+      menuButton.innerHTML = `
+        <span class="topbar-menu-lines">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+      `;
+      menuButton.setAttribute('aria-label', hasDesktopSidebar ? 'Menú visible' : (state.menuOpen ? 'Cerrar menú' : 'Abrir menú'));
+    }
+  }
+}
+
+function handleTopbarAction() {
+  if (shouldRenderLanding()) {
+    setView('auth');
+    return;
+  }
+  if (shouldRenderAuthScreen()) return;
+  toggleMenu();
+}
+
+function handleTopbarBrandClick() {
+  if (shouldRenderLanding() || shouldRenderAuthScreen()) {
+    setView('dashboard');
+  }
+}
+
+function handleTopbarBrandKeydown(event) {
+  if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault();
+    handleTopbarBrandClick();
   }
 }
 
