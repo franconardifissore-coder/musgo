@@ -744,6 +744,11 @@
     .legal-links {
       max-width: 504px;
     }
+
+    .auth-panel,
+    .auth-legal-copy {
+      max-width: 640px;
+    }
   }
 
   .screen-subtitle {
@@ -2027,6 +2032,20 @@
   .auth-feedback.success {
     background: rgba(198, 235, 212, 0.45);
     color: #345d4c;
+  }
+
+  .auth-legal-copy {
+    width: 100%;
+    margin-top: 14px;
+    color: #3f4940;
+    font-size: 0.9rem;
+    line-height: 1.55;
+  }
+
+  .auth-legal-copy a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
   }
 
   .space-editor-card {
@@ -5181,10 +5200,7 @@ function renderProfileScreen() {
           <div class="auth-divider">o</div>
           <button class="btn-secondary" type="button" onclick="handleGoogleSignIn()">Continuar con Google</button>
         </div>
-        <div class="legal-links">
-          <a href="/terminos-y-condiciones">Terminos y condiciones</a>
-          <a href="/privacidad">Politica de privacidad</a>
-        </div>
+        <p class="auth-legal-copy">Al continuar, aceptas tanto nuestra <a href="/privacidad">política de privacidad</a> como los <a href="/terminos-y-condiciones">términos y condiciones</a> del servicio.</p>
       </section>
     `;
   }
