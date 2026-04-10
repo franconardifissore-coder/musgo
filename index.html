@@ -813,6 +813,13 @@
     .auth-legal-copy {
       max-width: 640px;
     }
+
+    .auth-screen .screen-intro,
+    .auth-screen .auth-panel,
+    .auth-screen .auth-legal-copy {
+      margin-left: auto;
+      margin-right: auto;
+    }
   }
 
   .screen-subtitle {
@@ -2024,6 +2031,28 @@
     display: flex;
     flex-direction: column;
     gap: 18px;
+  }
+
+  .auth-screen .screen-intro {
+    text-align: center;
+    align-items: center;
+  }
+
+  .auth-screen .screen-subtitle {
+    display: none;
+  }
+
+  .auth-google-button {
+    width: 100%;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .auth-google-button img {
+    width: 18px;
+    height: 18px;
+    display: block;
+    flex-shrink: 0;
   }
 
   .auth-mode-toggle {
@@ -4697,17 +4726,20 @@ function renderLandingScreen() {
 function renderAuthScreen() {
   const authModeLabel = state.authForm.mode === 'signup' ? 'Crear cuenta' : 'Entrar';
   return `
-    <section class="screen">
+    <section class="screen auth-screen">
       <div class="screen-intro">
-        <h1 class="screen-title">Perfil</h1>
-        <p class="screen-subtitle">Entra con tu email o usa Google para acceder a tu jardín desde cualquier dispositivo.</p>
+        <h1 class="screen-title">Ingresar</h1>
       </div>
       <div class="auth-panel">
+        <button class="btn-secondary auth-google-button" type="button" onclick="handleGoogleSignIn()">
+          <img src="./resources/icons8-google.svg" alt="">
+          <span>Continuar con Google</span>
+        </button>
+        <div class="auth-divider">o con email</div>
         <div class="auth-mode-toggle">
           <button class="auth-mode-button ${state.authForm.mode === 'signin' ? 'active' : ''}" type="button" onclick="setAuthFormMode('signin')">Entrar</button>
           <button class="auth-mode-button ${state.authForm.mode === 'signup' ? 'active' : ''}" type="button" onclick="setAuthFormMode('signup')">Crear cuenta</button>
         </div>
-        <div class="auth-helper">${authModeLabel === 'Crear cuenta' ? 'Crea una cuenta rápida para compartir Musgo con familia o amigos sin depender de Google.' : 'Accede a tu jardín guardado en la nube con tu email y contraseña.'}</div>
         ${state.authForm.error ? `<div class="auth-feedback error">${escapeHtml(state.authForm.error)}</div>` : ''}
         ${state.authForm.success ? `<div class="auth-feedback success">${escapeHtml(state.authForm.success)}</div>` : ''}
         <div class="auth-form">
@@ -4719,10 +4751,8 @@ function renderAuthScreen() {
             <label>Contraseña</label>
             <input class="editor-input" type="password" value="${escapeHtml(state.authForm.password)}" placeholder="Mínimo 6 caracteres" oninput="updateAuthFormField('password', this.value)">
           </div>
-          <button class="btn-primary" type="button" onclick="submitEmailAuth()" ${state.authForm.loading ? 'disabled' : ''}>${state.authForm.loading ? 'Procesando...' : authModeLabel}</button>
-        </div>
-        <div class="auth-divider">o</div>
-        <button class="btn-secondary" type="button" onclick="handleGoogleSignIn()">Continuar con Google</button>
+            <button class="btn-primary" type="button" onclick="submitEmailAuth()" ${state.authForm.loading ? 'disabled' : ''}>${state.authForm.loading ? 'Procesando...' : authModeLabel}</button>
+          </div>
       </div>
       <p class="auth-legal-copy">Al continuar, aceptas tanto nuestra <a href="/privacidad">política de privacidad</a> como los <a href="/terminos-y-condiciones">términos y condiciones</a> del servicio.</p>
     </section>
