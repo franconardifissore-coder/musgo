@@ -810,16 +810,18 @@
 
     .spaces-list {
       display: grid;
-      grid-template-columns: minmax(0, 600px);
+      grid-template-columns: 600px;
       gap: 24px;
-      width: 100%;
+      width: fit-content;
+      max-width: 100%;
       justify-content: center;
       justify-items: center;
       place-content: start center;
     }
 
     .space-card {
-      width: 100%;
+      width: 600px;
+      min-width: 600px;
       max-width: 600px;
     }
 
@@ -861,7 +863,8 @@
     }
 
     .app-frame.desktop-sidebar-layout .app-main > .screen > .spaces-list {
-      width: 600px;
+      width: fit-content;
+      min-width: 600px;
       max-width: 600px;
     }
   }
