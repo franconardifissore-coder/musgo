@@ -903,6 +903,33 @@
       width: 374px;
       max-width: 374px;
     }
+
+    .editor-screen,
+    .detail-screen {
+      align-items: center;
+    }
+
+    .editor-screen .screen-head,
+    .editor-screen .screen-intro,
+    .editor-screen .space-editor-card,
+    .editor-screen .identified-plant-card,
+    .editor-screen .identified-plant-form,
+    .editor-screen .manual-plant-card,
+    .editor-screen > .form-group,
+    .editor-screen > .screen-actions,
+    .detail-screen .screen-head,
+    .detail-screen .screen-intro,
+    .detail-screen .plant-detail-layout {
+      width: min(100%, 560px);
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .editor-screen .screen-intro,
+    .detail-screen .screen-intro {
+      text-align: center;
+      align-items: center;
+    }
   }
 
   .screen-subtitle {
@@ -4862,7 +4889,7 @@ function renderPlantsScreen() {
   const tiles = renderPlantTiles(plants);
 
   return `
-    <section class="screen">
+    <section class="screen editor-screen">
       <div class="screen-intro">
         <h1 class="screen-title">Tus Plantas</h1>
         <p class="screen-subtitle">Bienvenid@ a tu colección</p>
@@ -4936,7 +4963,7 @@ function renderSpacesScreen() {
   }).join('');
 
   return `
-    <section class="screen">
+    <section class="screen editor-screen">
       <div class="screen-intro">
         <h1 class="screen-title">Tus Espacios</h1>
         <p class="screen-subtitle">Organiza tu oasis personal por habitaciones.</p>
@@ -4975,7 +5002,7 @@ function renderEditSpaceScreen() {
     : 'Define un espacio de tu casa para organizar tus plantas.';
 
   return `
-    <section class="screen">
+    <section class="screen detail-screen">
       <div class="screen-head">
         ${renderBackButton('Espacios', 'spaces')}
       </div>
