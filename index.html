@@ -740,6 +740,10 @@
     .plant-detail-layout {
       max-width: 380px;
     }
+
+    .legal-links {
+      max-width: 504px;
+    }
   }
 
   .screen-subtitle {
@@ -1560,6 +1564,26 @@
 
   .profile-actions {
     width: 100%;
+  }
+
+  .legal-links {
+    width: 100%;
+    margin-top: 18px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .legal-links a {
+    color: #191c1c;
+    font-size: 0.92rem;
+    line-height: 1.4;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .legal-links a:last-child {
+    text-align: right;
   }
 
   .editor-card {
@@ -5143,10 +5167,10 @@ function renderProfileScreen() {
           <div class="auth-helper">${authModeLabel === 'Crear cuenta' ? 'Crea una cuenta rápida para compartir Musgo con familia o amigos sin depender de Google.' : 'Accede a tu jardín guardado en la nube con tu email y contraseña.'}</div>
           ${state.authForm.error ? `<div class="auth-feedback error">${escapeHtml(state.authForm.error)}</div>` : ''}
           ${state.authForm.success ? `<div class="auth-feedback success">${escapeHtml(state.authForm.success)}</div>` : ''}
-          <div class="auth-form">
-            <div class="form-group">
-              <label>Email</label>
-              <input class="editor-input" type="email" value="${escapeHtml(state.authForm.email)}" placeholder="tu@email.com" oninput="updateAuthFormField('email', this.value)">
+        <div class="auth-form">
+          <div class="form-group">
+            <label>Email</label>
+            <input class="editor-input" type="email" value="${escapeHtml(state.authForm.email)}" placeholder="tu@email.com" oninput="updateAuthFormField('email', this.value)">
             </div>
             <div class="form-group">
               <label>Contraseña</label>
@@ -5156,6 +5180,10 @@ function renderProfileScreen() {
           </div>
           <div class="auth-divider">o</div>
           <button class="btn-secondary" type="button" onclick="handleGoogleSignIn()">Continuar con Google</button>
+        </div>
+        <div class="legal-links">
+          <a href="/terminos-y-condiciones">Terminos y condiciones</a>
+          <a href="/privacidad">Politica de privacidad</a>
         </div>
       </section>
     `;
@@ -5192,6 +5220,10 @@ function renderProfileScreen() {
       </div>
       <div class="screen-actions profile-actions">
         <button class="btn-secondary" type="button" onclick="handleSignOut()">Cerrar sesión</button>
+      </div>
+      <div class="legal-links">
+        <a href="/terminos-y-condiciones">Terminos y condiciones</a>
+        <a href="/privacidad">Politica de privacidad</a>
       </div>
     </section>
   `;
