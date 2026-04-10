@@ -86,7 +86,7 @@
     min-height: 72px;
     width: 100%;
     margin: 0;
-    padding: 16px 24px;
+    padding: 16px 28px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -115,11 +115,32 @@
     transition: opacity 0.18s ease;
   }
 
+  .topbar-menu-button.public-cta {
+    width: auto;
+    height: 44px;
+    min-height: 44px;
+    padding: 0 20px;
+    border: 1px solid rgba(52, 93, 76, 0.24);
+    border-radius: 999px;
+    background: #ffffff;
+    color: #345d4c;
+    box-shadow: 0 8px 20px rgba(31, 52, 37, 0.04);
+    gap: 10px;
+    transition: transform 0.22s ease, background 0.22s ease, border-color 0.22s ease, color 0.22s ease, box-shadow 0.22s ease;
+  }
+
   .topbar-menu-button:hover {
     background: transparent;
     transform: none;
     box-shadow: none;
     opacity: 0.72;
+  }
+
+  .topbar-menu-button.public-cta:hover {
+    transform: translateY(-1px);
+    border-color: rgba(79, 168, 109, 0.32);
+    box-shadow: 0 12px 24px rgba(31, 52, 37, 0.06);
+    opacity: 1;
   }
 
   .topbar-menu-button.is-open {
@@ -145,6 +166,20 @@
 
   .topbar-menu-button.is-open .topbar-menu-lines span {
     background: #ffffff;
+  }
+
+  .topbar-public-icon {
+    width: 22px;
+    height: 22px;
+    display: block;
+    flex-shrink: 0;
+  }
+
+  .topbar-public-label {
+    font-size: 16px;
+    font-weight: 700;
+    color: #345d4c;
+    line-height: 1;
   }
 
   .mobile-brand {
@@ -641,7 +676,7 @@
     .mobile-topbar {
       grid-column: 1 / -1;
       grid-row: 1;
-      padding: 16px 32px;
+      padding: 16px 40px;
     }
 
     .topbar-menu-button {
@@ -4304,15 +4339,20 @@ function renderTopbar() {
   }
   if (menuButton) {
     const isPublicHeader = showPublicLanding || showPublicAuth;
+    menuButton.classList.toggle('public-cta', showPublicLanding);
     menuButton.classList.toggle('is-open', Boolean(state.menuOpen) && !hasDesktopSidebar && !isPublicHeader);
     menuButton.setAttribute('aria-expanded', hasDesktopSidebar ? 'true' : (state.menuOpen ? 'true' : 'false'));
     if (showPublicLanding) {
       menuButton.style.display = 'inline-flex';
       menuButton.classList.remove('is-open');
-      menuButton.innerHTML = '<span style="font-size:16px;font-weight:700;color:#345d4c;line-height:1;">Ingresar</span>';
+      menuButton.innerHTML = `
+        <img class="topbar-public-icon" src="./resources/ingresar.svg" alt="">
+        <span class="topbar-public-label">Ingresar</span>
+      `;
       menuButton.setAttribute('aria-label', 'Ir a acceso');
     } else if (showPublicAuth) {
       menuButton.style.display = 'none';
+      menuButton.classList.remove('public-cta');
       menuButton.innerHTML = `
         <span class="topbar-menu-lines">
           <span></span>
@@ -4322,6 +4362,7 @@ function renderTopbar() {
       `;
     } else {
       menuButton.style.display = hasDesktopSidebar ? 'none' : 'inline-flex';
+      menuButton.classList.remove('public-cta');
       menuButton.innerHTML = `
         <span class="topbar-menu-lines">
           <span></span>
