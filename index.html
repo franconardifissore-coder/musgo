@@ -3884,6 +3884,18 @@ let state = {
 
 const MAIN_VIEWS = ['dashboard', 'plants', 'scan', 'spaces', 'profile'];
 
+function isUnauthenticatedExperience() {
+  return state.auth.ready && state.auth.configured && !state.auth.user;
+}
+
+function shouldRenderLanding() {
+  return isUnauthenticatedExperience() && state.currentView !== 'auth';
+}
+
+function shouldRenderAuthScreen() {
+  return isUnauthenticatedExperience() && state.currentView === 'auth';
+}
+
 function daysAgo(n) {
   const d = new Date();
   d.setDate(d.getDate() - n);
@@ -4138,9 +4150,15 @@ function applyAuthState({ session = null, user = null, configured = state.auth.c
 
   const nextUserId = user?.id || null;
   if (nextUserId && nextUserId !== previousUserId) {
+    if (state.currentView === 'auth') {
+      state.currentView = getPreviousMainView('dashboard');
+    }
     loadCloudGarden();
   }
   if (!nextUserId && previousUserId) {
+    if (state.currentView !== 'auth') {
+      state.currentView = 'dashboard';
+    }
     state.cloud = {
       loading: false,
       syncedUserId: null,
@@ -4268,9 +4286,11 @@ function renderTopbar() {
   const menuButton = document.getElementById('topbarMenuButton');
   const appFrame = document.querySelector('.app-frame');
   const isMainView = MAIN_VIEWS.includes(state.currentView);
-  const hasDesktopSidebar = window.innerWidth >= 1100 && isMainView && !state.splashVisible;
+  const showPublicLanding = shouldRenderLanding();
+  const showPublicAuth = shouldRenderAuthScreen();
+  const hasDesktopSidebar = window.innerWidth >= 1100 && isMainView && !state.splashVisible && !showPublicLanding && !showPublicAuth;
   if (topbar) {
-    topbar.style.display = (state.splashVisible || isMainView) ? 'flex' : 'none';
+    topbar.style.display = (state.splashVisible || (isMainView && !showPublicLanding && !showPublicAuth)) ? 'flex' : 'none';
     topbar.classList.toggle('splash-mode', Boolean(state.splashVisible));
   }
   if (appFrame) {
@@ -4287,9 +4307,11 @@ function renderMenu() {
   const overlay = document.getElementById('menuOverlay');
   if (!overlay) return;
   const isMainView = MAIN_VIEWS.includes(state.currentView);
-  const forceDesktopSidebar = window.innerWidth >= 1100 && isMainView && !state.splashVisible;
+  const showPublicLanding = shouldRenderLanding();
+  const showPublicAuth = shouldRenderAuthScreen();
+  const forceDesktopSidebar = window.innerWidth >= 1100 && isMainView && !state.splashVisible && !showPublicLanding && !showPublicAuth;
 
-  if (state.splashVisible) {
+  if (state.splashVisible || showPublicLanding || showPublicAuth) {
     overlay.classList.remove('open');
     overlay.innerHTML = '';
     return;
@@ -4491,8 +4513,8 @@ function renderAuthPrompt(message = 'Inicia sesión para ver y editar tu jardín
     icon: '☁️',
     title: 'Tu jardín está en la nube',
     message,
-    actionLabel: 'Ir a perfil',
-    action: "setView('profile')",
+    actionLabel: 'Acceder',
+    action: "setView('auth')",
   });
 }
 
@@ -4513,7 +4535,7 @@ function renderLandingScreen() {
           <div class="landing-eyebrow">Botanical care · AI plant tracking</div>
           <h1 class="landing-title">Tu jard&iacute;n, m&aacute;s simple y m&aacute;s inteligente.</h1>
           <p class="landing-subtitle">Organiza tus plantas, identif&iacute;calas con AI y revisa tus riegos desde una experiencia tranquila, r&aacute;pida y pensada para el d&iacute;a a d&iacute;a.</p>
-          <button class="btn-primary landing-cta" type="button" onclick="setView('profile')">Acceder</button>
+          <button class="btn-primary landing-cta" type="button" onclick="setView('auth')">Acceder</button>
         </div>
         <div class="landing-mockup">
           <div class="landing-phone">
@@ -4574,6 +4596,41 @@ function renderLandingScreen() {
         <a href="/privacidad">Política de privacidad</a>
         <a href="/terminos-y-condiciones">Términos y condiciones</a>
       </div>
+    </section>
+  `;
+}
+
+function renderAuthScreen() {
+  const authModeLabel = state.authForm.mode === 'signup' ? 'Crear cuenta' : 'Entrar';
+  return `
+    <section class="screen">
+      <div class="screen-intro">
+        <h1 class="screen-title">Perfil</h1>
+        <p class="screen-subtitle">Entra con tu email o usa Google para acceder a tu jardín desde cualquier dispositivo.</p>
+      </div>
+      <div class="auth-panel">
+        <div class="auth-mode-toggle">
+          <button class="auth-mode-button ${state.authForm.mode === 'signin' ? 'active' : ''}" type="button" onclick="setAuthFormMode('signin')">Entrar</button>
+          <button class="auth-mode-button ${state.authForm.mode === 'signup' ? 'active' : ''}" type="button" onclick="setAuthFormMode('signup')">Crear cuenta</button>
+        </div>
+        <div class="auth-helper">${authModeLabel === 'Crear cuenta' ? 'Crea una cuenta rápida para compartir Musgo con familia o amigos sin depender de Google.' : 'Accede a tu jardín guardado en la nube con tu email y contraseña.'}</div>
+        ${state.authForm.error ? `<div class="auth-feedback error">${escapeHtml(state.authForm.error)}</div>` : ''}
+        ${state.authForm.success ? `<div class="auth-feedback success">${escapeHtml(state.authForm.success)}</div>` : ''}
+        <div class="auth-form">
+          <div class="form-group">
+            <label>Email</label>
+            <input class="editor-input" type="email" value="${escapeHtml(state.authForm.email)}" placeholder="tu@email.com" oninput="updateAuthFormField('email', this.value)">
+          </div>
+          <div class="form-group">
+            <label>Contraseña</label>
+            <input class="editor-input" type="password" value="${escapeHtml(state.authForm.password)}" placeholder="Mínimo 6 caracteres" oninput="updateAuthFormField('password', this.value)">
+          </div>
+          <button class="btn-primary" type="button" onclick="submitEmailAuth()" ${state.authForm.loading ? 'disabled' : ''}>${state.authForm.loading ? 'Procesando...' : authModeLabel}</button>
+        </div>
+        <div class="auth-divider">o</div>
+        <button class="btn-secondary" type="button" onclick="handleGoogleSignIn()">Continuar con Google</button>
+      </div>
+      <p class="auth-legal-copy">Al continuar, aceptas tanto nuestra <a href="/privacidad">política de privacidad</a> como los <a href="/terminos-y-condiciones">términos y condiciones</a> del servicio.</p>
     </section>
   `;
 }
@@ -5232,41 +5289,6 @@ function renderProfileScreen() {
     `;
   }
 
-  if (state.auth.configured && !state.auth.user) {
-    const authModeLabel = state.authForm.mode === 'signup' ? 'Crear cuenta' : 'Entrar';
-    return `
-      <section class="screen">
-        <div class="screen-intro">
-          <h1 class="screen-title">Perfil</h1>
-          <p class="screen-subtitle">Entra con tu email o usa Google para acceder a tu jardín desde cualquier dispositivo.</p>
-        </div>
-        <div class="auth-panel">
-          <div class="auth-mode-toggle">
-            <button class="auth-mode-button ${state.authForm.mode === 'signin' ? 'active' : ''}" type="button" onclick="setAuthFormMode('signin')">Entrar</button>
-            <button class="auth-mode-button ${state.authForm.mode === 'signup' ? 'active' : ''}" type="button" onclick="setAuthFormMode('signup')">Crear cuenta</button>
-          </div>
-          <div class="auth-helper">${authModeLabel === 'Crear cuenta' ? 'Crea una cuenta rápida para compartir Musgo con familia o amigos sin depender de Google.' : 'Accede a tu jardín guardado en la nube con tu email y contraseña.'}</div>
-          ${state.authForm.error ? `<div class="auth-feedback error">${escapeHtml(state.authForm.error)}</div>` : ''}
-          ${state.authForm.success ? `<div class="auth-feedback success">${escapeHtml(state.authForm.success)}</div>` : ''}
-        <div class="auth-form">
-          <div class="form-group">
-            <label>Email</label>
-            <input class="editor-input" type="email" value="${escapeHtml(state.authForm.email)}" placeholder="tu@email.com" oninput="updateAuthFormField('email', this.value)">
-            </div>
-            <div class="form-group">
-              <label>Contraseña</label>
-              <input class="editor-input" type="password" value="${escapeHtml(state.authForm.password)}" placeholder="Mínimo 6 caracteres" oninput="updateAuthFormField('password', this.value)">
-            </div>
-            <button class="btn-primary" type="button" onclick="submitEmailAuth()" ${state.authForm.loading ? 'disabled' : ''}>${state.authForm.loading ? 'Procesando...' : authModeLabel}</button>
-          </div>
-          <div class="auth-divider">o</div>
-          <button class="btn-secondary" type="button" onclick="handleGoogleSignIn()">Continuar con Google</button>
-        </div>
-        <p class="auth-legal-copy">Al continuar, aceptas tanto nuestra <a href="/privacidad">política de privacidad</a> como los <a href="/terminos-y-condiciones">términos y condiciones</a> del servicio.</p>
-      </section>
-    `;
-  }
-
   const user = state.auth.user;
   const avatarUrl = user?.user_metadata?.avatar_url || '';
   return `
@@ -5314,8 +5336,12 @@ function renderCurrentView() {
     appMain.innerHTML = renderSplashScreen();
     return;
   }
-  if (state.auth.ready && state.auth.configured && !state.auth.user && state.currentView !== 'profile') {
+  if (shouldRenderLanding()) {
     appMain.innerHTML = renderLandingScreen();
+    return;
+  }
+  if (shouldRenderAuthScreen()) {
+    appMain.innerHTML = renderAuthScreen();
     return;
   }
   if (state.currentView === 'dashboard') {
