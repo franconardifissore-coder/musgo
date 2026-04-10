@@ -771,12 +771,13 @@
     }
 
     .plants-grid-mobile {
-      grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+      grid-template-columns: repeat(4, 190px) !important;
       gap: 18px !important;
       width: fit-content;
       max-width: 100%;
       justify-content: center;
       justify-items: stretch;
+      place-content: start center;
       margin-left: auto;
       margin-right: auto;
     }
@@ -808,10 +809,13 @@
     }
 
     .spaces-list {
-      grid-template-columns: repeat(auto-fit, minmax(260px, 600px));
+      display: grid;
+      grid-template-columns: minmax(0, 600px);
       gap: 24px;
+      width: 100%;
       justify-content: center;
       justify-items: center;
+      place-content: start center;
     }
 
     .space-card {
