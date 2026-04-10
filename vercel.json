@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/privacidad",
+      "destination": "/docs/privacy_policy/index.html"
+    },
+    {
+      "source": "/terminos-y-condiciones",
+      "destination": "/docs/terms_and_conditions/index.html"
+    }
+  ]
+}
