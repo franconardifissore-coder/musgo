@@ -698,6 +698,31 @@
       max-width: 1120px;
       margin-left: auto;
       margin-right: auto;
+      align-items: center;
+    }
+
+    .app-frame.desktop-sidebar-layout .app-main > .screen > * {
+      width: 100%;
+    }
+
+    .app-frame.desktop-sidebar-layout .app-main > .screen > .screen-intro {
+      width: 100%;
+      max-width: 1120px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+      align-items: center;
+    }
+
+    .app-frame.desktop-sidebar-layout .screen-title,
+    .app-frame.desktop-sidebar-layout .screen-subtitle {
+      text-align: center;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .app-frame.desktop-sidebar-layout .app-main > .screen > .chip-row {
+      justify-content: center;
     }
 
     .menu-overlay {
@@ -778,7 +803,8 @@
     .spaces-list {
       grid-template-columns: repeat(auto-fit, minmax(260px, 600px));
       gap: 24px;
-      justify-content: start;
+      justify-content: center;
+      justify-items: center;
     }
 
     .dashboard-layout {
@@ -786,6 +812,7 @@
       grid-template-columns: minmax(0, 360px) minmax(0, 1fr);
       gap: 24px;
       align-items: start;
+      justify-content: center;
     }
 
     .dashboard-chart-card {
@@ -799,6 +826,17 @@
 
     .scan-panel {
       max-width: 620px;
+    }
+
+    .app-frame.desktop-sidebar-layout .plants-grid-mobile,
+    .app-frame.desktop-sidebar-layout .spaces-list,
+    .app-frame.desktop-sidebar-layout .dashboard-layout,
+    .app-frame.desktop-sidebar-layout .scan-panel,
+    .app-frame.desktop-sidebar-layout .profile-card,
+    .app-frame.desktop-sidebar-layout .profile-actions,
+    .app-frame.desktop-sidebar-layout .legal-links {
+      margin-left: auto;
+      margin-right: auto;
     }
   }
 
