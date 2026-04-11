@@ -299,262 +299,515 @@
   .landing-screen {
     display: flex;
     flex-direction: column;
-    gap: 28px;
+    gap: 52px;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 8px 0 12px;
   }
 
   .landing-hero {
     display: grid;
-    gap: 22px;
-    padding: 6px 0 4px;
+    gap: 28px;
+    align-items: center;
   }
 
   .landing-copy {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 16px;
   }
 
   .landing-eyebrow {
-    font-size: 0.76rem;
+    font-size: 0.72rem;
     font-weight: 700;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: rgba(52, 93, 76, 0.68);
+    color: rgba(52, 93, 76, 0.72);
   }
 
   .landing-title {
-    font-size: 3.2rem;
-    line-height: 0.93;
-    letter-spacing: -0.08em;
+    font-size: 3.1rem;
+    line-height: 0.94;
+    letter-spacing: -0.07em;
     color: #191c1c;
     font-weight: 800;
+    max-width: 10ch;
   }
 
   .landing-subtitle {
-    max-width: 18ch;
-    font-size: 1.06rem;
-    line-height: 1.45;
-    color: #4f5b52;
+    max-width: 42ch;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #56665a;
+  }
+
+  .landing-copy-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
   }
 
   .landing-cta {
     width: fit-content;
-    min-width: 164px;
+    min-width: 168px;
   }
 
-  .landing-mockup {
+  .landing-note {
+    color: #7b8a80;
+    font-size: 0.82rem;
+    line-height: 1.4;
+  }
+
+  .landing-artboard {
     position: relative;
-    padding: 18px 14px;
+    min-height: 420px;
     border-radius: 34px;
     background:
-      radial-gradient(circle at 22% 18%, rgba(198, 235, 212, 0.82), transparent 42%),
-      linear-gradient(180deg, #ffffff 0%, #f6faf5 100%);
+      radial-gradient(circle at 22% 18%, rgba(198, 235, 212, 0.82), transparent 34%),
+      radial-gradient(circle at 82% 20%, rgba(52, 93, 76, 0.08), transparent 28%),
+      linear-gradient(180deg, #f7fbf6 0%, #eef6f0 100%);
     border: 1px solid rgba(52, 93, 76, 0.09);
     box-shadow: 0 28px 48px rgba(31, 52, 37, 0.08);
     overflow: hidden;
   }
 
-  .landing-phone {
+  .landing-art-photo {
     position: relative;
-    margin: 0 auto;
-    width: min(100%, 292px);
-    border-radius: 34px;
-    border: 8px solid #141716;
-    background: #ffffff;
-    box-shadow: 0 16px 36px rgba(20, 23, 22, 0.18);
+    width: min(100%, 318px);
+    height: 100%;
+    min-height: 420px;
+    margin-left: auto;
+    background:
+      linear-gradient(0deg, rgba(255,255,255,0.32), rgba(255,255,255,0.32)),
+      radial-gradient(circle at 52% 42%, rgba(255,255,255,0.6), transparent 28%),
+      linear-gradient(145deg, #dce9df 0%, #f6fbf7 44%, #d5e7d9 100%);
+    border-left: 1px solid rgba(52, 93, 76, 0.08);
     overflow: hidden;
   }
 
-  .landing-phone-notch {
+  .landing-art-photo::before {
     position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 106px;
-    height: 22px;
-    border-radius: 999px;
-    background: #101413;
-    z-index: 2;
-  }
-
-  .landing-phone-screen {
-    padding: 42px 16px 18px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    min-height: 420px;
-    background: linear-gradient(180deg, #f8fbf7 0%, #ffffff 100%);
-  }
-
-  .landing-phone-card {
-    border-radius: 24px;
-    background: #ffffff;
-    border: 1px solid rgba(52, 93, 76, 0.08);
-    box-shadow: 0 16px 28px rgba(31, 52, 37, 0.05);
-    padding: 18px;
-  }
-
-  .landing-phone-card.hero {
-    min-height: 182px;
-    display: flex;
-    align-items: flex-end;
+    content: '';
+    inset: 40px 26px auto auto;
+    width: 220px;
+    height: 300px;
+    border-radius: 18px;
     background:
-      radial-gradient(circle at 82% 18%, rgba(198, 235, 212, 0.72), transparent 28%),
-      linear-gradient(180deg, #f3faf2 0%, #ffffff 100%);
+      linear-gradient(180deg, rgba(255,255,255,0.78), rgba(255,255,255,0.34)),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='420' viewBox='0 0 320 420'%3E%3Cg fill='none' stroke='%23628d73' stroke-width='8' stroke-linecap='round'%3E%3Cpath d='M170 52c-12 32-8 70 10 110'/%3E%3Cpath d='M148 104c-36-10-62-30-78-60'/%3E%3Cpath d='M190 112c34-18 58-46 72-84'/%3E%3Cpath d='M146 168c-38 0-74-18-98-48'/%3E%3Cpath d='M192 174c38-8 78-30 104-64'/%3E%3Cpath d='M162 226c-34 12-70 36-90 72'/%3E%3Cpath d='M190 236c32 14 66 44 82 86'/%3E%3Cpath d='M160 286c0 46-10 84-28 116'/%3E%3C/g%3E%3Cg fill='%2397c8a6'%3E%3Cellipse cx='112' cy='90' rx='44' ry='22' transform='rotate(-28 112 90)'/%3E%3Cellipse cx='222' cy='72' rx='48' ry='22' transform='rotate(24 222 72)'/%3E%3Cellipse cx='86' cy='156' rx='46' ry='22' transform='rotate(-12 86 156)'/%3E%3Cellipse cx='250' cy='150' rx='50' ry='24' transform='rotate(18 250 150)'/%3E%3Cellipse cx='100' cy='276' rx='54' ry='24' transform='rotate(28 100 276)'/%3E%3Cellipse cx='244' cy='286' rx='56' ry='24' transform='rotate(-24 244 286)'/%3E%3C/g%3E%3C/svg%3E") center/cover no-repeat;
+    box-shadow: 0 18px 44px rgba(31, 52, 37, 0.12);
+    transform: rotate(-5deg);
   }
 
-  .landing-phone-card.hero::before {
+  .landing-art-photo::after {
     content: '';
     position: absolute;
-    inset: 0;
+    inset: auto auto 26px 28px;
+    width: 120px;
+    height: 120px;
+    border-radius: 24px;
+    background:
+      radial-gradient(circle at 35% 35%, rgba(255,255,255,0.82), transparent 32%),
+      linear-gradient(145deg, rgba(255,255,255,0.9), rgba(214, 234, 220, 0.9));
+    box-shadow: 0 16px 32px rgba(31, 52, 37, 0.08);
   }
 
-  .landing-phone-metric {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    position: relative;
-    z-index: 1;
-  }
-
-  .landing-phone-metric-value {
-    font-size: 2.4rem;
-    line-height: 1;
-    font-weight: 800;
-    color: #345D4C;
-    letter-spacing: -0.06em;
-  }
-
-  .landing-phone-metric-label {
-    font-size: 0.9rem;
-    color: #4f5b52;
-    max-width: 14ch;
-    line-height: 1.35;
-  }
-
-  .landing-phone-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-  }
-
-  .landing-mini-card {
-    border-radius: 20px;
-    background: #f7f8f6;
-    padding: 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    min-height: 122px;
-  }
-
-  .landing-mini-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 14px;
-    background: rgba(198, 235, 212, 0.55);
+  .landing-art-badge {
+    position: absolute;
+    top: 24px;
+    left: 24px;
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    color: #345D4C;
-    font-size: 1.2rem;
-  }
-
-  .landing-mini-title {
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: #1f3425;
-    line-height: 1.2;
-  }
-
-  .landing-mini-copy {
+    gap: 8px;
+    min-height: 34px;
+    padding: 0 14px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.84);
+    color: #345d4c;
     font-size: 0.8rem;
-    line-height: 1.4;
-    color: #607064;
+    font-weight: 700;
+    box-shadow: 0 10px 24px rgba(31, 52, 37, 0.08);
   }
 
   .landing-section {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 18px;
+  }
+
+  .landing-section.centered {
+    text-align: center;
+    align-items: center;
   }
 
   .landing-section-head {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
+  }
+
+  .landing-section-kicker {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(52, 93, 76, 0.72);
   }
 
   .landing-section-title {
-    font-size: 1.38rem;
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: #191c1c;
+    letter-spacing: -0.05em;
+  }
+
+  .landing-section-copy {
+    color: #5a685e;
+    font-size: 0.98rem;
+    line-height: 1.6;
+    max-width: 56ch;
+  }
+
+  .landing-story-list {
+    display: flex;
+    flex-direction: column;
+    gap: 34px;
+  }
+
+  .landing-story {
+    display: grid;
+    gap: 22px;
+    align-items: center;
+  }
+
+  .landing-story-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .landing-story-title {
+    font-size: 1.3rem;
+    line-height: 1.1;
     font-weight: 800;
     color: #191c1c;
     letter-spacing: -0.04em;
   }
 
-  .landing-section-copy {
-    color: #5a685e;
-    font-size: 0.96rem;
-    line-height: 1.5;
+  .landing-story-text {
+    color: #5d6c60;
+    font-size: 0.94rem;
+    line-height: 1.6;
+    max-width: 42ch;
   }
 
-  .landing-feature-list {
-    display: grid;
-    gap: 12px;
-  }
-
-  .landing-feature {
-    padding: 18px;
-    border-radius: 24px;
-    background: rgba(255, 255, 255, 0.88);
+  .landing-story-visual {
+    position: relative;
+    min-height: 250px;
+    border-radius: 28px;
+    background:
+      radial-gradient(circle at 24% 20%, rgba(198, 235, 212, 0.72), transparent 32%),
+      linear-gradient(180deg, #f5faf5 0%, #edf5ef 100%);
     border: 1px solid rgba(52, 93, 76, 0.08);
-    box-shadow: 0 16px 26px rgba(31, 52, 37, 0.045);
-    display: grid;
-    grid-template-columns: 48px minmax(0, 1fr);
-    gap: 14px;
-    align-items: start;
+    box-shadow: 0 20px 36px rgba(31, 52, 37, 0.06);
+    overflow: hidden;
   }
 
-  .landing-feature-icon {
-    width: 48px;
-    height: 48px;
+  .landing-story-visual::before {
+    content: '';
+    position: absolute;
+    inset: auto 24px 24px auto;
+    width: 46%;
+    height: 72%;
+    border-radius: 26px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.54)),
+      linear-gradient(180deg, #deefe3 0%, #f8fbf8 100%);
+    box-shadow: 0 16px 32px rgba(31, 52, 37, 0.1);
+    transform: rotate(-8deg);
+  }
+
+  .landing-story-visual::after {
+    content: '';
+    position: absolute;
+    inset: 22px auto auto 22px;
+    width: 44%;
+    height: 34%;
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 12px 24px rgba(31, 52, 37, 0.05);
+  }
+
+  .landing-story-ui {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 174px;
+    height: 320px;
+    border-radius: 28px;
+    border: 9px solid #141716;
+    background: linear-gradient(180deg, #f9fcf9 0%, #eef6ef 100%);
+    box-shadow: 0 20px 36px rgba(20, 23, 22, 0.16);
+    transform: translate(-50%, -50%) rotate(-10deg);
+    overflow: hidden;
+  }
+
+  .landing-story-ui.reverse {
+    transform: translate(-50%, -50%) rotate(10deg);
+  }
+
+  .landing-story-ui::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 74px;
+    height: 16px;
+    border-radius: 999px;
+    background: #101413;
+  }
+
+  .landing-story-screen {
+    padding: 34px 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 100%;
+    background: linear-gradient(180deg, #f8fbf7 0%, #ffffff 100%);
+  }
+
+  .landing-story-bar {
+    height: 10px;
+    border-radius: 999px;
+    background: rgba(52, 93, 76, 0.08);
+  }
+
+  .landing-story-bar.short {
+    width: 64%;
+  }
+
+  .landing-story-stat {
+    border-radius: 18px;
+    padding: 14px;
+    background: linear-gradient(180deg, #eef7ef 0%, #ffffff 100%);
+    border: 1px solid rgba(52, 93, 76, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .landing-story-stat strong {
+    font-size: 1.3rem;
+    color: #345d4c;
+    letter-spacing: -0.04em;
+  }
+
+  .landing-story-stat span {
+    font-size: 0.76rem;
+    color: #5c6c60;
+    line-height: 1.45;
+  }
+
+  .landing-story-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .landing-story-pill {
+    min-height: 54px;
     border-radius: 16px;
-    background: rgba(198, 235, 212, 0.48);
-    color: #345D4C;
+    background: #ffffff;
+    border: 1px solid rgba(52, 93, 76, 0.08);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.25rem;
-  }
-
-  .landing-feature-title {
-    font-size: 1rem;
+    color: #345d4c;
+    font-size: 0.78rem;
     font-weight: 700;
-    color: #1f3425;
-    margin-bottom: 4px;
   }
 
-  .landing-feature-copy {
+  .landing-benefit-grid,
+  .landing-testimonial-grid {
+    display: grid;
+    gap: 14px;
+    width: 100%;
+  }
+
+  .landing-benefit-card,
+  .landing-testimonial-card {
+    padding: 20px 18px;
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(52, 93, 76, 0.08);
+    box-shadow: 0 16px 26px rgba(31, 52, 37, 0.04);
+  }
+
+  .landing-benefit-head {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    background: rgba(198, 235, 212, 0.48);
+    color: #345D4C;
+    font-size: 1.1rem;
+    margin-bottom: 14px;
+  }
+
+  .landing-benefit-title,
+  .landing-testimonial-name {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #1f3425;
+    letter-spacing: -0.03em;
+  }
+
+  .landing-benefit-copy,
+  .landing-testimonial-copy {
+    margin-top: 8px;
     font-size: 0.88rem;
-    line-height: 1.45;
-    color: #647267;
+    line-height: 1.55;
+    color: #607064;
+  }
+
+  .landing-testimonial-role {
+    margin-top: 4px;
+    font-size: 0.76rem;
+    color: #8a988d;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .landing-cta-band {
+    position: relative;
+    overflow: hidden;
+    padding: 28px 24px;
+    border-radius: 28px;
+    background:
+      radial-gradient(circle at 18% 80%, rgba(255,255,255,0.08), transparent 24%),
+      radial-gradient(circle at 82% 18%, rgba(255,255,255,0.12), transparent 22%),
+      linear-gradient(135deg, #3d6d57 0%, #4f7f69 100%);
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    align-items: center;
+    text-align: center;
+  }
+
+  .landing-cta-band::before,
+  .landing-cta-band::after {
+    content: '';
+    position: absolute;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.08);
+  }
+
+  .landing-cta-band::before {
+    width: 180px;
+    height: 180px;
+    left: -70px;
+    bottom: -90px;
+  }
+
+  .landing-cta-band::after {
+    width: 220px;
+    height: 220px;
+    right: -100px;
+    top: -120px;
+  }
+
+  .landing-cta-icon {
+    position: relative;
+    z-index: 1;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.14);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.05rem;
+  }
+
+  .landing-cta-title {
+    position: relative;
+    z-index: 1;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+  }
+
+  .landing-cta-copy {
+    position: relative;
+    z-index: 1;
+    max-width: 42ch;
+    font-size: 0.94rem;
+    line-height: 1.55;
+    color: rgba(255,255,255,0.86);
+  }
+
+  .landing-cta-band .btn-primary {
+    position: relative;
+    z-index: 1;
+    background: #ffffff;
+    color: #345d4c;
+    border-color: transparent;
+    box-shadow: 0 12px 24px rgba(20, 23, 22, 0.12);
+  }
+
+  .landing-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-top: 8px;
+  }
+
+  .landing-footer-bar {
+    height: 1px;
+    background: rgba(52, 93, 76, 0.08);
+  }
+
+  .landing-footer-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .landing-footer-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: #345d4c;
+    font-size: 0.92rem;
+    font-weight: 700;
+  }
+
+  .landing-footer-brand img {
+    width: 18px;
+    height: 18px;
+    display: block;
   }
 
   .landing-legal {
     display: flex;
     flex-wrap: wrap;
-    gap: 14px 22px;
+    gap: 12px 18px;
     align-items: center;
-    justify-content: center;
-    padding: 6px 0 4px;
+    justify-content: flex-end;
   }
 
   .landing-legal a {
-    color: #40493d;
-    font-size: 0.92rem;
+    color: #58665c;
+    font-size: 0.88rem;
     line-height: 1.4;
-    text-decoration: underline;
-    text-underline-offset: 2px;
+    text-decoration: none;
   }
 
   @media (min-width: 760px) {
@@ -627,25 +880,43 @@
 
   @media (min-width: 900px) {
     .landing-screen {
-      gap: 36px;
+      gap: 68px;
     }
 
     .landing-hero {
-      grid-template-columns: minmax(0, 1fr) minmax(320px, 380px);
+      grid-template-columns: minmax(0, 0.9fr) minmax(360px, 0.85fr);
       align-items: center;
-      gap: 28px;
+      gap: 48px;
     }
 
     .landing-title {
-      font-size: 4.2rem;
+      font-size: 4.4rem;
     }
 
-    .landing-subtitle {
-      max-width: 24ch;
+    .landing-story {
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 380px);
+      gap: 42px;
     }
 
-    .landing-feature-list {
+    .landing-story.is-reverse {
+      grid-template-columns: minmax(320px, 380px) minmax(0, 1fr);
+    }
+
+    .landing-story.is-reverse .landing-story-copy {
+      order: 2;
+    }
+
+    .landing-story.is-reverse .landing-story-visual {
+      order: 1;
+    }
+
+    .landing-benefit-grid,
+    .landing-testimonial-grid {
       grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .landing-footer-bottom {
+      flex-wrap: nowrap;
     }
   }
 
@@ -3585,70 +3856,174 @@ function renderLandingScreen() {
     <section class="screen landing-screen">
       <div class="landing-hero">
         <div class="landing-copy">
-          <div class="landing-eyebrow">Botanical care · AI plant tracking</div>
-          <h1 class="landing-title">Tu jard&iacute;n, m&aacute;s simple y m&aacute;s inteligente.</h1>
-          <p class="landing-subtitle">Organiza tus plantas, identif&iacute;calas con AI y revisa tus riegos desde una experiencia tranquila, r&aacute;pida y pensada para el d&iacute;a a d&iacute;a.</p>
-          <button class="btn-primary landing-cta" type="button" onclick="setView('auth')">Acceder</button>
+          <div class="landing-eyebrow">Cuidado tranquilo para plantas reales</div>
+          <h1 class="landing-title">Cuida tus plantas sin esfuerzo.</h1>
+          <p class="landing-subtitle">Musgo te ayuda a organizar tus plantas, entender qu&eacute; toca regar y guardar cada ficha en una experiencia clara, ligera y pensada para usar todos los d&iacute;as.</p>
+          <div class="landing-copy-actions">
+            <button class="btn-primary landing-cta" type="button" onclick="setView('auth')">Empezar</button>
+          </div>
+          <div class="landing-note">Identificaci&oacute;n con AI, calendario de riego y espacios en una sola app.</div>
         </div>
-        <div class="landing-mockup">
-          <div class="landing-phone">
-            <div class="landing-phone-notch"></div>
-            <div class="landing-phone-screen">
-              <div class="landing-phone-card hero">
-                <div class="landing-phone-metric">
-                  <div class="landing-phone-metric-value">12</div>
-                  <div class="landing-phone-metric-label">Plantas que necesitan atenci&oacute;n hoy</div>
+        <div class="landing-artboard" aria-hidden="true">
+          <div class="landing-art-badge">Vista previa del jard&iacute;n</div>
+          <div class="landing-art-photo"></div>
+        </div>
+      </div>
+
+      <div class="landing-section centered">
+        <div class="landing-section-head">
+          <div class="landing-section-kicker">Todo en un mismo lugar</div>
+          <h2 class="landing-section-title">Todo para que tus plantas prosperen</h2>
+          <p class="landing-section-copy">La app ya combina seguimiento, organizaci&oacute;n e identificaci&oacute;n para reducir fricci&oacute;n y hacer m&aacute;s simple el cuidado diario.</p>
+        </div>
+      </div>
+
+      <div class="landing-story-list">
+        <article class="landing-story">
+          <div class="landing-story-visual">
+            <div class="landing-story-ui">
+              <div class="landing-story-screen">
+                <div class="landing-story-bar">
+                  <span></span>
+                  <span></span>
+                  <span></span>
                 </div>
-              </div>
-              <div class="landing-phone-grid">
-                <div class="landing-mini-card">
-                  <div class="landing-mini-icon">📷</div>
-                  <div class="landing-mini-title">Reconocimiento con AI</div>
-                  <div class="landing-mini-copy">Escanea una foto y convierte el resultado en una ficha lista para guardar.</div>
-                </div>
-                <div class="landing-mini-card">
-                  <div class="landing-mini-icon">📊</div>
-                  <div class="landing-mini-title">Stats de riego</div>
-                  <div class="landing-mini-copy">Visualiza tu carga de riego diaria y anticipa lo que viene los pr&oacute;ximos d&iacute;as.</div>
+                <div class="landing-story-stat">3 plantas necesitan riego esta semana</div>
+                <div class="landing-story-grid">
+                  <div class="landing-story-pill">Hoy</div>
+                  <div class="landing-story-pill">Ma&ntilde;ana</div>
+                  <div class="landing-story-pill">Viernes</div>
+                  <div class="landing-story-pill">Domingo</div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+          <div class="landing-story-copy">
+            <h3 class="landing-story-title">Calendario y recordatorio de riego</h3>
+            <p class="landing-story-text">Cada planta guarda su frecuencia de riego y Musgo la refleja en una vista de calendario para que sea f&aacute;cil anticipar qu&eacute; toca y cu&aacute;ndo.</p>
+          </div>
+        </article>
+
+        <article class="landing-story is-reverse">
+          <div class="landing-story-visual">
+            <div class="landing-story-ui reverse">
+              <div class="landing-story-screen">
+                <div class="landing-story-bar">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+                <div class="landing-story-stat">Reconocimiento sugerido con AI</div>
+                <div class="landing-story-grid">
+                  <div class="landing-story-pill">Monstera deliciosa</div>
+                  <div class="landing-story-pill">92% confianza</div>
+                  <div class="landing-story-pill">Crear ficha</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="landing-story-copy">
+            <h3 class="landing-story-title">Reconocimiento asistido con AI</h3>
+            <p class="landing-story-text">Puedes subir una imagen, recibir una coincidencia sugerida y usar ese resultado para arrancar una ficha de planta sin rellenar todo desde cero.</p>
+          </div>
+        </article>
+
+        <article class="landing-story">
+          <div class="landing-story-visual">
+            <div class="landing-story-ui">
+              <div class="landing-story-screen">
+                <div class="landing-story-bar">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+                <div class="landing-story-stat">Espacios organizados por ambiente</div>
+                <div class="landing-story-grid">
+                  <div class="landing-story-pill">Balc&oacute;n</div>
+                  <div class="landing-story-pill">Sal&oacute;n</div>
+                  <div class="landing-story-pill">Dormitorio</div>
+                  <div class="landing-story-pill">Estudio</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="landing-story-copy">
+            <h3 class="landing-story-title">Agrupa tus plantas por espacio</h3>
+            <p class="landing-story-text">La app permite crear espacios con nombre y emoji para encontrar m&aacute;s r&aacute;pido cada grupo de plantas y mantener mejor ordenada la colecci&oacute;n.</p>
+          </div>
+        </article>
       </div>
-      <div class="landing-section">
+
+      <div class="landing-section centered">
         <div class="landing-section-head">
-          <h2 class="landing-section-title">Preparada para crecer</h2>
-          <p class="landing-section-copy">La base ya est&aacute; lista para sumar m&aacute;s contenido, pero por ahora deja claro qu&eacute; hace Musgo y por qu&eacute; te ahorra tiempo.</p>
+          <div class="landing-section-kicker">Tres pasos, cero complicaciones</div>
+          <h2 class="landing-section-title">Una experiencia pensada para ser r&aacute;pida</h2>
         </div>
-        <div class="landing-feature-list">
-          <article class="landing-feature">
-            <div class="landing-feature-icon">🌿</div>
-            <div>
-              <div class="landing-feature-title">Carga plantas con reconocimiento de AI</div>
-              <div class="landing-feature-copy">Sube una foto, recibe una identificaci&oacute;n sugerida y crea la planta con sus datos precompletados.</div>
-            </div>
+        <div class="landing-benefit-grid">
+          <article class="landing-benefit-card">
+            <div class="landing-benefit-head">01</div>
+            <h3 class="landing-benefit-title">Crea o identifica</h3>
+            <p class="landing-benefit-copy">A&ntilde;ade plantas manualmente o usa una foto para empezar con datos sugeridos.</p>
           </article>
-          <article class="landing-feature">
-            <div class="landing-feature-icon">💧</div>
-            <div>
-              <div class="landing-feature-title">Stats y calendario de riego</div>
-              <div class="landing-feature-copy">Entiende qu&eacute; toca hoy, qu&eacute; se atrasa y c&oacute;mo evoluciona tu carga de riego durante la semana.</div>
-            </div>
+          <article class="landing-benefit-card">
+            <div class="landing-benefit-head">02</div>
+            <h3 class="landing-benefit-title">Organiza por espacios</h3>
+            <p class="landing-benefit-copy">Asigna cada planta a un rinc&oacute;n concreto para encontrarla sin pensar demasiado.</p>
           </article>
-          <article class="landing-feature">
-            <div class="landing-feature-icon">🏡</div>
-            <div>
-              <div class="landing-feature-title">Espacios para ahorrar tiempo</div>
-              <div class="landing-feature-copy">Agrupa plantas por rinc&oacute;n, localiza antes lo que tienes que hacer y mant&eacute;n tu casa mejor organizada.</div>
-            </div>
+          <article class="landing-benefit-card">
+            <div class="landing-benefit-head">03</div>
+            <h3 class="landing-benefit-title">Consulta qu&eacute; toca hoy</h3>
+            <p class="landing-benefit-copy">Revisa la vista de riego y actualiza el estado de cada planta desde un flujo simple.</p>
           </article>
         </div>
       </div>
-      <div class="landing-legal">
-        <a href="/privacidad">Política de privacidad</a>
-        <a href="/terminos-y-condiciones">Términos y condiciones</a>
+
+      <div class="landing-section centered">
+        <div class="landing-section-head">
+          <div class="landing-section-kicker">Lo que dicen nuestros usuarios</div>
+          <h2 class="landing-section-title">Una app que acompa&ntilde;a sin molestar</h2>
+        </div>
+        <div class="landing-testimonial-grid">
+          <article class="landing-testimonial-card">
+            <div class="landing-testimonial-name">Mar&iacute;a</div>
+            <div class="landing-testimonial-role">Colecci&oacute;n dom&eacute;stica</div>
+            <p class="landing-testimonial-copy">Ahora s&eacute; qu&eacute; plantas revisar cada semana sin tener que recordar fechas de memoria.</p>
+          </article>
+          <article class="landing-testimonial-card">
+            <div class="landing-testimonial-name">Pablo</div>
+            <div class="landing-testimonial-role">Balc&oacute;n urbano</div>
+            <p class="landing-testimonial-copy">El alta manual y los espacios me ayudan a mantener ordenada una colecci&oacute;n que antes llevaba en notas sueltas.</p>
+          </article>
+          <article class="landing-testimonial-card">
+            <div class="landing-testimonial-name">Clara</div>
+            <div class="landing-testimonial-role">Primeras plantas</div>
+            <p class="landing-testimonial-copy">La identificaci&oacute;n con AI me dio el empuj&oacute;n inicial para guardar cada planta y empezar a cuidarlas mejor.</p>
+          </article>
+        </div>
       </div>
+
+      <div class="landing-cta-band">
+        <div class="landing-cta-icon">🌿</div>
+        <h2 class="landing-cta-title">Tu jard&iacute;n te est&aacute; esperando</h2>
+        <p class="landing-cta-copy">Empieza a registrar tus plantas y convierte el cuidado diario en una rutina mucho m&aacute;s clara.</p>
+        <button class="btn-primary" type="button" onclick="setView('auth')">Entrar en Musgo</button>
+      </div>
+
+      <footer class="landing-footer">
+        <div class="landing-footer-bar">
+          <div class="landing-footer-brand">
+            <img src="./resources/logo vector.svg" alt="Musgo">
+            <span>Musgo</span>
+          </div>
+        </div>
+        <div class="landing-footer-bottom">
+          <div>Cuida tus plantas con una experiencia serena y organizada.</div>
+          <div class="landing-legal">
+            <a href="/privacidad">Pol&iacute;tica de privacidad</a>
+            <a href="/terminos-y-condiciones">T&eacute;rminos y condiciones</a>
+          </div>
+        </div>
+      </footer>
     </section>
   `;
 }
