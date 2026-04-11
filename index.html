@@ -650,6 +650,34 @@
   }
 
   @media (min-width: 1100px) {
+    .app-main > .screen {
+      width: 100%;
+      max-width: 1120px;
+      margin-left: auto;
+      margin-right: auto;
+      align-items: center;
+    }
+
+    .app-main > .screen > * {
+      width: 100%;
+    }
+
+    .app-main > .screen > .screen-intro {
+      width: 100%;
+      max-width: 1120px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+      align-items: center;
+    }
+
+    .screen-title,
+    .screen-subtitle {
+      text-align: center;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
     .app-shell {
       justify-content: stretch;
       padding: 0;
@@ -906,6 +934,20 @@
     }
 
     .editor-screen .screen-head,
+    .detail-screen .screen-head {
+      position: relative;
+      justify-content: center;
+    }
+
+    .editor-screen .screen-head .screen-back,
+    .detail-screen .screen-head .screen-back {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .editor-screen .screen-head,
     .editor-screen .screen-intro,
     .editor-screen .space-editor-card,
     .editor-screen .identified-plant-card,
@@ -925,6 +967,13 @@
     .detail-screen .screen-intro {
       text-align: center;
       align-items: center;
+    }
+
+    .detail-screen .screen-title,
+    .detail-screen .screen-subtitle,
+    .editor-screen .screen-title,
+    .editor-screen .screen-subtitle {
+      text-align: center;
     }
   }
 
