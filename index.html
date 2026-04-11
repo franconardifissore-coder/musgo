@@ -3186,6 +3186,7 @@
     SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhib2p6aWZob2N4eWdkb2p6cWpuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTIyMDIsImV4cCI6MjA5MDUyODIwMn0.bELLTjPbm4NnWQ7ujX4bQXroOJwCCLF16rvRHwNZMTM"
   };
 </script>
+<script src="./lib/app-router.js"></script>
 <script src="./lib/public-screens.js"></script>
 <script src="./lib/identify-plant.js"></script>
 <script src="./lib/supabase-data.js"></script>
@@ -3240,305 +3241,38 @@ let state = {
   calMonth: new Date().getMonth(),
 };
 
-const MAIN_VIEWS = ['dashboard', 'plants', 'scan', 'spaces', 'profile'];
-const PUBLIC_VIEWS = ['landing', 'auth'];
-const AUTHENTICATED_VIEWS = ['dashboard', 'plants', 'scan', 'spaces', 'profile', 'thirstyPlants', 'plantDetail', 'plantCreate', 'editSpace'];
-const ROUTABLE_VIEWS = [...PUBLIC_VIEWS, ...MAIN_VIEWS];
-const VIEW_PATHS = {
-  landing: '/',
-  auth: '/login',
-  dashboard: '/dashboard',
-  plants: '/plants',
-  scan: '/scanner',
-  spaces: '/spaces',
-  profile: '/profile',
-};
+const musgoRouter = window.createMusgoRouter({
+  getState: () => state,
+  createPlantDraft: (...args) => createPlantDraft(...args),
+  createSectionDraft: (...args) => createSectionDraft(...args),
+  getPreviousMainView: (...args) => getPreviousMainView(...args),
+});
 
-function isPublicView(view) {
-  return PUBLIC_VIEWS.includes(view);
-}
-
-function isAuthenticatedView(view) {
-  return AUTHENTICATED_VIEWS.includes(view);
-}
-
-function isAuthenticatedMainView(view = state.currentView) {
-  return MAIN_VIEWS.includes(view);
-}
-
-function getCurrentExperience() {
-  if (state.splashVisible) return 'splash';
-  if (isPublicView(state.currentView)) return 'public';
-  if (isAuthenticatedView(state.currentView)) return 'authenticated';
-  return 'authenticated';
-}
-
-function shouldShowPublicExperience() {
-  return getCurrentExperience() === 'public';
-}
-
-function shouldShowAuthenticatedExperience() {
-  return getCurrentExperience() === 'authenticated';
-}
-
-function shouldShowTopbar() {
-  return state.splashVisible || shouldShowPublicExperience() || isAuthenticatedMainView();
-}
-
-function shouldUseDesktopSidebarLayout() {
-  return window.innerWidth >= 1100 && shouldShowAuthenticatedExperience() && isAuthenticatedMainView() && !state.splashVisible;
-}
-
-function getNormalizedPathname(pathname = window.location.pathname) {
-  const rawPath = String(pathname || '/').trim() || '/';
-  const safePath = rawPath.startsWith('/') ? rawPath : `/${rawPath}`;
-  if (safePath.length > 1 && safePath.endsWith('/')) {
-    return safePath.slice(0, -1);
-  }
-  return safePath;
-}
-
-function hasPendingAuthCallbackParams() {
-  const searchParams = new URLSearchParams(window.location.search);
-  const hashParams = new URLSearchParams((window.location.hash || '').replace(/^#/, ''));
-
-  return [
-    'code',
-    'access_token',
-    'refresh_token',
-    'provider_token',
-    'provider_refresh_token',
-    'error',
-    'error_code',
-    'error_description',
-  ].some((key) => searchParams.has(key) || hashParams.has(key));
-}
-
-function getPathForView(view) {
-  if (view === 'thirstyPlants') {
-    return '/dashboard/thirsty';
-  }
-  if (view === 'plantCreate') {
-    return '/plants/new';
-  }
-  if (view === 'plantDetail') {
-    return state.detailPlantId ? `/plants/${encodeURIComponent(state.detailPlantId)}` : '/plants';
-  }
-  if (view === 'editSpace') {
-    if (state.editingSectionId) {
-      return `/spaces/${encodeURIComponent(state.editingSectionId)}/edit`;
-    }
-    return '/spaces/new';
-  }
-  return VIEW_PATHS[view] || null;
-}
-
-function resolvePathToView(pathname = window.location.pathname) {
-  const normalizedPath = getNormalizedPathname(pathname);
-
-  if (normalizedPath === '/') {
-    return { view: 'landing', canonicalPath: '/' };
-  }
-  if (normalizedPath === '/login') {
-    return { view: 'auth', canonicalPath: '/login' };
-  }
-  if (normalizedPath === '/dashboard') {
-    return { view: 'dashboard', canonicalPath: '/dashboard' };
-  }
-  if (normalizedPath === '/dashboard/thirsty') {
-    return { view: 'thirstyPlants', canonicalPath: '/dashboard/thirsty' };
-  }
-  if (normalizedPath === '/plants') {
-    return { view: 'plants', canonicalPath: '/plants' };
-  }
-  if (normalizedPath === '/plants/new') {
-    return { view: 'plantCreate', canonicalPath: '/plants/new' };
-  }
-  const plantDetailMatch = normalizedPath.match(/^\/plants\/([^/]+)$/);
-  if (plantDetailMatch) {
-    return {
-      view: 'plantDetail',
-      canonicalPath: normalizedPath,
-      params: {
-        plantId: decodeURIComponent(plantDetailMatch[1]),
-      },
-    };
-  }
-  if (normalizedPath === '/scanner') {
-    return { view: 'scan', canonicalPath: '/scanner' };
-  }
-  if (normalizedPath === '/spaces') {
-    return { view: 'spaces', canonicalPath: '/spaces' };
-  }
-  if (normalizedPath === '/spaces/new') {
-    return { view: 'editSpace', canonicalPath: '/spaces/new', params: { mode: 'create' } };
-  }
-  const editSpaceMatch = normalizedPath.match(/^\/spaces\/([^/]+)\/edit$/);
-  if (editSpaceMatch) {
-    return {
-      view: 'editSpace',
-      canonicalPath: normalizedPath,
-      params: {
-        mode: 'edit',
-        sectionId: decodeURIComponent(editSpaceMatch[1]),
-      },
-    };
-  }
-  if (normalizedPath === '/profile') {
-    return { view: 'profile', canonicalPath: '/profile' };
-  }
-
-  return { view: 'landing', canonicalPath: '/' };
-}
-
-function hydrateRouteState(resolvedRoute) {
-  const route = resolvedRoute || resolvePathToView(window.location.pathname);
-  const params = route.params || {};
-
-  if (route.view === 'plantDetail') {
-    const plantId = params.plantId || null;
-    state.detailPlantId = plantId;
-    const plant = state.plants.find(item => item.id === plantId);
-    state.detailDraft = plant
-      ? {
-          name: plant.name || '',
-          freq: Number(plant.freq) || 3,
-          section: plant.section || '',
-        }
-      : null;
-    state.calPlantId = plantId;
-    state.calYear = new Date().getFullYear();
-    state.calMonth = new Date().getMonth();
-    return;
-  }
-
-  if (route.view === 'plantCreate') {
-    if (!state.screenPlantDraft) {
-      state.screenPlantDraft = createPlantDraft();
-    }
-    state.detailPlantId = null;
-    state.detailDraft = null;
-    return;
-  }
-
-  if (route.view === 'editSpace') {
-    const isEditMode = params.mode === 'edit' && params.sectionId;
-    if (isEditMode) {
-      const section = state.sections.find(item => item.id === params.sectionId);
-      state.editingSectionId = params.sectionId;
-      state.screenSectionDraft = section ? createSectionDraft(section) : null;
-      return;
-    }
-
-    state.editingSectionId = null;
-    if (!state.screenSectionDraft) {
-      state.screenSectionDraft = createSectionDraft();
-    }
-    return;
-  }
-
-  if (route.view === 'thirstyPlants') {
-    return;
-  }
-
-  state.detailPlantId = null;
-  state.detailDraft = null;
-
-  if (route.view !== 'plantCreate') {
-    state.screenPlantDraft = null;
-  }
-
-  if (route.view !== 'editSpace') {
-    state.screenSectionDraft = null;
-    state.editingSectionId = null;
-  }
-}
-
-function syncHistoryPath(pathname, { replace = false } = {}) {
-  const nextPath = getNormalizedPathname(pathname);
-  const currentPath = getNormalizedPathname(window.location.pathname);
-
-  if (nextPath === currentPath) {
-    if (replace && window.history.state?.path !== nextPath) {
-      window.history.replaceState({ path: nextPath }, '', nextPath);
-    }
-    return;
-  }
-
-  if (replace) {
-    try {
-      window.history.replaceState({ path: nextPath }, '', nextPath);
-    } catch (error) {
-      if (window.location.protocol !== 'file:') {
-        window.location.replace(nextPath);
-      }
-      return;
-    }
-    if (getNormalizedPathname(window.location.pathname) !== nextPath && window.location.protocol !== 'file:') {
-      window.location.replace(nextPath);
-    }
-    return;
-  }
-
-  try {
-    window.history.pushState({ path: nextPath }, '', nextPath);
-  } catch (error) {
-    if (window.location.protocol !== 'file:') {
-      window.location.assign(nextPath);
-    }
-    return;
-  }
-
-  if (getNormalizedPathname(window.location.pathname) !== nextPath && window.location.protocol !== 'file:') {
-    window.location.assign(nextPath);
-  }
-}
+const { MAIN_VIEWS, PUBLIC_VIEWS, AUTHENTICATED_VIEWS, ROUTABLE_VIEWS, VIEW_PATHS } = musgoRouter;
+const isPublicView = (...args) => musgoRouter.isPublicView(...args);
+const isAuthenticatedView = (...args) => musgoRouter.isAuthenticatedView(...args);
+const isAuthenticatedMainView = (...args) => musgoRouter.isAuthenticatedMainView(...args);
+const getCurrentExperience = (...args) => musgoRouter.getCurrentExperience(...args);
+const shouldShowPublicExperience = (...args) => musgoRouter.shouldShowPublicExperience(...args);
+const shouldShowAuthenticatedExperience = (...args) => musgoRouter.shouldShowAuthenticatedExperience(...args);
+const shouldShowTopbar = (...args) => musgoRouter.shouldShowTopbar(...args);
+const shouldUseDesktopSidebarLayout = (...args) => musgoRouter.shouldUseDesktopSidebarLayout(...args);
+const getNormalizedPathname = (...args) => musgoRouter.getNormalizedPathname(...args);
+const getPathForView = (...args) => musgoRouter.getPathForView(...args);
+const resolvePathToView = (...args) => musgoRouter.resolvePathToView(...args);
+const hydrateRouteState = (...args) => musgoRouter.hydrateRouteState(...args);
+const syncHistoryPath = (...args) => musgoRouter.syncHistoryPath(...args);
 
 function applyRouteFromLocation(options = {}) {
-  const {
-    renderView = true,
-    scroll = false,
-    replaceHistory = true,
-  } = options;
-  const resolvedRoute = resolvePathToView(window.location.pathname);
-
-  hydrateRouteState(resolvedRoute);
-
-  navigateToView(resolvedRoute.view, {
-    renderView,
-    scroll,
-    updateHistory: false,
-  });
-
-  if (replaceHistory && resolvedRoute.canonicalPath && !hasPendingAuthCallbackParams()) {
-    syncHistoryPath(resolvedRoute.canonicalPath, { replace: true });
-  }
+  return musgoRouter.applyRouteFromLocation(options, navigateToView);
 }
 
 function getAuthRedirectView() {
-  if (!state.auth.ready) return null;
-
-  if (state.auth.configured && !state.auth.user && !isPublicView(state.currentView)) {
-    return 'auth';
-  }
-
-  if (state.auth.user && isPublicView(state.currentView)) {
-    return getPreviousMainView('dashboard');
-  }
-
-  return null;
+  return musgoRouter.getAuthRedirectView();
 }
 
 function reconcileNavigationWithAuth() {
-  const redirectView = getAuthRedirectView();
-  if (!redirectView) return false;
-
-  navigateToView(redirectView, {
-    trackMainView: false,
-    scroll: false,
-    replaceHistory: true,
-  });
-  return true;
+  return musgoRouter.reconcileNavigationWithAuth(navigateToView);
 }
 
 function shouldRenderLanding() {
