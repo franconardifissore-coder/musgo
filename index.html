@@ -3720,7 +3720,7 @@ function getPreviousMainView(fallback = 'plants') {
 
 function renderBackButton(label = 'Volver', targetView = null) {
   const destination = targetView || getPreviousMainView();
-  return `<button class="screen-back" type="button" onclick="setView('${destination}')">← ${escapeHtml(label)}</button>`;
+  return `<button class="screen-back" type="button" onclick="window.navigateToView('${destination}')">← ${escapeHtml(label)}</button>`;
 }
 
 function renderSectionOptions(selectedSection = '', includePlaceholder = false) {
@@ -4244,7 +4244,7 @@ function renderAuthPrompt(message = 'Inicia sesión para ver y editar tu jardín
     title: 'Tu jardín está en la nube',
     message,
     actionLabel: 'Acceder',
-    action: "setView('auth')",
+    action: "window.navigateToView('auth')",
   });
 }
 
@@ -4408,7 +4408,7 @@ function renderPlantsScreen() {
       ${plants.length ? `
         <div class="plants-grid-mobile">
           ${tiles}
-          <button class="add-plant-card-mobile" type="button" onclick="setView('scan')">
+          <button class="add-plant-card-mobile" type="button" onclick="window.navigateToView('scan')">
             <span class="add-circle">＋</span>
             <span class="add-label">Agregar planta</span>
           </button>
@@ -4419,7 +4419,7 @@ function renderPlantsScreen() {
           title: 'Sin plantas todavía',
           message: 'Empieza a subir tus plantas al jardín y no te perderás un solo riego',
           actionLabel: 'Añadir planta',
-          action: "setView('scan')"
+          action: "window.navigateToView('scan')"
         })}
       `}
     </section>
@@ -4640,7 +4640,7 @@ function renderThirstyPlantsScreen() {
           title: 'Nada para regar hoy',
           message: 'Tu jardín está al día por ahora. Vuelve más tarde para revisar las próximas acciones.',
           actionLabel: 'Volver al dashboard',
-          action: "setView('dashboard')"
+          action: "window.navigateToView('dashboard')"
         })}
       `}
     </section>
@@ -4793,7 +4793,7 @@ function renderPlantDetailScreen() {
           <p class="screen-subtitle">No hemos encontrado esta planta.</p>
         </div>
         <div class="screen-actions">
-          <button class="btn-primary" type="button" onclick="setView('plants')">Volver a plantas</button>
+          <button class="btn-primary" type="button" onclick="window.navigateToView('plants')">Volver a plantas</button>
         </div>
       </section>
     `;
