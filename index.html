@@ -222,6 +222,28 @@
     padding: 24px 28px 40px;
   }
 
+  .app-frame.public-experience {
+    background: #ffffff;
+  }
+
+  .app-frame.authenticated-experience {
+    background: #ffffff;
+  }
+
+  .authenticated-app-shell {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    width: 100%;
+  }
+
+  .authenticated-app-shell-content {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    width: 100%;
+  }
+
   .screen {
     display: flex;
     flex-direction: column;
@@ -3164,6 +3186,7 @@
     SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhib2p6aWZob2N4eWdkb2p6cWpuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTIyMDIsImV4cCI6MjA5MDUyODIwMn0.bELLTjPbm4NnWQ7ujX4bQXroOJwCCLF16rvRHwNZMTM"
   };
 </script>
+<script src="./lib/public-screens.js"></script>
 <script src="./lib/identify-plant.js"></script>
 <script src="./lib/supabase-data.js"></script>
 <script type="module" src="./lib/supabase-auth.js"></script>
@@ -3218,17 +3241,276 @@ let state = {
 };
 
 const MAIN_VIEWS = ['dashboard', 'plants', 'scan', 'spaces', 'profile'];
+const PUBLIC_VIEWS = ['landing', 'auth'];
+const AUTHENTICATED_VIEWS = ['dashboard', 'plants', 'scan', 'spaces', 'profile', 'thirstyPlants', 'plantDetail', 'plantCreate', 'editSpace'];
+const ROUTABLE_VIEWS = [...PUBLIC_VIEWS, ...MAIN_VIEWS];
+const VIEW_PATHS = {
+  landing: '/',
+  auth: '/login',
+  dashboard: '/dashboard',
+  plants: '/plants',
+  scan: '/scanner',
+  spaces: '/spaces',
+  profile: '/profile',
+};
 
-function isUnauthenticatedExperience() {
-  return state.auth.ready && state.auth.configured && !state.auth.user;
+function isPublicView(view) {
+  return PUBLIC_VIEWS.includes(view);
+}
+
+function isAuthenticatedView(view) {
+  return AUTHENTICATED_VIEWS.includes(view);
+}
+
+function isAuthenticatedMainView(view = state.currentView) {
+  return MAIN_VIEWS.includes(view);
+}
+
+function getCurrentExperience() {
+  if (state.splashVisible) return 'splash';
+  if (isPublicView(state.currentView)) return 'public';
+  if (isAuthenticatedView(state.currentView)) return 'authenticated';
+  return 'authenticated';
+}
+
+function shouldShowPublicExperience() {
+  return getCurrentExperience() === 'public';
+}
+
+function shouldShowAuthenticatedExperience() {
+  return getCurrentExperience() === 'authenticated';
+}
+
+function shouldShowTopbar() {
+  return state.splashVisible || shouldShowPublicExperience() || isAuthenticatedMainView();
+}
+
+function shouldUseDesktopSidebarLayout() {
+  return window.innerWidth >= 1100 && shouldShowAuthenticatedExperience() && isAuthenticatedMainView() && !state.splashVisible;
+}
+
+function getNormalizedPathname(pathname = window.location.pathname) {
+  const rawPath = String(pathname || '/').trim() || '/';
+  const safePath = rawPath.startsWith('/') ? rawPath : `/${rawPath}`;
+  if (safePath.length > 1 && safePath.endsWith('/')) {
+    return safePath.slice(0, -1);
+  }
+  return safePath;
+}
+
+function getPathForView(view) {
+  if (view === 'thirstyPlants') {
+    return '/dashboard/thirsty';
+  }
+  if (view === 'plantCreate') {
+    return '/plants/new';
+  }
+  if (view === 'plantDetail') {
+    return state.detailPlantId ? `/plants/${encodeURIComponent(state.detailPlantId)}` : '/plants';
+  }
+  if (view === 'editSpace') {
+    if (state.editingSectionId) {
+      return `/spaces/${encodeURIComponent(state.editingSectionId)}/edit`;
+    }
+    return '/spaces/new';
+  }
+  return VIEW_PATHS[view] || null;
+}
+
+function resolvePathToView(pathname = window.location.pathname) {
+  const normalizedPath = getNormalizedPathname(pathname);
+
+  if (normalizedPath === '/') {
+    return { view: 'landing', canonicalPath: '/' };
+  }
+  if (normalizedPath === '/login') {
+    return { view: 'auth', canonicalPath: '/login' };
+  }
+  if (normalizedPath === '/dashboard') {
+    return { view: 'dashboard', canonicalPath: '/dashboard' };
+  }
+  if (normalizedPath === '/dashboard/thirsty') {
+    return { view: 'thirstyPlants', canonicalPath: '/dashboard/thirsty' };
+  }
+  if (normalizedPath === '/plants') {
+    return { view: 'plants', canonicalPath: '/plants' };
+  }
+  if (normalizedPath === '/plants/new') {
+    return { view: 'plantCreate', canonicalPath: '/plants/new' };
+  }
+  const plantDetailMatch = normalizedPath.match(/^\/plants\/([^/]+)$/);
+  if (plantDetailMatch) {
+    return {
+      view: 'plantDetail',
+      canonicalPath: normalizedPath,
+      params: {
+        plantId: decodeURIComponent(plantDetailMatch[1]),
+      },
+    };
+  }
+  if (normalizedPath === '/scanner') {
+    return { view: 'scan', canonicalPath: '/scanner' };
+  }
+  if (normalizedPath === '/spaces') {
+    return { view: 'spaces', canonicalPath: '/spaces' };
+  }
+  if (normalizedPath === '/spaces/new') {
+    return { view: 'editSpace', canonicalPath: '/spaces/new', params: { mode: 'create' } };
+  }
+  const editSpaceMatch = normalizedPath.match(/^\/spaces\/([^/]+)\/edit$/);
+  if (editSpaceMatch) {
+    return {
+      view: 'editSpace',
+      canonicalPath: normalizedPath,
+      params: {
+        mode: 'edit',
+        sectionId: decodeURIComponent(editSpaceMatch[1]),
+      },
+    };
+  }
+  if (normalizedPath === '/profile') {
+    return { view: 'profile', canonicalPath: '/profile' };
+  }
+
+  return { view: 'landing', canonicalPath: '/' };
+}
+
+function hydrateRouteState(resolvedRoute) {
+  const route = resolvedRoute || resolvePathToView(window.location.pathname);
+  const params = route.params || {};
+
+  if (route.view === 'plantDetail') {
+    const plantId = params.plantId || null;
+    state.detailPlantId = plantId;
+    const plant = state.plants.find(item => item.id === plantId);
+    state.detailDraft = plant
+      ? {
+          name: plant.name || '',
+          freq: Number(plant.freq) || 3,
+          section: plant.section || '',
+        }
+      : null;
+    state.calPlantId = plantId;
+    state.calYear = new Date().getFullYear();
+    state.calMonth = new Date().getMonth();
+    return;
+  }
+
+  if (route.view === 'plantCreate') {
+    if (!state.screenPlantDraft) {
+      state.screenPlantDraft = createPlantDraft();
+    }
+    state.detailPlantId = null;
+    state.detailDraft = null;
+    return;
+  }
+
+  if (route.view === 'editSpace') {
+    const isEditMode = params.mode === 'edit' && params.sectionId;
+    if (isEditMode) {
+      const section = state.sections.find(item => item.id === params.sectionId);
+      state.editingSectionId = params.sectionId;
+      state.screenSectionDraft = section ? createSectionDraft(section) : null;
+      return;
+    }
+
+    state.editingSectionId = null;
+    if (!state.screenSectionDraft) {
+      state.screenSectionDraft = createSectionDraft();
+    }
+    return;
+  }
+
+  if (route.view === 'thirstyPlants') {
+    return;
+  }
+
+  state.detailPlantId = null;
+  state.detailDraft = null;
+
+  if (route.view !== 'plantCreate') {
+    state.screenPlantDraft = null;
+  }
+
+  if (route.view !== 'editSpace') {
+    state.screenSectionDraft = null;
+    state.editingSectionId = null;
+  }
+}
+
+function syncHistoryPath(pathname, { replace = false } = {}) {
+  const nextPath = getNormalizedPathname(pathname);
+  const currentPath = getNormalizedPathname(window.location.pathname);
+
+  if (nextPath === currentPath) {
+    if (replace && window.history.state?.path !== nextPath) {
+      window.history.replaceState({ path: nextPath }, '', nextPath);
+    }
+    return;
+  }
+
+  if (replace) {
+    window.history.replaceState({ path: nextPath }, '', nextPath);
+    return;
+  }
+
+  window.history.pushState({ path: nextPath }, '', nextPath);
+}
+
+function applyRouteFromLocation(options = {}) {
+  const {
+    renderView = true,
+    scroll = false,
+    replaceHistory = true,
+  } = options;
+  const resolvedRoute = resolvePathToView(window.location.pathname);
+
+  hydrateRouteState(resolvedRoute);
+
+  navigateToView(resolvedRoute.view, {
+    renderView,
+    scroll,
+    updateHistory: false,
+  });
+
+  if (replaceHistory && resolvedRoute.canonicalPath) {
+    syncHistoryPath(resolvedRoute.canonicalPath, { replace: true });
+  }
+}
+
+function reconcileNavigationWithAuth() {
+  if (!state.auth.ready) return false;
+
+  if (state.auth.configured && !state.auth.user) {
+    if (!isPublicView(state.currentView)) {
+      navigateToView('auth', {
+        trackMainView: false,
+        scroll: false,
+        replaceHistory: true,
+      });
+      return true;
+    }
+    return false;
+  }
+
+  if (state.auth.user && isPublicView(state.currentView)) {
+    navigateToView(getPreviousMainView('dashboard'), {
+      trackMainView: false,
+      scroll: false,
+      replaceHistory: true,
+    });
+    return true;
+  }
+
+  return false;
 }
 
 function shouldRenderLanding() {
-  return isUnauthenticatedExperience() && state.currentView !== 'auth';
+  return state.currentView === 'landing';
 }
 
 function shouldRenderAuthScreen() {
-  return isUnauthenticatedExperience() && state.currentView === 'auth';
+  return state.currentView === 'auth';
 }
 
 function today() {
@@ -3274,6 +3556,11 @@ function escapeHtml(value) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
+
+window.__musgoPublicScreenContext = () => ({
+  state,
+  escapeHtml,
+});
 
 function resetIdentificationState() {
   state.identification = {
@@ -3461,6 +3748,46 @@ function scrollPageToTop() {
   });
 }
 
+function navigateToView(view, options = {}) {
+  const {
+    trackMainView = MAIN_VIEWS.includes(view),
+    resetScan = view === 'scan',
+    scroll = true,
+    renderView = true,
+    closeMenu = true,
+    updateHistory = ROUTABLE_VIEWS.includes(view),
+    replaceHistory = false,
+  } = options;
+
+  if (closeMenu) {
+    state.menuOpen = false;
+  }
+  if (resetScan) {
+    resetIdentificationState();
+  }
+
+  state.currentView = view;
+
+  if (trackMainView) {
+    state.previousMainView = view;
+  }
+
+  if (updateHistory) {
+    const targetPath = getPathForView(view);
+    if (targetPath) {
+      syncHistoryPath(targetPath, { replace: replaceHistory });
+    }
+  }
+
+  if (renderView) {
+    render();
+  }
+
+  if (scroll) {
+    scrollPageToTop();
+  }
+}
+
 function dismissSplash() {
   if (!state.splashVisible) return;
   state.splashVisible = false;
@@ -3497,19 +3824,18 @@ function applyAuthState({ session = null, user = null, configured = state.auth.c
     user,
     error,
   };
-  render();
 
   const nextUserId = user?.id || null;
+  const navigationAdjusted = reconcileNavigationWithAuth();
+
+  if (!navigationAdjusted) {
+    render();
+  }
+
   if (nextUserId && nextUserId !== previousUserId) {
-    if (state.currentView === 'auth') {
-      state.currentView = getPreviousMainView('dashboard');
-    }
     loadCloudGarden();
   }
   if (!nextUserId && previousUserId) {
-    if (state.currentView !== 'auth') {
-      state.currentView = 'dashboard';
-    }
     state.cloud = {
       loading: false,
       syncedUserId: null,
@@ -3589,6 +3915,7 @@ async function loadCloudGarden() {
     const garden = await window.supabaseData.fetchUserGarden();
     state.sections = garden.sections;
     state.plants = garden.plants;
+    hydrateRouteState();
     state.cloud = {
       loading: false,
       syncedUserId: userId,
@@ -3636,24 +3963,32 @@ function renderTopbar() {
   const menuButton = document.getElementById('topbarMenuButton');
   const brand = document.getElementById('topbarBrand');
   const appFrame = document.querySelector('.app-frame');
-  const isMainView = MAIN_VIEWS.includes(state.currentView);
+  const appMain = document.getElementById('appMain');
+  const isPublicExperience = shouldShowPublicExperience();
+  const isAuthenticatedExperience = shouldShowAuthenticatedExperience();
   const showPublicLanding = shouldRenderLanding();
   const showPublicAuth = shouldRenderAuthScreen();
-  const hasDesktopSidebar = window.innerWidth >= 1100 && isMainView && !state.splashVisible && !showPublicLanding && !showPublicAuth;
+  const hasDesktopSidebar = shouldUseDesktopSidebarLayout();
   if (topbar) {
-    topbar.style.display = (state.splashVisible || isMainView || showPublicLanding || showPublicAuth) ? 'flex' : 'none';
+    topbar.style.display = shouldShowTopbar() ? 'flex' : 'none';
     topbar.classList.toggle('splash-mode', Boolean(state.splashVisible));
   }
   if (appFrame) {
     appFrame.classList.toggle('desktop-sidebar-layout', hasDesktopSidebar);
+    appFrame.classList.toggle('public-experience', isPublicExperience);
+    appFrame.classList.toggle('authenticated-experience', isAuthenticatedExperience);
+  }
+  if (appMain) {
+    appMain.setAttribute('data-experience', getCurrentExperience());
+    appMain.setAttribute('data-shell', isAuthenticatedExperience ? 'authenticated' : 'none');
   }
   if (brand) {
-    const brandIsClickable = showPublicLanding || showPublicAuth;
+    const brandIsClickable = isPublicExperience;
     brand.style.cursor = brandIsClickable ? 'pointer' : 'default';
     brand.setAttribute('aria-disabled', brandIsClickable ? 'false' : 'true');
   }
   if (menuButton) {
-    const isPublicHeader = showPublicLanding || showPublicAuth;
+    const isPublicHeader = isPublicExperience;
     menuButton.classList.toggle('public-cta', showPublicLanding);
     menuButton.classList.toggle('is-open', Boolean(state.menuOpen) && !hasDesktopSidebar && !isPublicHeader);
     menuButton.setAttribute('aria-expanded', hasDesktopSidebar ? 'true' : (state.menuOpen ? 'true' : 'false'));
@@ -3692,7 +4027,7 @@ function renderTopbar() {
 
 function handleTopbarAction() {
   if (shouldRenderLanding()) {
-    setView('auth');
+    navigateToView('auth');
     return;
   }
   if (shouldRenderAuthScreen()) return;
@@ -3701,7 +4036,7 @@ function handleTopbarAction() {
 
 function handleTopbarBrandClick() {
   if (shouldRenderLanding() || shouldRenderAuthScreen()) {
-    setView('dashboard');
+    navigateToView('landing');
   }
 }
 
@@ -3715,12 +4050,10 @@ function handleTopbarBrandKeydown(event) {
 function renderMenu() {
   const overlay = document.getElementById('menuOverlay');
   if (!overlay) return;
-  const isMainView = MAIN_VIEWS.includes(state.currentView);
-  const showPublicLanding = shouldRenderLanding();
-  const showPublicAuth = shouldRenderAuthScreen();
-  const forceDesktopSidebar = window.innerWidth >= 1100 && isMainView && !state.splashVisible && !showPublicLanding && !showPublicAuth;
+  const isPublicExperience = shouldShowPublicExperience();
+  const forceDesktopSidebar = shouldUseDesktopSidebarLayout();
 
-  if (state.splashVisible || showPublicLanding || showPublicAuth) {
+  if (state.splashVisible || isPublicExperience) {
     overlay.classList.remove('open');
     overlay.innerHTML = '';
     return;
@@ -3733,7 +4066,7 @@ function renderMenu() {
     { id: 'spaces', icon: './resources/Navbar/Spaces icon.svg', label: 'Espacios' },
     { id: 'profile', icon: './resources/Navbar/Profile icon.svg', label: 'Perfil' },
   ];
-  const activeView = MAIN_VIEWS.includes(state.currentView)
+  const activeView = isAuthenticatedMainView()
     ? state.currentView
     : getPreviousMainView();
 
@@ -3774,7 +4107,7 @@ function handleMenuOverlayClick(event) {
 
 function navigateFromMenu(view) {
   closeMenu();
-  setView(view);
+  navigateToView(view);
 }
 
 async function handleGoogleSignIn() {
@@ -3921,219 +4254,6 @@ function renderLoadingCard(message = 'Estamos recuperando tus plantas y seccione
       <div class="splash-spinner" aria-hidden="true"></div>
       <div class="splash-note">Fotosíntesis en progreso…</div>
     </div>
-  `;
-}
-
-function renderLandingScreen() {
-  return `
-    <section class="screen landing-screen">
-      <div class="landing-hero">
-        <div class="landing-copy">
-          <div class="landing-eyebrow">Cuidado tranquilo para plantas reales</div>
-          <h1 class="landing-title">Cuida tus plantas sin esfuerzo.</h1>
-          <p class="landing-subtitle">Musgo te ayuda a organizar tus plantas, entender qu&eacute; toca regar y guardar cada ficha en una experiencia clara, ligera y pensada para usar todos los d&iacute;as.</p>
-          <div class="landing-copy-actions">
-            <button class="btn-primary landing-cta" type="button" onclick="setView('auth')">Empezar</button>
-          </div>
-          <div class="landing-note">Identificaci&oacute;n con AI, calendario de riego y espacios en una sola app.</div>
-        </div>
-        <div class="landing-artboard" aria-hidden="true">
-          <div class="landing-art-badge">Vista previa del jard&iacute;n</div>
-          <div class="landing-art-photo"></div>
-        </div>
-      </div>
-
-      <div class="landing-section centered">
-        <div class="landing-section-head">
-          <div class="landing-section-kicker">Todo en un mismo lugar</div>
-          <h2 class="landing-section-title">Todo para que tus plantas prosperen</h2>
-          <p class="landing-section-copy">La app ya combina seguimiento, organizaci&oacute;n e identificaci&oacute;n para reducir fricci&oacute;n y hacer m&aacute;s simple el cuidado diario.</p>
-        </div>
-      </div>
-
-      <div class="landing-story-list">
-        <article class="landing-story">
-          <div class="landing-story-visual">
-            <div class="landing-story-ui">
-              <div class="landing-story-screen">
-                <div class="landing-story-bar">
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                </div>
-                <div class="landing-story-stat">3 plantas necesitan riego esta semana</div>
-                <div class="landing-story-grid">
-                  <div class="landing-story-pill">Hoy</div>
-                  <div class="landing-story-pill">Ma&ntilde;ana</div>
-                  <div class="landing-story-pill">Viernes</div>
-                  <div class="landing-story-pill">Domingo</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="landing-story-copy">
-            <h3 class="landing-story-title">Calendario y recordatorio de riego</h3>
-            <p class="landing-story-text">Cada planta guarda su frecuencia de riego y Musgo la refleja en una vista de calendario para que sea f&aacute;cil anticipar qu&eacute; toca y cu&aacute;ndo.</p>
-          </div>
-        </article>
-
-        <article class="landing-story is-reverse">
-          <div class="landing-story-visual">
-            <div class="landing-story-ui reverse">
-              <div class="landing-story-screen">
-                <div class="landing-story-bar">
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                </div>
-                <div class="landing-story-stat">Reconocimiento sugerido con AI</div>
-                <div class="landing-story-grid">
-                  <div class="landing-story-pill">Monstera deliciosa</div>
-                  <div class="landing-story-pill">92% confianza</div>
-                  <div class="landing-story-pill">Crear ficha</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="landing-story-copy">
-            <h3 class="landing-story-title">Reconocimiento asistido con AI</h3>
-            <p class="landing-story-text">Puedes subir una imagen, recibir una coincidencia sugerida y usar ese resultado para arrancar una ficha de planta sin rellenar todo desde cero.</p>
-          </div>
-        </article>
-
-        <article class="landing-story">
-          <div class="landing-story-visual">
-            <div class="landing-story-ui">
-              <div class="landing-story-screen">
-                <div class="landing-story-bar">
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                </div>
-                <div class="landing-story-stat">Espacios organizados por ambiente</div>
-                <div class="landing-story-grid">
-                  <div class="landing-story-pill">Balc&oacute;n</div>
-                  <div class="landing-story-pill">Sal&oacute;n</div>
-                  <div class="landing-story-pill">Dormitorio</div>
-                  <div class="landing-story-pill">Estudio</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="landing-story-copy">
-            <h3 class="landing-story-title">Agrupa tus plantas por espacio</h3>
-            <p class="landing-story-text">La app permite crear espacios con nombre y emoji para encontrar m&aacute;s r&aacute;pido cada grupo de plantas y mantener mejor ordenada la colecci&oacute;n.</p>
-          </div>
-        </article>
-      </div>
-
-      <div class="landing-section centered">
-        <div class="landing-section-head">
-          <div class="landing-section-kicker">Tres pasos, cero complicaciones</div>
-          <h2 class="landing-section-title">Una experiencia pensada para ser r&aacute;pida</h2>
-        </div>
-        <div class="landing-benefit-grid">
-          <article class="landing-benefit-card">
-            <div class="landing-benefit-head">01</div>
-            <h3 class="landing-benefit-title">Crea o identifica</h3>
-            <p class="landing-benefit-copy">A&ntilde;ade plantas manualmente o usa una foto para empezar con datos sugeridos.</p>
-          </article>
-          <article class="landing-benefit-card">
-            <div class="landing-benefit-head">02</div>
-            <h3 class="landing-benefit-title">Organiza por espacios</h3>
-            <p class="landing-benefit-copy">Asigna cada planta a un rinc&oacute;n concreto para encontrarla sin pensar demasiado.</p>
-          </article>
-          <article class="landing-benefit-card">
-            <div class="landing-benefit-head">03</div>
-            <h3 class="landing-benefit-title">Consulta qu&eacute; toca hoy</h3>
-            <p class="landing-benefit-copy">Revisa la vista de riego y actualiza el estado de cada planta desde un flujo simple.</p>
-          </article>
-        </div>
-      </div>
-
-      <div class="landing-section centered">
-        <div class="landing-section-head">
-          <div class="landing-section-kicker">Lo que dicen nuestros usuarios</div>
-          <h2 class="landing-section-title">Una app que acompa&ntilde;a sin molestar</h2>
-        </div>
-        <div class="landing-testimonial-grid">
-          <article class="landing-testimonial-card">
-            <div class="landing-testimonial-name">Mar&iacute;a</div>
-            <div class="landing-testimonial-role">Colecci&oacute;n dom&eacute;stica</div>
-            <p class="landing-testimonial-copy">Ahora s&eacute; qu&eacute; plantas revisar cada semana sin tener que recordar fechas de memoria.</p>
-          </article>
-          <article class="landing-testimonial-card">
-            <div class="landing-testimonial-name">Pablo</div>
-            <div class="landing-testimonial-role">Balc&oacute;n urbano</div>
-            <p class="landing-testimonial-copy">El alta manual y los espacios me ayudan a mantener ordenada una colecci&oacute;n que antes llevaba en notas sueltas.</p>
-          </article>
-          <article class="landing-testimonial-card">
-            <div class="landing-testimonial-name">Clara</div>
-            <div class="landing-testimonial-role">Primeras plantas</div>
-            <p class="landing-testimonial-copy">La identificaci&oacute;n con AI me dio el empuj&oacute;n inicial para guardar cada planta y empezar a cuidarlas mejor.</p>
-          </article>
-        </div>
-      </div>
-
-      <div class="landing-cta-band">
-        <div class="landing-cta-icon">🌿</div>
-        <h2 class="landing-cta-title">Tu jard&iacute;n te est&aacute; esperando</h2>
-        <p class="landing-cta-copy">Empieza a registrar tus plantas y convierte el cuidado diario en una rutina mucho m&aacute;s clara.</p>
-        <button class="btn-primary" type="button" onclick="setView('auth')">Entrar en Musgo</button>
-      </div>
-
-      <footer class="landing-footer">
-        <div class="landing-footer-bar">
-          <div class="landing-footer-brand">
-            <img src="./resources/logo vector.svg" alt="Musgo">
-            <span>Musgo</span>
-          </div>
-        </div>
-        <div class="landing-footer-bottom">
-          <div>Cuida tus plantas con una experiencia serena y organizada.</div>
-          <div class="landing-legal">
-            <a href="/privacidad">Pol&iacute;tica de privacidad</a>
-            <a href="/terminos-y-condiciones">T&eacute;rminos y condiciones</a>
-          </div>
-        </div>
-      </footer>
-    </section>
-  `;
-}
-
-function renderAuthScreen() {
-  const authModeLabel = state.authForm.mode === 'signup' ? 'Crear cuenta' : 'Entrar';
-  return `
-    <section class="screen auth-screen">
-      <div class="screen-intro">
-        <h1 class="screen-title">Ingresar</h1>
-      </div>
-      <div class="auth-panel">
-        <button class="btn-secondary auth-google-button" type="button" onclick="handleGoogleSignIn()">
-          <img src="./resources/icons8-google.svg" alt="">
-          <span>Continuar con Google</span>
-        </button>
-        <div class="auth-divider">o con email</div>
-        <div class="auth-mode-toggle">
-          <button class="auth-mode-button ${state.authForm.mode === 'signin' ? 'active' : ''}" type="button" onclick="setAuthFormMode('signin')">Entrar</button>
-          <button class="auth-mode-button ${state.authForm.mode === 'signup' ? 'active' : ''}" type="button" onclick="setAuthFormMode('signup')">Crear cuenta</button>
-        </div>
-        ${state.authForm.error ? `<div class="auth-feedback error">${escapeHtml(state.authForm.error)}</div>` : ''}
-        ${state.authForm.success ? `<div class="auth-feedback success">${escapeHtml(state.authForm.success)}</div>` : ''}
-        <div class="auth-form">
-          <div class="form-group">
-            <label>Email</label>
-            <input class="editor-input" type="email" value="${escapeHtml(state.authForm.email)}" placeholder="tu@email.com" oninput="updateAuthFormField('email', this.value)">
-          </div>
-          <div class="form-group">
-            <label>Contraseña</label>
-            <input class="editor-input" type="password" value="${escapeHtml(state.authForm.password)}" placeholder="Mínimo 6 caracteres" oninput="updateAuthFormField('password', this.value)">
-          </div>
-            <button class="btn-primary" type="button" onclick="submitEmailAuth()" ${state.authForm.loading ? 'disabled' : ''}>${state.authForm.loading ? 'Procesando...' : authModeLabel}</button>
-          </div>
-      </div>
-      <p class="auth-legal-copy">Al continuar, aceptas tanto nuestra <a href="/privacidad">política de privacidad</a> como los <a href="/terminos-y-condiciones">términos y condiciones</a> del servicio.</p>
-    </section>
   `;
 }
 
@@ -4782,47 +4902,68 @@ function renderCurrentView() {
     appMain.innerHTML = renderSplashScreen();
     return;
   }
-  if (shouldRenderLanding()) {
-    appMain.innerHTML = renderLandingScreen();
+  if (shouldShowPublicExperience()) {
+    appMain.innerHTML = renderPublicExperience();
     return;
+  }
+  if (shouldShowAuthenticatedExperience()) {
+    appMain.innerHTML = renderAuthenticatedExperience();
+    return;
+  }
+  appMain.innerHTML = renderAuthenticatedExperience();
+}
+
+function renderPublicExperience() {
+  const publicScreens = window.musgoPublicScreens;
+  if (!publicScreens) {
+    throw new Error('musgo_public_screens_unavailable');
   }
   if (shouldRenderAuthScreen()) {
-    appMain.innerHTML = renderAuthScreen();
-    return;
+    return publicScreens.renderAuthScreen();
   }
+  return publicScreens.renderLandingScreen();
+}
+
+function renderAuthenticatedExperience() {
+  return renderAuthenticatedAppShell(renderAuthenticatedRouteContent());
+}
+
+function renderAuthenticatedAppShell(content) {
+  return `
+    <div class="authenticated-app-shell" data-app-shell="authenticated">
+      <div class="authenticated-app-shell-content">
+        ${content}
+      </div>
+    </div>
+  `;
+}
+
+function renderAuthenticatedRouteContent() {
   if (state.currentView === 'dashboard') {
-    appMain.innerHTML = renderDashboardScreen();
-    return;
+    return renderDashboardScreen();
   }
   if (state.currentView === 'spaces') {
-    appMain.innerHTML = renderSpacesScreen();
-    return;
+    return renderSpacesScreen();
   }
   if (state.currentView === 'scan') {
-    appMain.innerHTML = renderScanScreen();
-    return;
+    return renderScanScreen();
   }
   if (state.currentView === 'profile') {
-    appMain.innerHTML = renderProfileScreen();
-    return;
+    return renderProfileScreen();
   }
   if (state.currentView === 'thirstyPlants') {
-    appMain.innerHTML = renderThirstyPlantsScreen();
-    return;
+    return renderThirstyPlantsScreen();
   }
   if (state.currentView === 'plantDetail') {
-    appMain.innerHTML = renderPlantDetailScreen();
-    return;
+    return renderPlantDetailScreen();
   }
   if (state.currentView === 'plantCreate') {
-    appMain.innerHTML = renderPlantCreateScreen();
-    return;
+    return renderPlantCreateScreen();
   }
   if (state.currentView === 'editSpace') {
-    appMain.innerHTML = renderEditSpaceScreen();
-    return;
+    return renderEditSpaceScreen();
   }
-  appMain.innerHTML = renderPlantsScreen();
+  return renderPlantsScreen();
 }
 
 function render() {
@@ -4986,16 +5127,7 @@ async function detailCalendarDayClick(dateStr, alreadyWatered) {
 
 // ===== ACTIONS =====
 function setView(view) {
-  state.menuOpen = false;
-  if (view === 'scan') {
-    resetIdentificationState();
-  }
-  state.currentView = view;
-  if (MAIN_VIEWS.includes(view)) {
-    state.previousMainView = view;
-  }
-  render();
-  scrollPageToTop();
+  navigateToView(view);
 }
 
 function openPlantDetail(plantId) {
@@ -5010,22 +5142,22 @@ function openPlantDetail(plantId) {
   state.calPlantId = plantId;
   state.calYear = new Date().getFullYear();
   state.calMonth = new Date().getMonth();
-  state.currentView = 'plantDetail';
-  render();
-  scrollPageToTop();
+  navigateToView('plantDetail', {
+    trackMainView: false,
+  });
 }
 
 function openThirstyPlantsView() {
-  state.currentView = 'thirstyPlants';
-  render();
-  scrollPageToTop();
+  navigateToView('thirstyPlants', {
+    trackMainView: false,
+  });
 }
 
 function openPlantCreateView(prefill = null) {
   state.screenPlantDraft = createPlantDraft(prefill);
-  state.currentView = 'plantCreate';
-  render();
-  scrollPageToTop();
+  navigateToView('plantCreate', {
+    trackMainView: false,
+  });
 }
 
 function updateScreenPlantField(field, value) {
@@ -5042,9 +5174,7 @@ function updateDetailPlantField(field, value) {
 
 function setSection(id) {
   state.activeSection = id;
-  state.currentView = 'plants';
-  render();
-  scrollPageToTop();
+  navigateToView('plants');
 }
 
 function openEditSectionView(sectionId) {
@@ -5052,23 +5182,23 @@ function openEditSectionView(sectionId) {
   if (!section) return;
   state.editingSectionId = section.id;
   state.screenSectionDraft = createSectionDraft(section);
-  state.currentView = 'editSpace';
-  render();
-  scrollPageToTop();
+  navigateToView('editSpace', {
+    trackMainView: false,
+  });
 }
 
 function openCreateSectionView() {
   state.editingSectionId = null;
   state.screenSectionDraft = createSectionDraft();
-  state.currentView = 'editSpace';
-  render();
-  scrollPageToTop();
+  navigateToView('editSpace', {
+    trackMainView: false,
+  });
 }
 
 function cancelEditSectionView() {
   state.screenSectionDraft = null;
   state.editingSectionId = null;
-  setView('spaces');
+  navigateToView('spaces');
 }
 
 function updateScreenSectionName(value) {
@@ -5183,9 +5313,7 @@ async function savePlantFromScreen() {
   if (isIdentifiedFlow) {
     resetIdentificationState();
   }
-  state.currentView = 'plants';
-  render();
-  scrollPageToTop();
+  navigateToView('plants');
 
   try {
     await syncPlantToCloud(plantToSync);
@@ -5350,7 +5478,10 @@ async function confirmDelete() {
   if (state.detailPlantId === plantId) {
     state.detailPlantId = null;
     state.detailDraft = null;
-    state.currentView = 'plants';
+    navigateToView('plants', {
+      scroll: false,
+      renderView: false,
+    });
   }
   saveState();
   closeDeleteModal();
@@ -5386,7 +5517,7 @@ async function saveSectionChanges() {
   section.outdoor = ['balcón','terraza','jardín','exterior','patio'].some(w => nextName.toLowerCase().includes(w));
   state.screenSectionDraft = null;
   state.editingSectionId = null;
-  setView('spaces');
+  navigateToView('spaces');
 
   try {
     await syncSectionToCloud(section);
@@ -5424,7 +5555,7 @@ async function saveSectionFromScreen() {
   state.sections.push(section);
   state.screenSectionDraft = null;
   state.editingSectionId = null;
-  setView('spaces');
+  navigateToView('spaces');
 
   try {
     await syncSectionToCloud(section);
@@ -5449,7 +5580,7 @@ async function deleteCurrentSection() {
   state.activeSection = 'all';
   state.screenSectionDraft = null;
   state.editingSectionId = null;
-  setView('spaces');
+  navigateToView('spaces');
 
   try {
     if (isCloudSyncEnabled()) {
@@ -5476,6 +5607,15 @@ document.querySelectorAll('.modal-overlay').forEach(el => {
   });
 });
 
+window.addEventListener('popstate', () => {
+  applyRouteFromLocation({
+    renderView: true,
+    scroll: false,
+    replaceHistory: false,
+  });
+  reconcileNavigationWithAuth();
+});
+
 // ===== TOAST =====
 let toastTimer;
 function showToast(msg) {
@@ -5488,6 +5628,11 @@ function showToast(msg) {
 
 // ===== INIT =====
 loadState();
+applyRouteFromLocation({
+  renderView: false,
+  scroll: false,
+  replaceHistory: true,
+});
 initSplash();
 render();
 initAuth();

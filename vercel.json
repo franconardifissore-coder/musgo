@@ -7,6 +7,50 @@
     {
       "source": "/terminos-y-condiciones",
       "destination": "/docs/terms_and_conditions/index.html"
+    },
+    {
+      "source": "/login",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/dashboard",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/dashboard/thirsty",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/plants",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/plants/new",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/plants/:path",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/scanner",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/spaces",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/spaces/new",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/spaces/:path/edit",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/profile",
+      "destination": "/index.html"
     }
   ]
 }
