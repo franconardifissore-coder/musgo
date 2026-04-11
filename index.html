@@ -1601,6 +1601,25 @@
     max-width: 28ch;
   }
 
+  .scan-box-copy.is-error {
+    color: #b5503a;
+    max-width: 30ch;
+  }
+
+  .scan-feedback {
+    margin-top: -8px;
+    padding: 14px 16px;
+    border-radius: 18px;
+    font-size: 0.92rem;
+    line-height: 1.45;
+  }
+
+  .scan-feedback.error {
+    background: rgba(181, 80, 58, 0.08);
+    border: 1px solid rgba(181, 80, 58, 0.18);
+    color: #8f3e2c;
+  }
+
   .scan-secondary {
     min-height: 64px;
     border-radius: 24px;
@@ -3190,6 +3209,7 @@ let state = {
     preview: '',
     results: [],
     loading: false,
+    error: '',
   },
   // Calendar state
   calPlantId: null,
@@ -3261,6 +3281,7 @@ function resetIdentificationState() {
     preview: '',
     results: [],
     loading: false,
+    error: '',
   };
 }
 
@@ -4485,7 +4506,7 @@ function renderScanScreen() {
   const scanTitle = state.identification.loading ? 'Analizando planta...' : 'Escanear planta';
   const scanCopy = state.identification.loading
     ? 'Estamos revisando la imagen para identificar tu planta automáticamente.'
-    : 'Reconocimiento con AI';
+    : (state.identification.error || 'Reconocimiento con AI');
 
   return `
     <section class="screen">
@@ -4499,9 +4520,10 @@ function renderScanScreen() {
           <div class="scan-box-inner">
             ${scanPreview}
             <div class="scan-box-title">${scanTitle}</div>
-            <div class="scan-box-copy ${state.identification.loading ? 'is-loading' : ''}">${scanCopy}</div>
+            <div class="scan-box-copy ${state.identification.loading ? 'is-loading' : ''} ${state.identification.error ? 'is-error' : ''}">${scanCopy}</div>
           </div>
         </button>
+        ${state.identification.error ? `<div class="scan-feedback error">${escapeHtml(state.identification.error)}</div>` : ''}
         <button class="scan-secondary" type="button" onclick="openPlantCreateView()">Crear manualmente</button>
       </div>
     </section>
@@ -5161,23 +5183,29 @@ async function handleDirectScanFileChange(event) {
 
   state.identification.file = file;
   state.identification.results = [];
+  state.identification.error = '';
 
   try {
     state.identification.preview = await createPersistableImagePreview(file);
   } catch (error) {
     state.identification.preview = '';
+    state.identification.loading = false;
+    state.identification.error = 'No pudimos preparar la imagen. Prueba con otra foto.';
     showToast('⚠️ No pudimos preparar la imagen. Prueba con otra foto.');
     render();
     return;
   }
 
   if (!window.plantIdentificationClient || typeof window.plantIdentificationClient.identifyPlantFromImage !== 'function') {
+    state.identification.loading = false;
+    state.identification.error = 'La identificación automática no está disponible en este momento.';
     showToast('⚠️ La integración de identificación no está disponible en este momento.');
     render();
     return;
   }
 
   state.identification.loading = true;
+  state.identification.error = '';
   render();
 
   try {
@@ -5186,19 +5214,47 @@ async function handleDirectScanFileChange(event) {
     state.identification.results = usefulResults;
 
     if (!usefulResults.length) {
+      state.identification.error = 'No encontramos una coincidencia clara. Prueba con otra foto o crea la planta manualmente.';
       showToast('⚠️ No pudimos identificar la planta con suficiente confianza');
       render();
       return;
     }
 
+    state.identification.error = '';
     openIdentifiedPlantDraft(usefulResults[0]);
   } catch (error) {
-    showToast('⚠️ No pudimos analizar la foto');
+    const message = getPlantIdentificationErrorMessage(error);
+    state.identification.error = message;
+    showToast(`⚠️ ${message}`);
     render();
   } finally {
     state.identification.loading = false;
     render();
   }
+}
+
+function getPlantIdentificationErrorMessage(error) {
+  const code = String(error && (error.code || error.message) || '');
+  const status = Number(error && error.status || error && error.payload && error.payload.plantnetStatus || 0);
+  const rawMessage = String(error && error.message || '');
+
+  if (code === 'identify_network_error') {
+    return 'No pudimos conectar con el servicio de identificación.';
+  }
+
+  if (code === 'missing_plantnet_api_key' || rawMessage.includes('PLANTNET_API_KEY')) {
+    return 'La identificación automática no está configurada en este momento.';
+  }
+
+  if (status === 429 || code === 'plant_identification_rate_limited') {
+    return 'Se alcanzó temporalmente el límite de identificaciones. Inténtalo más tarde.';
+  }
+
+  if (status >= 500) {
+    return 'El servicio de identificación falló. Puedes volver a intentarlo o crear la planta manualmente.';
+  }
+
+  return 'No pudimos analizar la foto. Prueba con otra imagen o crea la planta manualmente.';
 }
 
 

@@ -35,20 +35,32 @@ serve(async (req) => {
 
     const apiKey = Deno.env.get("PLANTNET_API_KEY");
     if (!apiKey) {
-      return jsonResponse({ error: "Missing PLANTNET_API_KEY" }, 500);
+      return jsonResponse({ error: "Missing PLANTNET_API_KEY" }, 503);
     }
 
     const plantnetForm = new FormData();
     plantnetForm.append("images", image, image.name || "plant.jpg");
     plantnetForm.append("organs", "leaf");
 
-    const response = await fetch(
-      `https://my-api.plantnet.org/v2/identify/all?api-key=${apiKey}`,
-      {
-        method: "POST",
-        body: plantnetForm,
-      }
-    );
+    let response: Response;
+    try {
+      response = await fetch(
+        `https://my-api.plantnet.org/v2/identify/all?api-key=${apiKey}`,
+        {
+          method: "POST",
+          body: plantnetForm,
+        }
+      );
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      return jsonResponse(
+        {
+          error: "PlantNet network request failed",
+          details: message,
+        },
+        502
+      );
+    }
 
     const rawText = await response.text();
 
@@ -62,18 +74,24 @@ serve(async (req) => {
           plantnetStatus: response.status,
           raw: rawText,
         },
-        500
+        502
       );
     }
 
     if (!response.ok) {
+      const status =
+        response.status === 429
+          ? 429
+          : response.status >= 400 && response.status < 500
+            ? response.status
+            : 502;
       return jsonResponse(
         {
           error: "PlantNet request failed",
           plantnetStatus: response.status,
           body: data,
         },
-        500
+        status
       );
     }
 
