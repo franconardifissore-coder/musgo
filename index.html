@@ -5130,6 +5130,9 @@ function setView(view) {
   navigateToView(view);
 }
 
+window.navigateToView = navigateToView;
+window.setView = setView;
+
 function openPlantDetail(plantId) {
   const plant = state.plants.find(item => item.id === plantId);
   if (!plant) return;
