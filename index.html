@@ -3298,6 +3298,22 @@ function getNormalizedPathname(pathname = window.location.pathname) {
   return safePath;
 }
 
+function hasPendingAuthCallbackParams() {
+  const searchParams = new URLSearchParams(window.location.search);
+  const hashParams = new URLSearchParams((window.location.hash || '').replace(/^#/, ''));
+
+  return [
+    'code',
+    'access_token',
+    'refresh_token',
+    'provider_token',
+    'provider_refresh_token',
+    'error',
+    'error_code',
+    'error_description',
+  ].some((key) => searchParams.has(key) || hashParams.has(key));
+}
+
 function getPathForView(view) {
   if (view === 'thirstyPlants') {
     return '/dashboard/thirsty';
@@ -3494,7 +3510,7 @@ function applyRouteFromLocation(options = {}) {
     updateHistory: false,
   });
 
-  if (replaceHistory && resolvedRoute.canonicalPath) {
+  if (replaceHistory && resolvedRoute.canonicalPath && !hasPendingAuthCallbackParams()) {
     syncHistoryPath(resolvedRoute.canonicalPath, { replace: true });
   }
 }
