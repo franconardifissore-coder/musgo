@@ -3303,6 +3303,58 @@ function loadImageElement(src) {
   });
 }
 
+async function createAnalysisImageFile(file) {
+  if (!(file instanceof File)) {
+    throw new Error('invalid_file');
+  }
+
+  if (!String(file.type || '').startsWith('image/')) {
+    return file;
+  }
+
+  const rawDataUrl = await fileToDataUrl(file);
+  if (!rawDataUrl) {
+    return file;
+  }
+
+  const image = await loadImageElement(rawDataUrl);
+  const canvas = document.createElement('canvas');
+  const context = canvas.getContext('2d');
+  if (!context) {
+    return file;
+  }
+
+  const MAX_DIMENSION = 1600;
+  let width = image.naturalWidth || image.width;
+  let height = image.naturalHeight || image.height;
+  const scale = Math.min(1, MAX_DIMENSION / Math.max(width, height));
+  width = Math.max(1, Math.round(width * scale));
+  height = Math.max(1, Math.round(height * scale));
+  canvas.width = width;
+  canvas.height = height;
+  context.drawImage(image, 0, 0, width, height);
+
+  const blob = await new Promise((resolve, reject) => {
+    canvas.toBlob(result => {
+      if (result) {
+        resolve(result);
+      } else {
+        reject(new Error('image_encode_failed'));
+      }
+    }, 'image/jpeg', 0.86);
+  });
+
+  const safeName = String(file.name || 'plant')
+    .replace(/\.[^.]+$/, '')
+    .replace(/[^a-z0-9_-]+/gi, '-')
+    .replace(/^-+|-+$/g, '') || 'plant';
+
+  return new File([blob], `${safeName}.jpg`, {
+    type: 'image/jpeg',
+    lastModified: Date.now(),
+  });
+}
+
 async function createPersistableImagePreview(file) {
   const rawDataUrl = await fileToDataUrl(file);
   if (!rawDataUrl) return '';
@@ -5178,17 +5230,18 @@ function openDirectScanPicker() {
 }
 
 async function handleDirectScanFileChange(event) {
-  const file = event.target.files && event.target.files[0];
-  if (!file) return;
+  const rawFile = event.target.files && event.target.files[0];
+  if (!rawFile) return;
 
-  state.identification.file = file;
   state.identification.results = [];
   state.identification.error = '';
 
   try {
-    state.identification.preview = await createPersistableImagePreview(file);
+    state.identification.preview = await createPersistableImagePreview(rawFile);
+    state.identification.file = await createAnalysisImageFile(rawFile);
   } catch (error) {
     state.identification.preview = '';
+    state.identification.file = null;
     state.identification.loading = false;
     state.identification.error = 'No pudimos preparar la imagen. Prueba con otra foto.';
     showToast('⚠️ No pudimos preparar la imagen. Prueba con otra foto.');
@@ -5209,7 +5262,7 @@ async function handleDirectScanFileChange(event) {
   render();
 
   try {
-    const response = await window.plantIdentificationClient.identifyPlantFromImage(file);
+    const response = await window.plantIdentificationClient.identifyPlantFromImage(state.identification.file);
     const usefulResults = response.results.filter(result => result.confidence >= 15);
     state.identification.results = usefulResults;
 

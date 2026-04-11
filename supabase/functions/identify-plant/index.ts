@@ -38,24 +38,43 @@ serve(async (req) => {
       return jsonResponse({ error: "Missing PLANTNET_API_KEY" }, 503);
     }
 
+    const imageBytes = new Uint8Array(await image.arrayBuffer());
+    const normalizedImage = new File(
+      [imageBytes],
+      image.name || "plant.jpg",
+      {
+        type: image.type || "image/jpeg",
+      }
+    );
+
     const plantnetForm = new FormData();
-    plantnetForm.append("images", image, image.name || "plant.jpg");
+    plantnetForm.append("images", normalizedImage, normalizedImage.name);
     plantnetForm.append("organs", "leaf");
 
     let response: Response;
+    let timeout: number | undefined;
     try {
+      const controller = new AbortController();
+      timeout = setTimeout(() => controller.abort(), 20000);
       response = await fetch(
         `https://my-api.plantnet.org/v2/identify/all?api-key=${apiKey}`,
         {
           method: "POST",
           body: plantnetForm,
+          signal: controller.signal,
         }
       );
+      clearTimeout(timeout);
     } catch (error) {
+      if (timeout) {
+        clearTimeout(timeout);
+      }
       const message = error instanceof Error ? error.message : String(error);
       return jsonResponse(
         {
-          error: "PlantNet network request failed",
+          error: message.includes("aborted")
+            ? "PlantNet request timed out"
+            : "PlantNet network request failed",
           details: message,
         },
         502
