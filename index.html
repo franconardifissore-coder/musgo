@@ -4396,15 +4396,20 @@ function renderPlantTiles(plants = []) {
   }).join('');
 }
 
-function renderPlantsScreen() {
+function renderProtectedScreenState({
+  title,
+  subtitle,
+  loadingMessage,
+  authMessage = '',
+} = {}) {
   if (!state.auth.ready || state.cloud.loading) {
     return `
       <section class="screen">
         <div class="screen-intro">
-          <h1 class="screen-title">Tus Plantas</h1>
-          <p class="screen-subtitle">Bienvenid@ a tu colección</p>
+          <h1 class="screen-title">${escapeHtml(title)}</h1>
+          <p class="screen-subtitle">${escapeHtml(subtitle)}</p>
         </div>
-        ${renderLoadingCard()}
+        ${renderLoadingCard(loadingMessage)}
       </section>
     `;
   }
@@ -4413,13 +4418,24 @@ function renderPlantsScreen() {
     return `
       <section class="screen">
         <div class="screen-intro">
-          <h1 class="screen-title">Tus Plantas</h1>
-          <p class="screen-subtitle">Bienvenid@ a tu colección</p>
+          <h1 class="screen-title">${escapeHtml(title)}</h1>
+          <p class="screen-subtitle">${escapeHtml(subtitle)}</p>
         </div>
-        ${renderAuthPrompt()}
+        ${renderAuthPrompt(authMessage)}
       </section>
     `;
   }
+
+  return '';
+}
+
+function renderPlantsScreen() {
+  const protectedState = renderProtectedScreenState({
+    title: 'Tus Plantas',
+    subtitle: 'Bienvenid@ a tu colección',
+    loadingMessage: 'Estamos preparando tu colección.',
+  });
+  if (protectedState) return protectedState;
 
   const all = { id: 'all', name: 'Todos', label: 'Todos' };
   const tabs = [
@@ -4464,29 +4480,13 @@ function renderPlantsScreen() {
 }
 
 function renderSpacesScreen() {
-  if (!state.auth.ready || state.cloud.loading) {
-    return `
-      <section class="screen">
-        <div class="screen-intro">
-          <h1 class="screen-title">Tus Espacios</h1>
-          <p class="screen-subtitle">Organiza tu oasis personal por habitaciones.</p>
-        </div>
-        ${renderLoadingCard('Estamos recuperando tus espacios y sus plantas.')}
-      </section>
-    `;
-  }
-
-  if (state.auth.configured && !state.auth.user) {
-    return `
-      <section class="screen">
-        <div class="screen-intro">
-          <h1 class="screen-title">Tus Espacios</h1>
-          <p class="screen-subtitle">Organiza tu oasis personal por habitaciones.</p>
-        </div>
-        ${renderAuthPrompt('Inicia sesión para editar tus espacios y ver cuántas plantas viven en cada uno.')}
-      </section>
-    `;
-  }
+  const protectedState = renderProtectedScreenState({
+    title: 'Tus Espacios',
+    subtitle: 'Organiza tu oasis personal por habitaciones.',
+    loadingMessage: 'Estamos recuperando tus espacios y sus plantas.',
+    authMessage: 'Inicia sesión para editar tus espacios y ver cuántas plantas viven en cada uno.',
+  });
+  if (protectedState) return protectedState;
 
   const spaces = state.sections.map(section => {
     const plantsInSection = state.plants.filter(plant => plant.section === section.id);
@@ -4581,29 +4581,13 @@ function renderEditSpaceScreen() {
 }
 
 function renderDashboardScreen() {
-  if (!state.auth.ready || state.cloud.loading) {
-    return `
-      <section class="screen">
-        <div class="screen-intro">
-          <h1 class="screen-title">Tu vista diaria</h1>
-          <p class="screen-subtitle">Mira tu jardín y las acciones que tienes que realizar.</p>
-        </div>
-        ${renderLoadingCard('Estamos preparando el resumen de hoy para tu colección.')}
-      </section>
-    `;
-  }
-
-  if (state.auth.configured && !state.auth.user) {
-    return `
-      <section class="screen">
-        <div class="screen-intro">
-          <h1 class="screen-title">Tu vista diaria</h1>
-          <p class="screen-subtitle">Mira tu jardín y las acciones que tienes que realizar.</p>
-        </div>
-        ${renderAuthPrompt('Inicia sesión para ver un resumen diario de tu jardín y las próximas acciones de riego.')}
-      </section>
-    `;
-  }
+  const protectedState = renderProtectedScreenState({
+    title: 'Tu vista diaria',
+    subtitle: 'Mira tu jardín y las acciones que tienes que realizar.',
+    loadingMessage: 'Estamos preparando el resumen de hoy para tu colección.',
+    authMessage: 'Inicia sesión para ver un resumen diario de tu jardín y las próximas acciones de riego.',
+  });
+  if (protectedState) return protectedState;
 
   const thirstyPlants = state.plants.filter(needsWater);
   const thirstyCount = thirstyPlants.length;
@@ -4685,29 +4669,13 @@ function renderThirstyPlantsScreen() {
 }
 
 function renderScanScreen() {
-  if (!state.auth.ready || state.cloud.loading) {
-    return `
-      <section class="screen">
-        <div class="screen-intro">
-          <h1 class="screen-title">Agrega una planta</h1>
-          <p class="screen-subtitle">Enfoca tu planta para identificarla automáticamente o cárgala manualmente.</p>
-        </div>
-        ${renderLoadingCard('Estamos preparando tu cuenta para crear nuevas plantas.')}
-      </section>
-    `;
-  }
-
-  if (state.auth.configured && !state.auth.user) {
-    return `
-      <section class="screen">
-        <div class="screen-intro">
-          <h1 class="screen-title">Agrega una planta</h1>
-          <p class="screen-subtitle">Enfoca tu planta para identificarla automáticamente o cárgala manualmente.</p>
-        </div>
-        ${renderAuthPrompt('Inicia sesión para identificar plantas y guardarlas directamente en tu colección.')}
-      </section>
-    `;
-  }
+  const protectedState = renderProtectedScreenState({
+    title: 'Agrega una planta',
+    subtitle: 'Enfoca tu planta para identificarla automáticamente o cárgala manualmente.',
+    loadingMessage: 'Estamos preparando tu cuenta para crear nuevas plantas.',
+    authMessage: 'Inicia sesión para identificar plantas y guardarlas directamente en tu colección.',
+  });
+  if (protectedState) return protectedState;
 
   const scanPreview = state.identification.preview
     ? `<div class="scan-box-preview"><img src="${state.identification.preview}" alt="Preview de la planta"></div>`
@@ -4880,17 +4848,13 @@ function renderPlantDetailScreen() {
 }
 
 function renderProfileScreen() {
-  if (!state.auth.ready || state.cloud.loading) {
-    return `
-      <section class="screen">
-        <div class="screen-intro">
-          <h1 class="screen-title">Perfil</h1>
-          <p class="screen-subtitle">Tu cuenta y el resumen de tu colección.</p>
-        </div>
-        ${renderLoadingCard('Estamos preparando tu perfil.')}
-      </section>
-    `;
-  }
+  const protectedState = renderProtectedScreenState({
+    title: 'Perfil',
+    subtitle: 'Tu cuenta y el resumen de tu colección.',
+    loadingMessage: 'Estamos preparando tu perfil.',
+    authMessage: 'Inicia sesión para acceder a tu perfil y al resumen de tu colección.',
+  });
+  if (protectedState) return protectedState;
 
   const user = state.auth.user;
   const avatarUrl = user?.user_metadata?.avatar_url || '';
