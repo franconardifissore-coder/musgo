@@ -3515,31 +3515,30 @@ function applyRouteFromLocation(options = {}) {
   }
 }
 
-function reconcileNavigationWithAuth() {
-  if (!state.auth.ready) return false;
+function getAuthRedirectView() {
+  if (!state.auth.ready) return null;
 
-  if (state.auth.configured && !state.auth.user) {
-    if (!isPublicView(state.currentView)) {
-      navigateToView('auth', {
-        trackMainView: false,
-        scroll: false,
-        replaceHistory: true,
-      });
-      return true;
-    }
-    return false;
+  if (state.auth.configured && !state.auth.user && !isPublicView(state.currentView)) {
+    return 'auth';
   }
 
   if (state.auth.user && isPublicView(state.currentView)) {
-    navigateToView(getPreviousMainView('dashboard'), {
-      trackMainView: false,
-      scroll: false,
-      replaceHistory: true,
-    });
-    return true;
+    return getPreviousMainView('dashboard');
   }
 
-  return false;
+  return null;
+}
+
+function reconcileNavigationWithAuth() {
+  const redirectView = getAuthRedirectView();
+  if (!redirectView) return false;
+
+  navigateToView(redirectView, {
+    trackMainView: false,
+    scroll: false,
+    replaceHistory: true,
+  });
+  return true;
 }
 
 function shouldRenderLanding() {
@@ -4939,32 +4938,21 @@ function renderAuthenticatedAppShell(content) {
   `;
 }
 
+const AUTHENTICATED_ROUTE_RENDERERS = {
+  dashboard: renderDashboardScreen,
+  plants: renderPlantsScreen,
+  spaces: renderSpacesScreen,
+  scan: renderScanScreen,
+  profile: renderProfileScreen,
+  thirstyPlants: renderThirstyPlantsScreen,
+  plantDetail: renderPlantDetailScreen,
+  plantCreate: renderPlantCreateScreen,
+  editSpace: renderEditSpaceScreen,
+};
+
 function renderAuthenticatedRouteContent() {
-  if (state.currentView === 'dashboard') {
-    return renderDashboardScreen();
-  }
-  if (state.currentView === 'spaces') {
-    return renderSpacesScreen();
-  }
-  if (state.currentView === 'scan') {
-    return renderScanScreen();
-  }
-  if (state.currentView === 'profile') {
-    return renderProfileScreen();
-  }
-  if (state.currentView === 'thirstyPlants') {
-    return renderThirstyPlantsScreen();
-  }
-  if (state.currentView === 'plantDetail') {
-    return renderPlantDetailScreen();
-  }
-  if (state.currentView === 'plantCreate') {
-    return renderPlantCreateScreen();
-  }
-  if (state.currentView === 'editSpace') {
-    return renderEditSpaceScreen();
-  }
-  return renderPlantsScreen();
+  const renderer = AUTHENTICATED_ROUTE_RENDERERS[state.currentView] || renderPlantsScreen;
+  return renderer();
 }
 
 function render() {
