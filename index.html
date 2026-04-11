@@ -3188,6 +3188,7 @@
 </script>
 <script src="./lib/app-router.js"></script>
 <script src="./lib/public-screens.js"></script>
+<script src="./lib/auth-screens/authenticated-registry.js"></script>
 <script src="./lib/auth-screens/overview-screens.js"></script>
 <script src="./lib/auth-screens/spaces-screens.js"></script>
 <script src="./lib/auth-screens/plants-screens.js"></script>
@@ -4207,6 +4208,22 @@ window.__musgoScannerScreenContext = () => ({
   renderProtectedScreenState,
 });
 
+window.__musgoAuthenticatedRegistryContext = () => ({
+  state,
+  routeRenderers: {
+    dashboard: renderDashboardScreen,
+    plants: renderPlantsScreen,
+    spaces: renderSpacesScreen,
+    scan: renderScanScreen,
+    profile: renderProfileScreen,
+    thirstyPlants: renderThirstyPlantsScreen,
+    plantDetail: renderPlantDetailScreen,
+    plantCreate: renderPlantCreateScreen,
+    editSpace: renderEditSpaceScreen,
+  },
+  fallbackRenderer: renderPlantsScreen,
+});
+
 function renderPlantsScreen() {
   const plantsScreens = window.musgoPlantsScreens;
   if (!plantsScreens) {
@@ -4309,34 +4326,19 @@ function renderPublicExperience() {
 }
 
 function renderAuthenticatedExperience() {
-  return renderAuthenticatedAppShell(renderAuthenticatedRouteContent());
+  const authenticatedRegistry = window.musgoAuthenticatedRegistry;
+  if (!authenticatedRegistry) {
+    throw new Error('musgo_authenticated_registry_unavailable');
+  }
+  return authenticatedRegistry.renderAuthenticatedExperience();
 }
-
-function renderAuthenticatedAppShell(content) {
-  return `
-    <div class="authenticated-app-shell" data-app-shell="authenticated">
-      <div class="authenticated-app-shell-content">
-        ${content}
-      </div>
-    </div>
-  `;
-}
-
-const AUTHENTICATED_ROUTE_RENDERERS = {
-  dashboard: renderDashboardScreen,
-  plants: renderPlantsScreen,
-  spaces: renderSpacesScreen,
-  scan: renderScanScreen,
-  profile: renderProfileScreen,
-  thirstyPlants: renderThirstyPlantsScreen,
-  plantDetail: renderPlantDetailScreen,
-  plantCreate: renderPlantCreateScreen,
-  editSpace: renderEditSpaceScreen,
-};
 
 function renderAuthenticatedRouteContent() {
-  const renderer = AUTHENTICATED_ROUTE_RENDERERS[state.currentView] || renderPlantsScreen;
-  return renderer();
+  const authenticatedRegistry = window.musgoAuthenticatedRegistry;
+  if (!authenticatedRegistry) {
+    throw new Error('musgo_authenticated_registry_unavailable');
+  }
+  return authenticatedRegistry.renderAuthenticatedRouteContent();
 }
 
 function render() {
