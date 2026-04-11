@@ -913,6 +913,16 @@
       max-width: 500px;
     }
 
+    .plant-create-screen .screen-head,
+    .plant-create-screen .screen-intro,
+    .plant-create-screen .identified-plant-card,
+    .plant-create-screen .identified-plant-form,
+    .plant-create-screen .manual-plant-card,
+    .plant-create-screen > .form-group,
+    .plant-create-screen > .screen-actions {
+      max-width: 500px;
+    }
+
     .legal-links {
       max-width: 504px;
     }
@@ -4130,7 +4140,7 @@ function renderPlantCreateScreen() {
     ? `Match con ${confidenceToPercent(draft.identificationConfidence)}% de confianza`
     : 'Planta identificada';
   return `
-    <section class="screen">
+    <section class="screen editor-screen plant-create-screen">
       <div class="screen-head">
         ${renderBackButton('Scan', 'scan')}
       </div>
