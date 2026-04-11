@@ -3450,11 +3450,32 @@ function syncHistoryPath(pathname, { replace = false } = {}) {
   }
 
   if (replace) {
-    window.history.replaceState({ path: nextPath }, '', nextPath);
+    try {
+      window.history.replaceState({ path: nextPath }, '', nextPath);
+    } catch (error) {
+      if (window.location.protocol !== 'file:') {
+        window.location.replace(nextPath);
+      }
+      return;
+    }
+    if (getNormalizedPathname(window.location.pathname) !== nextPath && window.location.protocol !== 'file:') {
+      window.location.replace(nextPath);
+    }
     return;
   }
 
-  window.history.pushState({ path: nextPath }, '', nextPath);
+  try {
+    window.history.pushState({ path: nextPath }, '', nextPath);
+  } catch (error) {
+    if (window.location.protocol !== 'file:') {
+      window.location.assign(nextPath);
+    }
+    return;
+  }
+
+  if (getNormalizedPathname(window.location.pathname) !== nextPath && window.location.protocol !== 'file:') {
+    window.location.assign(nextPath);
+  }
 }
 
 function applyRouteFromLocation(options = {}) {
