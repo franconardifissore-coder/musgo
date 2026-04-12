@@ -3195,6 +3195,7 @@
 <script src="./lib/auth-screens/scanner-screen.js"></script>
 <script src="./lib/app-actions/plants-actions.js"></script>
 <script src="./lib/app-actions/spaces-actions.js"></script>
+<script src="./lib/app-actions/scanner-actions.js"></script>
 <script src="./lib/app-sync.js"></script>
 <script src="./lib/app-auth.js"></script>
 <script src="./lib/identify-plant.js"></script>
@@ -3383,6 +3384,17 @@ window.__musgoSpacesActionsContext = () => ({
   syncSectionToCloud,
   deleteSectionFromCloud,
   isCloudSyncEnabled,
+});
+
+window.__musgoScannerActionsContext = () => ({
+  getState: () => state,
+  getPersistableImagePreview,
+  resetIdentificationState,
+  render,
+  showToast,
+  createPersistableImagePreview,
+  createAnalysisImageFile,
+  openPlantCreateView: (...args) => window.musgoPlantActions.openPlantCreateView(...args),
 });
 
 const {
@@ -4339,116 +4351,6 @@ window.navigateToView = navigateToView;
 window.setView = setView;
 
 const sectionEmojis = ['🌺','🛋️','🛏️','🚿','🍳','🪴','🌿','🏡','🌞','💻','📚','🎭'];
-
-function buildIdentifiedPlantDraft(result) {
-  if (!result) return null;
-  return {
-    species: result.scientificName,
-    name: result.scientificName || '',
-    imagePreview: getPersistableImagePreview(state.identification.preview),
-    identifiedSpecies: result.scientificName,
-    identifiedCommonName: result.commonNames && result.commonNames.length ? result.commonNames[0] : '',
-    identificationConfidence: result.confidence / 100,
-    identifiedAt: new Date().toISOString(),
-  };
-}
-
-function openIdentifiedPlantDraft(result) {
-  const draft = buildIdentifiedPlantDraft(result);
-  if (!draft) return;
-  openPlantCreateView(draft);
-}
-
-function openDirectScanPicker() {
-  if (state.identification.loading) return;
-  resetIdentificationState();
-  render();
-  const input = document.getElementById('scanImageInput');
-  if (!input) return;
-  input.value = '';
-  input.click();
-}
-
-async function handleDirectScanFileChange(event) {
-  const rawFile = event.target.files && event.target.files[0];
-  if (!rawFile) return;
-
-  state.identification.results = [];
-  state.identification.error = '';
-
-  try {
-    state.identification.preview = await createPersistableImagePreview(rawFile);
-    state.identification.file = await createAnalysisImageFile(rawFile);
-  } catch (error) {
-    state.identification.preview = '';
-    state.identification.file = null;
-    state.identification.loading = false;
-    state.identification.error = 'No pudimos preparar la imagen. Prueba con otra foto.';
-    showToast('⚠️ No pudimos preparar la imagen. Prueba con otra foto.');
-    render();
-    return;
-  }
-
-  if (!window.plantIdentificationClient || typeof window.plantIdentificationClient.identifyPlantFromImage !== 'function') {
-    state.identification.loading = false;
-    state.identification.error = 'La identificación automática no está disponible en este momento.';
-    showToast('⚠️ La integración de identificación no está disponible en este momento.');
-    render();
-    return;
-  }
-
-  state.identification.loading = true;
-  state.identification.error = '';
-  render();
-
-  try {
-    const response = await window.plantIdentificationClient.identifyPlantFromImage(state.identification.file);
-    const usefulResults = response.results.filter(result => result.confidence >= 15);
-    state.identification.results = usefulResults;
-
-    if (!usefulResults.length) {
-      state.identification.error = 'No encontramos una coincidencia clara. Prueba con otra foto o crea la planta manualmente.';
-      showToast('⚠️ No pudimos identificar la planta con suficiente confianza');
-      render();
-      return;
-    }
-
-    state.identification.error = '';
-    openIdentifiedPlantDraft(usefulResults[0]);
-  } catch (error) {
-    const message = getPlantIdentificationErrorMessage(error);
-    state.identification.error = message;
-    showToast(`⚠️ ${message}`);
-    render();
-  } finally {
-    state.identification.loading = false;
-    render();
-  }
-}
-
-function getPlantIdentificationErrorMessage(error) {
-  const code = String(error && (error.code || error.message) || '');
-  const status = Number(error && error.status || error && error.payload && error.payload.plantnetStatus || 0);
-  const rawMessage = String(error && error.message || '');
-
-  if (code === 'identify_network_error') {
-    return 'No pudimos conectar con el servicio de identificación.';
-  }
-
-  if (code === 'missing_plantnet_api_key' || rawMessage.includes('PLANTNET_API_KEY')) {
-    return 'La identificación automática no está configurada en este momento.';
-  }
-
-  if (status === 429 || code === 'plant_identification_rate_limited') {
-    return 'Se alcanzó temporalmente el límite de identificaciones. Inténtalo más tarde.';
-  }
-
-  if (status >= 500) {
-    return 'El servicio de identificación falló. Puedes volver a intentarlo o crear la planta manualmente.';
-  }
-
-  return 'No pudimos analizar la foto. Prueba con otra imagen o crea la planta manualmente.';
-}
 
 async function confirmDelete() {
   const deletedPlant = await window.musgoPlantActions.confirmDeletePlant();
