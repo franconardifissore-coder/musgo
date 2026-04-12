@@ -114,11 +114,30 @@ serve(async (req) => {
       );
     }
 
-    const results = (data.results || []).slice(0, 3).map((r: any) => ({
-      scientificName: r?.species?.scientificNameWithoutAuthor || "Unknown",
-      confidence: Math.round((r?.score || 0) * 100),
-      commonNames: r?.species?.commonNames || [],
-    }));
+    const results = (data.results || []).slice(0, 3).map((r: any) => {
+      const refImages = (r?.images || [])
+        .slice(0, 2)
+        .map((img: any) => {
+          const url = img?.url?.m || img?.url?.s || null;
+          if (!url) return null;
+          return {
+            url,
+            organ: img?.organ || null,
+            author: img?.author || null,
+          };
+        })
+        .filter(Boolean);
+
+      return {
+        scientificName: r?.species?.scientificNameWithoutAuthor || "Unknown",
+        confidence: Math.round((r?.score || 0) * 100),
+        commonNames: r?.species?.commonNames || [],
+        family: r?.species?.family?.scientificNameWithoutAuthor || null,
+        genus: r?.species?.genus?.scientificNameWithoutAuthor || null,
+        referenceImages: refImages,
+        gbifId: r?.gbif?.id || null,
+      };
+    });
 
     return jsonResponse({
       bestMatch: data.bestMatch || null,
