@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Musgo</title>
-<link rel="icon" type="image/svg+xml" href="./resources/logo vector.svg">
+<link rel="icon" type="image/svg+xml" href="/resources/logo vector.svg">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./styles.css">
+<link rel="stylesheet" href="/styles.css">
 </head>
 <body>
 
@@ -14,7 +14,7 @@
   <div class="app-frame">
     <header class="mobile-topbar">
       <div class="mobile-brand" id="topbarBrand" role="button" tabindex="0" onclick="handleTopbarBrandClick()" onkeydown="handleTopbarBrandKeydown(event)">
-        <div class="mobile-brand-icon"><img src="./resources/logo vector.svg" alt="Musgo"></div>
+        <div class="mobile-brand-icon"><img src="/resources/logo vector.svg" alt="Musgo"></div>
         <div class="mobile-brand-name">Musgo</div>
       </div>
       <button class="topbar-menu-button" id="topbarMenuButton" type="button" aria-label="Abrir menú" aria-expanded="false" onclick="handleTopbarAction()">
@@ -51,26 +51,26 @@
     SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhib2p6aWZob2N4eWdkb2p6cWpuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NTIyMDIsImV4cCI6MjA5MDUyODIwMn0.bELLTjPbm4NnWQ7ujX4bQXroOJwCCLF16rvRHwNZMTM"
   };
 </script>
-<script src="./lib/app-state.js"></script>
-<script src="./lib/app-router.js"></script>
-<script src="./lib/shared-render.js"></script>
-<script src="./lib/public-screens.js"></script>
-<script src="./lib/auth-screens/authenticated-registry.js"></script>
-<script src="./lib/auth-screens/overview-screens.js"></script>
-<script src="./lib/auth-screens/spaces-screens.js"></script>
-<script src="./lib/auth-screens/plants-screens.js"></script>
-<script src="./lib/auth-screens/scanner-screen.js"></script>
-<script src="./lib/domain/image-processing.js"></script>
-<script src="./lib/domain/watering.js"></script>
-<script src="./lib/domain/calendar.js"></script>
-<script src="./lib/app-actions/plants-actions.js"></script>
-<script src="./lib/app-actions/spaces-actions.js"></script>
-<script src="./lib/app-actions/scanner-actions.js"></script>
-<script src="./lib/app-sync.js"></script>
-<script src="./lib/app-auth.js"></script>
-<script src="./lib/identify-plant.js"></script>
-<script src="./lib/supabase-data.js"></script>
-<script type="module" src="./lib/supabase-auth.js"></script>
+<script src="/lib/app-state.js"></script>
+<script src="/lib/app-router.js"></script>
+<script src="/lib/shared-render.js"></script>
+<script src="/lib/public-screens.js"></script>
+<script src="/lib/auth-screens/authenticated-registry.js"></script>
+<script src="/lib/auth-screens/overview-screens.js"></script>
+<script src="/lib/auth-screens/spaces-screens.js"></script>
+<script src="/lib/auth-screens/plants-screens.js"></script>
+<script src="/lib/auth-screens/scanner-screen.js"></script>
+<script src="/lib/domain/image-processing.js"></script>
+<script src="/lib/domain/watering.js"></script>
+<script src="/lib/domain/calendar.js"></script>
+<script src="/lib/app-actions/plants-actions.js"></script>
+<script src="/lib/app-actions/spaces-actions.js"></script>
+<script src="/lib/app-actions/scanner-actions.js"></script>
+<script src="/lib/app-sync.js"></script>
+<script src="/lib/app-auth.js"></script>
+<script src="/lib/identify-plant.js"></script>
+<script src="/lib/supabase-data.js"></script>
+<script type="module" src="/lib/supabase-auth.js"></script>
 <script>
 // ===== STATE =====
 const appState = window.musgoAppState;
@@ -372,7 +372,7 @@ function renderTopbar() {
       menuButton.style.display = 'inline-flex';
       menuButton.classList.remove('is-open');
       menuButton.innerHTML = `
-        <img class="topbar-public-icon" src="./resources/ingresar.svg" alt="">
+        <img class="topbar-public-icon" src="/resources/ingresar.svg" alt="">
         <span class="topbar-public-label">Ingresar</span>
       `;
       menuButton.setAttribute('aria-label', 'Ir a acceso');
@@ -436,11 +436,11 @@ function renderMenu() {
   }
 
   const items = [
-    { id: 'dashboard', icon: './resources/Navbar/Home.svg', label: 'Inicio' },
-    { id: 'plants', icon: './resources/Navbar/plants icon.svg', label: 'Jardín' },
-    { id: 'scan', icon: './resources/Navbar/Scanner icon.svg', label: 'Agregar planta' },
-    { id: 'spaces', icon: './resources/Navbar/Spaces icon.svg', label: 'Espacios' },
-    { id: 'profile', icon: './resources/Navbar/Profile icon.svg', label: 'Perfil' },
+    { id: 'dashboard', icon: '/resources/Navbar/Home.svg', label: 'Inicio' },
+    { id: 'plants', icon: '/resources/Navbar/plants icon.svg', label: 'Jardín' },
+    { id: 'scan', icon: '/resources/Navbar/Scanner icon.svg', label: 'Agregar planta' },
+    { id: 'spaces', icon: '/resources/Navbar/Spaces icon.svg', label: 'Espacios' },
+    { id: 'profile', icon: '/resources/Navbar/Profile icon.svg', label: 'Perfil' },
   ];
   const activeView = isAuthenticatedMainView()
     ? state.currentView
