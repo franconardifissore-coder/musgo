@@ -3193,6 +3193,8 @@
 <script src="./lib/auth-screens/spaces-screens.js"></script>
 <script src="./lib/auth-screens/plants-screens.js"></script>
 <script src="./lib/auth-screens/scanner-screen.js"></script>
+<script src="./lib/app-sync.js"></script>
+<script src="./lib/app-auth.js"></script>
 <script src="./lib/identify-plant.js"></script>
 <script src="./lib/supabase-data.js"></script>
 <script type="module" src="./lib/supabase-auth.js"></script>
@@ -3336,6 +3338,36 @@ window.__musgoPublicScreenContext = () => ({
   state,
   escapeHtml,
 });
+
+window.__musgoAppSyncContext = () => ({
+  getState: () => state,
+  hydrateRouteState,
+  render,
+  showToast,
+});
+
+window.__musgoAppAuthContext = () => ({
+  getState: () => state,
+  reconcileNavigationWithAuth,
+  render,
+  showToast,
+  loadCloudGarden: (...args) => window.musgoAppSync.loadCloudGarden(...args),
+});
+
+const {
+  isCloudSyncEnabled,
+  loadCloudGarden,
+  syncSectionToCloud,
+  syncPlantToCloud,
+  deletePlantFromCloud,
+  deleteSectionFromCloud,
+} = window.musgoAppSync;
+
+const {
+  initAuth,
+  getUserName,
+  getUserInitial,
+} = window.musgoAppAuth;
 
 function resetIdentificationState() {
   state.identification = {
@@ -3589,150 +3621,6 @@ function initSplash() {
   }, 1350);
 }
 
-function applyAuthState({ session = null, user = null, configured = state.auth.configured, error = '' } = {}) {
-  const previousUserId = state.auth.user?.id || null;
-  state.auth = {
-    ...state.auth,
-    ready: true,
-    configured,
-    session,
-    user,
-    error,
-  };
-
-  const nextUserId = user?.id || null;
-  const navigationAdjusted = reconcileNavigationWithAuth();
-
-  if (!navigationAdjusted) {
-    render();
-  }
-
-  if (nextUserId && nextUserId !== previousUserId) {
-    loadCloudGarden();
-  }
-  if (!nextUserId && previousUserId) {
-    state.cloud = {
-      loading: false,
-      syncedUserId: null,
-      error: '',
-    };
-    state.sections = [];
-    state.plants = [];
-    render();
-  }
-}
-
-async function initAuth() {
-  const authApi = window.supabaseAuth;
-
-  if (!authApi) {
-    state.auth = {
-      ...state.auth,
-      ready: false,
-      configured: false,
-      session: null,
-      user: null,
-      error: '',
-    };
-    window.addEventListener('musgo:supabase-auth-ready', () => {
-      initAuth();
-    }, { once: true });
-    return;
-  }
-
-  const configured = Boolean(authApi.isConfigured && authApi.isConfigured());
-  applyAuthState({ configured, error: configured ? '' : 'Falta configurar SUPABASE_ANON_KEY en runtime.' });
-
-  if (!configured) return;
-
-  try {
-    const { session, user } = await authApi.getSessionData();
-    applyAuthState({ configured: true, session, user, error: '' });
-  } catch (error) {
-    applyAuthState({
-      configured: true,
-      session: null,
-      user: null,
-      error: error instanceof Error ? error.message : String(error),
-    });
-  }
-
-  authApi.onAuthStateChange(({ session, user }) => {
-    applyAuthState({ configured: true, session, user, error: '' });
-  });
-}
-
-function getUserInitial(user) {
-  const source = user?.user_metadata?.full_name || user?.email || '?';
-  return source.trim().charAt(0).toUpperCase();
-}
-
-function getUserName(user) {
-  return user?.user_metadata?.full_name || user?.user_metadata?.name || 'Sesión iniciada';
-}
-
-function isCloudSyncEnabled() {
-  return Boolean(state.auth.user && window.supabaseData);
-}
-
-async function loadCloudGarden() {
-  if (!isCloudSyncEnabled()) return;
-
-  const userId = state.auth.user.id;
-  state.cloud = {
-    ...state.cloud,
-    loading: true,
-    error: '',
-  };
-  render();
-
-  try {
-    const garden = await window.supabaseData.fetchUserGarden();
-    state.sections = garden.sections;
-    state.plants = garden.plants;
-    hydrateRouteState();
-    state.cloud = {
-      loading: false,
-      syncedUserId: userId,
-      error: '',
-    };
-    render();
-  } catch (error) {
-    state.cloud = {
-      loading: false,
-      syncedUserId: null,
-      error: error instanceof Error ? error.message : String(error),
-    };
-    render();
-    showToast('⚠️ No pudimos cargar tus plantas desde la nube');
-  }
-}
-
-async function syncSectionToCloud(section) {
-  if (!isCloudSyncEnabled()) return;
-  await window.supabaseData.upsertSection(section, state.auth.user.id);
-}
-
-async function syncPlantToCloud(plant) {
-  if (!isCloudSyncEnabled()) return;
-  const section = state.sections.find(item => item.id === plant.section);
-  if (section) {
-    await syncSectionToCloud(section);
-  }
-  await window.supabaseData.upsertPlant(plant, state.auth.user.id);
-}
-
-async function deletePlantFromCloud(plantId) {
-  if (!isCloudSyncEnabled()) return;
-  await window.supabaseData.deletePlant(plantId);
-}
-
-async function deleteSectionFromCloud(sectionId) {
-  if (!isCloudSyncEnabled()) return;
-  await window.supabaseData.clearPlantSection(sectionId);
-  await window.supabaseData.deleteSection(sectionId);
-}
-
 function renderTopbar() {
   const topbar = document.querySelector('.mobile-topbar');
   const menuButton = document.getElementById('topbarMenuButton');
@@ -3883,95 +3771,6 @@ function handleMenuOverlayClick(event) {
 function navigateFromMenu(view) {
   closeMenu();
   navigateToView(view);
-}
-
-async function handleGoogleSignIn() {
-  const authApi = window.supabaseAuth;
-  if (!authApi || !authApi.isConfigured || !authApi.isConfigured()) {
-    showToast('⚠️ Supabase Auth no está configurado');
-    return;
-  }
-
-  try {
-    await authApi.signInWithGoogle();
-  } catch (error) {
-    showToast('⚠️ No pudimos iniciar sesión con Google');
-  }
-}
-
-function setAuthFormMode(mode) {
-  state.authForm.mode = mode === 'signup' ? 'signup' : 'signin';
-  state.authForm.error = '';
-  state.authForm.success = '';
-  render();
-}
-
-function updateAuthFormField(field, value) {
-  if (!state.authForm) return;
-  state.authForm[field] = value;
-}
-
-async function submitEmailAuth() {
-  const authApi = window.supabaseAuth;
-  if (!authApi || !authApi.isConfigured || !authApi.isConfigured()) {
-    showToast('⚠️ Supabase Auth no está configurado');
-    return;
-  }
-
-  const email = (state.authForm.email || '').trim();
-  const password = state.authForm.password || '';
-
-  if (!email) {
-    state.authForm.error = 'Escribe tu email.';
-    state.authForm.success = '';
-    render();
-    return;
-  }
-
-  if (password.length < 6) {
-    state.authForm.error = 'La contraseña debe tener al menos 6 caracteres.';
-    state.authForm.success = '';
-    render();
-    return;
-  }
-
-  state.authForm.loading = true;
-  state.authForm.error = '';
-  state.authForm.success = '';
-  render();
-
-  try {
-    if (state.authForm.mode === 'signup') {
-      await authApi.signUpWithEmail({ email, password });
-      state.authForm.success = 'Cuenta creada. Ya puedes usar Musgo con tu email.';
-      showToast('🌱 Cuenta creada');
-    } else {
-      await authApi.signInWithEmail({ email, password });
-      state.authForm.success = '';
-      showToast('👋 Sesión iniciada');
-    }
-    state.authForm.password = '';
-  } catch (error) {
-    state.authForm.error = error instanceof Error ? error.message : 'No pudimos completar la operación.';
-  } finally {
-    state.authForm.loading = false;
-    render();
-  }
-}
-
-async function handleSignOut() {
-  const authApi = window.supabaseAuth;
-  if (!authApi || !authApi.isConfigured || !authApi.isConfigured()) {
-    showToast('⚠️ Supabase Auth no está configurado');
-    return;
-  }
-
-  try {
-    await authApi.signOut();
-    showToast('👋 Sesión cerrada');
-  } catch (error) {
-    showToast('⚠️ No pudimos cerrar la sesión');
-  }
 }
 
 // ===== STORAGE =====
