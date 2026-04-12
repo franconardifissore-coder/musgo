@@ -3194,6 +3194,7 @@
 <script src="./lib/auth-screens/plants-screens.js"></script>
 <script src="./lib/auth-screens/scanner-screen.js"></script>
 <script src="./lib/app-actions/plants-actions.js"></script>
+<script src="./lib/app-actions/spaces-actions.js"></script>
 <script src="./lib/app-sync.js"></script>
 <script src="./lib/app-auth.js"></script>
 <script src="./lib/identify-plant.js"></script>
@@ -3368,6 +3369,20 @@ window.__musgoPlantActionsContext = () => ({
   syncPlantToCloud,
   deletePlantFromCloud,
   closeDeleteModal,
+});
+
+window.__musgoSpacesActionsContext = () => ({
+  getState: () => state,
+  createSectionDraft,
+  createEntityId,
+  today,
+  render,
+  showToast,
+  navigateToView,
+  syncPlantToCloud,
+  syncSectionToCloud,
+  deleteSectionFromCloud,
+  isCloudSyncEnabled,
 });
 
 const {
@@ -4323,76 +4338,6 @@ function setView(view) {
 window.navigateToView = navigateToView;
 window.setView = setView;
 
-function openEditSectionView(sectionId) {
-  const section = state.sections.find(item => item.id === sectionId);
-  if (!section) return;
-  state.editingSectionId = section.id;
-  state.screenSectionDraft = createSectionDraft(section);
-  navigateToView('editSpace', {
-    trackMainView: false,
-  });
-}
-
-function openCreateSectionView() {
-  state.editingSectionId = null;
-  state.screenSectionDraft = createSectionDraft();
-  navigateToView('editSpace', {
-    trackMainView: false,
-  });
-}
-
-function cancelEditSectionView() {
-  state.screenSectionDraft = null;
-  state.editingSectionId = null;
-  navigateToView('spaces');
-}
-
-function updateScreenSectionName(value) {
-  if (!state.screenSectionDraft) return;
-  state.screenSectionDraft.name = value;
-}
-
-function setScreenSectionEmoji(emoji) {
-  if (!state.screenSectionDraft) return;
-  state.screenSectionDraft.icon = emoji;
-  render();
-}
-
-async function waterSection(sectionId) {
-  const section = state.sections.find(item => item.id === sectionId);
-  if (!section) return;
-
-  const plantsInSection = state.plants.filter(plant => plant.section === sectionId);
-  if (!plantsInSection.length) {
-    showToast('⚠️ Esta sección no tiene plantas todavía');
-    return;
-  }
-
-  const td = today();
-  const updatedPlants = [];
-  plantsInSection.forEach(plant => {
-    if (!plant.waterLog) plant.waterLog = [];
-    if (!plant.waterLog.includes(td)) {
-      plant.waterLog.push(td);
-      updatedPlants.push(plant);
-    }
-  });
-
-  render();
-
-  try {
-    for (const plant of updatedPlants) {
-      await syncPlantToCloud(plant);
-    }
-  } catch (error) {
-    console.error('Failed to sync section watering', error);
-    showToast('⚠️ Regamos localmente, pero no pudimos sincronizar toda la sección');
-    return;
-  }
-
-  showToast(`💧 ${section.name} al día`);
-}
-
 const sectionEmojis = ['🌺','🛋️','🛏️','🚿','🍳','🪴','🌿','🏡','🌞','💻','📚','🎭'];
 
 function buildIdentifiedPlantDraft(result) {
@@ -4505,135 +4450,10 @@ function getPlantIdentificationErrorMessage(error) {
   return 'No pudimos analizar la foto. Prueba con otra imagen o crea la planta manualmente.';
 }
 
-
-function openDeleteSectionModal(sectionId) {
-  state.deletingPlantId = null;
-  state.deletingSectionId = sectionId;
-  const section = state.sections.find(x => x.id === sectionId);
-  document.getElementById('deleteModalTitle').textContent = 'Eliminar espacio';
-  document.getElementById('deleteModalSubtitle').textContent = '¿Estás segur@ que deseas eliminar este espacio?';
-  document.getElementById('deleteConfirmName').textContent = section ? `${section.name}` : '';
-  document.getElementById('deleteModal').classList.add('open');
-}
-
-function closeDeleteModal() {
-  state.deletingPlantId = null;
-  state.deletingSectionId = null;
-  document.getElementById('deleteModal').classList.remove('open');
-}
-
 async function confirmDelete() {
-  if (state.deletingSectionId) {
-    await deleteCurrentSection();
-    closeDeleteModal();
-    return;
-  }
-  await window.musgoPlantActions.confirmDeletePlant();
-}
-
-function editSectionFromSpaces(sectionId) {
-  state.activeSection = sectionId;
-  openEditSectionView(sectionId);
-}
-
-async function saveSectionChanges() {
-  const sectionId = state.editingSectionId || state.activeSection;
-  const section = state.sections.find(item => item.id === sectionId);
-  if (!section) return;
-
-  const nextName = ((state.screenSectionDraft?.name) || '').trim();
-  if (!nextName) {
-    showToast('⚠️ El nombre es obligatorio');
-    return;
-  }
-
-  section.name = nextName;
-  section.icon = state.screenSectionDraft?.icon || section.icon || '🪴';
-  section.outdoor = ['balcón','terraza','jardín','exterior','patio'].some(w => nextName.toLowerCase().includes(w));
-  state.screenSectionDraft = null;
-  state.editingSectionId = null;
-  navigateToView('spaces');
-
-  try {
-    await syncSectionToCloud(section);
-  } catch (error) {
-    console.error('Failed to sync edited section', error);
-    showToast('⚠️ La sección se actualizó localmente, pero no pudimos sincronizarla');
-    return;
-  }
-
-  showToast(`✏️ Sección "${nextName}" actualizada`);
-}
-
-async function saveSectionFromScreen() {
-  const draft = state.screenSectionDraft;
-  if (!draft) return;
-
-  const nextName = (draft.name || '').trim();
-  if (!nextName) {
-    showToast('⚠️ El nombre es obligatorio');
-    return;
-  }
-
-  if (state.editingSectionId) {
-    await saveSectionChanges();
-    return;
-  }
-
-  const section = {
-    id: createEntityId('section'),
-    name: nextName,
-    icon: draft.icon || '🪴',
-    outdoor: ['balcón','terraza','jardín','exterior','patio'].some(w => nextName.toLowerCase().includes(w)),
-  };
-
-  state.sections.push(section);
-  state.screenSectionDraft = null;
-  state.editingSectionId = null;
-  navigateToView('spaces');
-
-  try {
-    await syncSectionToCloud(section);
-  } catch (error) {
-    console.error('Failed to sync created section from screen', error);
-    showToast('⚠️ La sección se creó localmente, pero no pudimos sincronizarla');
-    return;
-  }
-
-  showToast(`📍 Sección "${nextName}" creada`);
-}
-
-async function deleteCurrentSection() {
-  const sectionId = state.editingSectionId || state.activeSection;
-  const section = state.sections.find(item => item.id === sectionId);
-  if (!section) return;
-  const affectedPlants = state.plants.filter(plant => plant.section === sectionId);
-  affectedPlants.forEach(plant => {
-    plant.section = '';
-  });
-  state.sections = state.sections.filter(item => item.id !== sectionId);
-  state.activeSection = 'all';
-  state.screenSectionDraft = null;
-  state.editingSectionId = null;
-  navigateToView('spaces');
-
-  try {
-    if (isCloudSyncEnabled()) {
-      await deleteSectionFromCloud(sectionId);
-    }
-  } catch (error) {
-    console.error('Failed to delete section in cloud', error);
-    showToast('⚠️ La sección se eliminó localmente, pero no pudimos sincronizar el borrado');
-    return;
-  }
-
-  showToast(`🗑️ Espacio "${section.name}" eliminado${affectedPlants.length ? ` y ${affectedPlants.length} planta${affectedPlants.length === 1 ? '' : 's'} quedaron sin asignar` : ''}`);
-}
-
-async function deleteSectionFromScreen() {
-  const sectionId = state.editingSectionId || state.activeSection;
-  if (!sectionId) return;
-  openDeleteSectionModal(sectionId);
+  const deletedPlant = await window.musgoPlantActions.confirmDeletePlant();
+  if (deletedPlant) return;
+  await window.musgoSpacesActions.confirmDeleteSection();
 }
 
 document.querySelectorAll('.modal-overlay').forEach(el => {
