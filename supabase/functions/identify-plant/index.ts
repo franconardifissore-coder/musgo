@@ -118,7 +118,13 @@ serve(async (req) => {
       const refImages = (r?.images || [])
         .slice(0, 2)
         .map((img: any) => {
-          const url = img?.url?.m || img?.url?.s || null;
+          // PlantNet may return url as a nested object {o,m,s} or as a plain string
+          const url =
+            (typeof img?.url === "string" ? img.url : null) ||
+            img?.url?.m ||
+            img?.url?.s ||
+            img?.url?.o ||
+            null;
           if (!url) return null;
           return {
             url,
