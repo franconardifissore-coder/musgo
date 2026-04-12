@@ -2,59 +2,38 @@
 
 ## Alcance
 
-Este documento describe el sistema visual que está implementado hoy en el código del proyecto, principalmente en [`index.html`](/Users/franconardi/Documents/GitHub/musgo/index.html). Se basa en componentes y estilos reales renderizados por la SPA actual.
+Este documento describe el sistema visual que está implementado hoy en el código del proyecto. Los estilos viven en [`styles.css`](/Users/franconardi/Documents/GitHub/musgo/styles.css) y la fuente única es **DM Sans**. Se basa en componentes y estilos reales renderizados por la SPA actual.
 
 ## Fundamentos visuales
 
 ### Paleta base
 
-Tokens definidos en `:root`:
+Tokens definidos en `:root` (archivo `styles.css`):
 
+#### Brand
 - `--green-dark: #345D4C`
-- `--green-light: #C6EBD4`
-- `--bg: #f4f7f1`
-- `--bg-soft: #eef4ec`
-- `--surface: rgba(255, 255, 255, 0.84)`
-- `--surface-strong: #ffffff`
-- `--surface-muted: #f6faf4`
-- `--line: rgba(96, 125, 101, 0.14)`
-- `--line-strong: rgba(83, 115, 88, 0.2)`
+- `--green-light: #ECFAF2`
+
+#### Text
+- `--text: #191C1C`
+- `--muted: #878787`
+
+#### Surfaces
+- `--white: #FFFFFF`
+- `--light-grey: #F3F4F3`
+- `--border-grey: #D9D9D9`
+
+#### Feedback
+- `--danger: #9F402D`
+- `--danger-soft: rgba(159, 64, 45, 0.10)`
+
+#### Aliases (backward compatibility)
 - `--accent: var(--green-dark)`
-- `--accent-deep: var(--green-dark)`
-- `--accent-soft: rgba(198, 235, 212, 0.5)`
-- `--text: #1f3425`
-- `--text-soft: #526457`
-- `--muted: #708172`
-- `--muted-soft: #94a096`
-- `--rain: #6e9db3`
-- `--rain-soft: rgba(110, 157, 179, 0.12)`
-- `--earth: #987d58`
-- `--earth-soft: rgba(152, 125, 88, 0.1)`
-- `--danger: #cf7152`
-- `--danger-soft: rgba(207, 113, 82, 0.12)`
-
-### Colores usados de forma recurrente
-
-#### Neutros y superficies
-
-- fondo global: `#F9F9F8`
-- superficie principal: `#ffffff`
-- superficies suaves: `#f3f4f3`, `#f5f7f4`, `#f7f8f6`, `#f9fbf8`, `#f9fcf8`
-- bordes suaves: `rgba(52, 93, 76, 0.06)` y `rgba(96, 125, 101, 0.14)`
-
-#### Verde de marca
-
-- color principal de acción y texto destacado: `#345D4C`
-- verde secundario de apoyo: `#4d7663`
-- verde suave para estados y fondos: `#C6EBD4`
-- anillos/focus/hover: `rgba(79, 168, 109, 0.12)` a `rgba(79, 168, 109, 0.38)`
-
-#### Estados
-
-- éxito/agua/planta al día: verde oscuro y verde claro
-- warning/riego atrasado: `#cf7152`, `#b24f37`, `#9f402d`
-- información/identificación/fichas auxiliares: `#6e9db3`
-- estado “earth” para vacíos o identificación insuficiente: `#987d58`
+- `--surface: var(--white)`
+- `--surface-strong: var(--white)`
+- `--bg: var(--light-grey)`
+- `--text-soft: var(--muted)`
+- `--muted-soft: var(--muted)`
 
 ### Gradientes y fondos
 
