@@ -3195,6 +3195,7 @@
 <script src="./lib/auth-screens/spaces-screens.js"></script>
 <script src="./lib/auth-screens/plants-screens.js"></script>
 <script src="./lib/auth-screens/scanner-screen.js"></script>
+<script src="./lib/domain/image-processing.js"></script>
 <script src="./lib/domain/watering.js"></script>
 <script src="./lib/domain/calendar.js"></script>
 <script src="./lib/app-actions/plants-actions.js"></script>
@@ -3213,6 +3214,16 @@ const resetIdentificationState = (...args) => appState.resetIdentificationState(
 const createPlantDraft = (...args) => appState.createPlantDraft(state, ...args);
 const createSectionDraft = (...args) => appState.createSectionDraft(state, ...args);
 const getPreviousMainView = (fallback = 'plants') => appState.getPreviousMainView(state, MAIN_VIEWS, fallback);
+const createEntityId = (...args) => appState.createEntityId(...args);
+
+// ===== IMAGE PROCESSING =====
+const {
+  fileToDataUrl,
+  loadImageElement,
+  createAnalysisImageFile,
+  createPersistableImagePreview,
+  getPersistableImagePreview,
+} = window.musgoImageProcessing;
 
 const musgoRouter = window.createMusgoRouter({
   getState: () => state,
@@ -3379,121 +3390,6 @@ const {
   getUserInitial,
 } = window.musgoAppAuth;
 
-function fileToDataUrl(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = () => reject(new Error('file_read_failed'));
-    reader.readAsDataURL(file);
-  });
-}
-
-function loadImageElement(src) {
-  return new Promise((resolve, reject) => {
-    const image = new Image();
-    image.onload = () => resolve(image);
-    image.onerror = () => reject(new Error('image_load_failed'));
-    image.src = src;
-  });
-}
-
-async function createAnalysisImageFile(file) {
-  if (!(file instanceof File)) {
-    throw new Error('invalid_file');
-  }
-
-  if (!String(file.type || '').startsWith('image/')) {
-    return file;
-  }
-
-  const rawDataUrl = await fileToDataUrl(file);
-  if (!rawDataUrl) {
-    return file;
-  }
-
-  const image = await loadImageElement(rawDataUrl);
-  const canvas = document.createElement('canvas');
-  const context = canvas.getContext('2d');
-  if (!context) {
-    return file;
-  }
-
-  const MAX_DIMENSION = 1600;
-  let width = image.naturalWidth || image.width;
-  let height = image.naturalHeight || image.height;
-  const scale = Math.min(1, MAX_DIMENSION / Math.max(width, height));
-  width = Math.max(1, Math.round(width * scale));
-  height = Math.max(1, Math.round(height * scale));
-  canvas.width = width;
-  canvas.height = height;
-  context.drawImage(image, 0, 0, width, height);
-
-  const blob = await new Promise((resolve, reject) => {
-    canvas.toBlob(result => {
-      if (result) {
-        resolve(result);
-      } else {
-        reject(new Error('image_encode_failed'));
-      }
-    }, 'image/jpeg', 0.86);
-  });
-
-  const safeName = String(file.name || 'plant')
-    .replace(/\.[^.]+$/, '')
-    .replace(/[^a-z0-9_-]+/gi, '-')
-    .replace(/^-+|-+$/g, '') || 'plant';
-
-  return new File([blob], `${safeName}.jpg`, {
-    type: 'image/jpeg',
-    lastModified: Date.now(),
-  });
-}
-
-async function createPersistableImagePreview(file) {
-  const rawDataUrl = await fileToDataUrl(file);
-  if (!rawDataUrl) return '';
-
-  try {
-    const image = await loadImageElement(rawDataUrl);
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-    if (!context) return rawDataUrl;
-
-    const MAX_DIMENSION = 1280;
-    const MAX_PREVIEW_LENGTH = 900000;
-    let width = image.naturalWidth || image.width;
-    let height = image.naturalHeight || image.height;
-    const scale = Math.min(1, MAX_DIMENSION / Math.max(width, height));
-    width = Math.max(1, Math.round(width * scale));
-    height = Math.max(1, Math.round(height * scale));
-    canvas.width = width;
-    canvas.height = height;
-    context.drawImage(image, 0, 0, width, height);
-
-    const qualities = [0.86, 0.78, 0.7, 0.62, 0.54];
-    for (const quality of qualities) {
-      const compressed = canvas.toDataURL('image/jpeg', quality);
-      if (compressed.length <= MAX_PREVIEW_LENGTH) {
-        return compressed;
-      }
-    }
-
-    return canvas.toDataURL('image/jpeg', 0.46);
-  } catch (error) {
-    return rawDataUrl;
-  }
-}
-
-function getPersistableImagePreview(dataUrl) {
-  return dataUrl || '';
-}
-
-function createEntityId(prefix = 'id') {
-  if (window.crypto && typeof window.crypto.randomUUID === 'function') {
-    return window.crypto.randomUUID();
-  }
-  return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-}
 
 function scrollPageToTop() {
   const applyScrollTop = () => {
@@ -3726,13 +3622,11 @@ function navigateFromMenu(view) {
 }
 
 // ===== STORAGE =====
+// Local persistence is not implemented — all data lives in Supabase.
+// saveState is kept as a no-op because action modules call it after mutations;
+// replacing it here avoids touching every action file.
 function saveState() {
   return;
-}
-
-function loadState() {
-  state.sections = [];
-  state.plants = [];
 }
 
 // ===== RENDER =====
@@ -3922,12 +3816,7 @@ function render() {
 }
 
 // ===== ACTIONS =====
-function setView(view) {
-  navigateToView(view);
-}
-
 window.navigateToView = navigateToView;
-window.setView = setView;
 
 const sectionEmojis = ['🌺','🛋️','🛏️','🚿','🍳','🪴','🌿','🏡','🌞','💻','📚','🎭'];
 
@@ -3963,7 +3852,6 @@ function showToast(msg) {
 }
 
 // ===== INIT =====
-loadState();
 applyRouteFromLocation({
   renderView: false,
   scroll: false,
