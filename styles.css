@@ -1749,29 +1749,36 @@
     min-width: 0;
     display: flex;
     flex-direction: column;
+    gap: 8px;
+  }
+
+  .scan-match-field {
+    display: flex;
+    flex-direction: column;
     gap: 2px;
   }
 
-  .scan-match-name {
-    font-size: 0.92rem;
+  .scan-match-label {
+    font-size: 0.74rem;
     font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .scan-match-value {
+    font-size: 0.88rem;
     color: var(--text);
+    line-height: 1.25;
+    word-break: break-word;
+  }
+
+  .scan-match-value-species {
+    font-weight: 700;
     font-style: italic;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
 
-  .scan-match-common {
-    font-size: 0.82rem;
-    color: var(--text);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .scan-match-family {
-    font-size: 0.75rem;
+  .scan-match-value-family {
     color: var(--muted);
   }
 
