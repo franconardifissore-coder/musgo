@@ -57,7 +57,7 @@ serve(async (req) => {
       const controller = new AbortController();
       timeout = setTimeout(() => controller.abort(), 20000);
       response = await fetch(
-        `https://my-api.plantnet.org/v2/identify/all?api-key=${apiKey}`,
+        `https://my-api.plantnet.org/v2/identify/all?include-related-images=true&nb-results=3&api-key=${apiKey}`,
         {
           method: "POST",
           body: plantnetForm,
