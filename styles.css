@@ -348,8 +348,10 @@
     align-items: center;
     text-align: center;
     gap: 18px;
-    padding-bottom: 12px;
+    padding-bottom: 32px;
     width: 100%;
+    position: relative;
+    z-index: 1;
   }
 
   .landing-eyebrow {
@@ -383,11 +385,15 @@
     align-items: center;
     justify-content: center;
     margin-bottom: 8px;
+    position: relative;
+    z-index: 2;
   }
 
   .landing-cta {
     width: fit-content;
+    flex: 0 0 auto;
     min-width: 152px;
+    padding: 16px 28px;
     background: #ffffff;
     color: #1A3D2A;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
@@ -400,7 +406,10 @@
   }
 
   .landing-cta-sec {
+    width: fit-content;
+    flex: 0 0 auto;
     min-width: 130px;
+    padding: 16px 28px;
     background: #ffffff;
     border-color: #ffffff;
     color: #1A3D2A;
@@ -419,8 +428,7 @@
     width: 100%;
     display: flex;
     justify-content: center;
-    padding: 10px 12px 0;
-    margin-bottom: -110px;
+    padding: 18px 12px 24px;
     position: relative;
     z-index: 1;
   }
