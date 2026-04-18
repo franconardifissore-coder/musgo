@@ -45,7 +45,7 @@
   }
 
   .landing-title {
-    font-family: 'Fraunces', 'Georgia', serif;
+    font-family: 'DM Sans', sans-serif;
     font-size: clamp(3rem, 7vw, 5rem);
     line-height: 0.92;
     letter-spacing: -0.06em;
@@ -281,7 +281,7 @@
   }
 
   .landing-section-title {
-    font-family: 'Fraunces', 'Georgia', serif;
+    font-family: 'DM Sans', sans-serif;
     font-size: clamp(2.2rem, 4vw, 3.4rem);
     line-height: 1;
     font-weight: 700;
@@ -316,7 +316,7 @@
   }
 
   .landing-story-title {
-    font-family: 'Fraunces', 'Georgia', serif;
+    font-family: 'DM Sans', sans-serif;
     font-size: clamp(2rem, 3vw, 3rem);
     line-height: 1;
     font-weight: 700;
