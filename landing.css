@@ -111,35 +111,15 @@
   }
 
   .landing-hero-media {
+    display: none;
+  }
+
+  .landing-hero-photo {
     width: 100%;
-    display: flex;
-    justify-content: flex-end;
-    position: relative;
-    min-height: 540px;
-  }
-
-  .landing-hero-media-card {
-    width: min(100%, 520px);
-    min-height: 540px;
-    border-radius: 34px;
-    background:
-      radial-gradient(circle at 18% 16%, rgba(255,255,255,0.95), rgba(255,255,255,0) 24%),
-      linear-gradient(180deg, #f6faf6 0%, #edf5ef 100%);
-    border: 1px solid rgba(52, 93, 76, 0.08);
-    box-shadow: 0 30px 60px rgba(31, 52, 37, 0.08);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    padding: 28px 20px 0;
-  }
-
-  .landing-mockup-img {
-    width: min(100%, 420px);
-    object-fit: contain;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 28px;
     display: block;
-    filter: drop-shadow(0 34px 60px rgba(20, 23, 22, 0.22));
-    transform: translateY(22px);
   }
 
   .landing-hero-floating-card {
@@ -587,15 +567,9 @@
     }
 
     .landing-hero-media {
-      min-height: 620px;
-    }
-
-    .landing-hero-media-card {
-      min-height: 620px;
-    }
-
-    .landing-mockup-img {
-      width: min(100%, 470px);
+      display: block;
+      min-height: 560px;
+      max-height: 680px;
     }
 
     .landing-story {
