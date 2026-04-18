@@ -27,7 +27,6 @@
     text-align: left;
     gap: 20px;
     width: 100%;
-    max-width: 480px;
   }
 
   .landing-eyebrow {
@@ -51,7 +50,6 @@
     letter-spacing: -0.06em;
     color: #141917;
     font-weight: 700;
-    max-width: 8ch;
   }
 
   .landing-title span {
@@ -59,10 +57,17 @@
   }
 
   .landing-subtitle {
-    max-width: 30ch;
     font-size: 1.08rem;
     line-height: 1.65;
     color: #5d6b61;
+  }
+
+  .landing-eyebrow-icon {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
   }
 
   .landing-copy-actions {
