@@ -954,31 +954,38 @@
 
   @media (min-width: 900px) {
     .landing-screen {
-      gap: 68px;
+      gap: 104px;
     }
 
     .landing-hero {
-      margin-left: -32px;
-      margin-right: -32px;
-      margin-top: -36px;
-      padding: 72px 60px 0;
+      grid-template-columns: minmax(0, 1fr) minmax(420px, 520px);
+      gap: 56px;
+      padding-top: 36px;
     }
 
     .landing-title {
-      font-size: 4.2rem;
+      font-size: clamp(4.2rem, 5vw, 5.4rem);
+    }
+
+    .landing-hero-media {
+      min-height: 620px;
+    }
+
+    .landing-hero-media-card {
+      min-height: 620px;
     }
 
     .landing-mockup-img {
-      width: min(100%, 430px);
+      width: min(100%, 470px);
     }
 
     .landing-story {
-      grid-template-columns: minmax(0, 1fr) minmax(320px, 380px);
-      gap: 42px;
+      grid-template-columns: minmax(360px, 1fr) minmax(0, 420px);
+      gap: 72px;
     }
 
     .landing-story.is-reverse {
-      grid-template-columns: minmax(320px, 380px) minmax(0, 1fr);
+      grid-template-columns: minmax(0, 420px) minmax(360px, 1fr);
     }
 
     .landing-story.is-reverse .landing-story-copy {
@@ -992,6 +999,7 @@
     .landing-benefit-grid,
     .landing-testimonial-grid {
       grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 22px;
     }
 
     .landing-footer-bottom {
