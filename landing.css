@@ -322,7 +322,7 @@
 
   .landing-story-title {
     font-family: 'DM Sans', sans-serif;
-    font-size: clamp(2rem, 3vw, 3rem);
+    font-size: clamp(2rem, 3vw, 2.5rem);
     line-height: 1;
     font-weight: 700;
     color: #191c1c;
