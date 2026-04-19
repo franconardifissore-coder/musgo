@@ -595,20 +595,26 @@
 /* ──────────────── LANDING — shell width overrides ──────────────── */
 /* El shell global (.app-frame y .app-main > .screen) está capado a 1120px en
    styles.css para la app autenticada. En la experiencia pública queremos más
-   aire, así que ensanchamos solo cuando estamos en la landing. */
+   aire, así que ensanchamos y dejamos que el contenido ocupe el ancho completo
+   del frame (sin el padding horizontal que usa la app autenticada). */
 
   @media (min-width: 760px) {
     .app-frame.public-experience {
-      width: min(100%, 1240px);
-      max-width: 1240px;
+      width: min(100%, 1344px);
+      max-width: 1344px;
       margin-left: auto;
       margin-right: auto;
     }
   }
 
   @media (min-width: 1100px) {
+    .app-frame.public-experience .app-main {
+      padding-left: 0;
+      padding-right: 0;
+    }
+
     .app-main > .landing-screen {
-      max-width: 1240px;
+      max-width: 1344px;
       margin-left: auto;
       margin-right: auto;
     }
