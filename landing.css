@@ -299,6 +299,17 @@
     align-items: center;
   }
 
+  /* Full-bleed tinted row: escapa el contenedor para que el background
+     ocupe el 100% del viewport, pero mantiene el contenido dentro del
+     ancho original gracias al padding horizontal simétrico. */
+  .landing-story--tinted {
+    background: #F3F4F3;
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    padding: 72px calc(50vw - 50%);
+  }
+
   .landing-story-copy {
     display: flex;
     flex-direction: column;
