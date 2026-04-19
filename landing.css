@@ -117,13 +117,16 @@
   }
 
   .landing-hero-media {
-    display: none;
+    display: block;
+    width: 100%;
   }
 
   .landing-hero-photo {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    height: auto;
+    max-width: 520px;
+    margin: 0 auto;
+    object-fit: contain;
     border-radius: 28px;
     display: block;
   }
@@ -565,6 +568,13 @@
       display: block;
       min-height: 560px;
       max-height: 680px;
+    }
+
+    .landing-hero-photo {
+      height: 100%;
+      max-width: none;
+      margin: 0;
+      object-fit: cover;
     }
 
     .landing-story {
