@@ -282,6 +282,11 @@
     max-width: 56ch;
   }
 
+  .landing-section.centered .landing-section-copy {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
   .landing-story-list {
     display: flex;
     flex-direction: column;
@@ -557,18 +562,10 @@
     }
 
     .landing-story .landing-story-copy {
-      order: 1;
+      order: 2;
     }
 
     .landing-story .landing-story-visual {
-      order: 2;
-    }
-
-    .landing-story.is-reverse .landing-story-copy {
-      order: 2;
-    }
-
-    .landing-story.is-reverse .landing-story-visual {
       order: 1;
     }
 
