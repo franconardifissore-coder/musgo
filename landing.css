@@ -619,3 +619,20 @@
       margin-right: auto;
     }
   }
+
+/* ──────────────── LANDING — pure white background ──────────────── */
+/* Forzamos blanco puro (#FFFFFF) en toda la experiencia pública. El shell
+   global usa #FAFAF8, pero en la landing queremos un blanco neutro sin
+   tinte cálido. Scoped a .public-experience para no tocar la app autenticada. */
+
+  body:has(.app-frame.public-experience) {
+    background: #ffffff;
+  }
+
+  .app-shell:has(.app-frame.public-experience) {
+    background: #ffffff;
+  }
+
+  .app-frame.public-experience {
+    background: #ffffff;
+  }
