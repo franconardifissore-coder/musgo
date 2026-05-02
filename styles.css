@@ -763,6 +763,7 @@
     flex-direction: row;
     align-items: stretch;
     min-height: 120px;
+    max-height: 150px;
     border: 1px solid rgba(52, 93, 76, 0.06);
   }
 
