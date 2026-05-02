@@ -173,6 +173,10 @@ window.__musgoPlantActionsContext = () => ({
   uploadPlantImage,
   deletePlantImage,
   closeDeleteModal,
+  fetchPlantPhotos: (...args) => window.supabaseData.fetchPlantPhotos(...args),
+  uploadPlantPhoto: (...args) => window.supabaseData.uploadPlantPhoto(...args),
+  savePlantPhoto: (...args) => window.supabaseData.savePlantPhoto(...args),
+  deletePhotoEntry: (...args) => window.supabaseData.deletePhotoEntry(...args),
 });
 
 window.__musgoSpacesActionsContext = () => ({
@@ -256,6 +260,17 @@ const {
   getUserInitial,
 } = window.musgoAppAuth;
 
+
+// Formats an ISO timestamp for display in the photo timeline, e.g. "2 may 2026"
+function formatPhotoDate(isoString) {
+  if (!isoString) return '';
+  try {
+    const d = new Date(isoString);
+    return d.toLocaleDateString('es-AR', { day: 'numeric', month: 'short', year: 'numeric' });
+  } catch (_) {
+    return isoString;
+  }
+}
 
 function scrollPageToTop() {
   const applyScrollTop = () => {
@@ -534,6 +549,7 @@ window.__musgoPlantsScreenContext = () => ({
   renderBackButton,
   renderSectionOptions,
   renderInlinePlantCalendar,
+  formatPhotoDate,
 });
 
 window.__musgoScannerScreenContext = () => ({
