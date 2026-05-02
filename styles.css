@@ -756,18 +756,20 @@
   /* ── Horizontal list tile ── */
   .plant-tile {
     background: #fff;
-    border-radius: 14px;
+    border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 6px 20px rgba(52, 93, 76, 0.07);
     display: flex;
     flex-direction: row;
     align-items: stretch;
-    min-height: 120px;
+    height: 150px;
     border: 1px solid rgba(52, 93, 76, 0.06);
   }
 
   .plant-tile-visual {
-    width: 120px;
+    width: 150px;
+    height: 150px;
+    aspect-ratio: 1 / 1;
     flex-shrink: 0;
     position: relative;
     background:
@@ -2730,7 +2732,6 @@
 
   .dashboard-chart-card,
   .dashboard-summary-card,
-  .plant-tile,
   .add-plant-card-mobile,
   .space-card,
   .profile-card,
