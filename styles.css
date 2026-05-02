@@ -2825,6 +2825,8 @@
 
 .plant-main-photo-overlay-icon {
   font-size: 1.6rem;
+  width: 28px;
+  height: 28px;
   opacity: 0;
   transition: opacity 0.2s;
 }
@@ -2975,6 +2977,9 @@
 
 .photo-grid-empty-icon {
   font-size: 1.8rem;
+  width: 36px;
+  height: 36px;
+  opacity: 0.7;
 }
 
 .photo-grid-error {
@@ -3080,6 +3085,8 @@
 
 .photo-modal-drop-icon {
   font-size: 2rem;
+  width: 36px;
+  height: 36px;
 }
 
 .photo-modal-drop-label {
