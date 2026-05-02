@@ -767,7 +767,7 @@
   }
 
   .plant-tile-visual {
-    width: 120px;
+    width: 145px;
     flex-shrink: 0;
     position: relative;
     background:
@@ -831,7 +831,6 @@
 
   .plant-tile-water-button {
     margin-top: auto;
-    padding-top: 8px;
     min-height: 36px;
     width: 100%;
     border: none;
