@@ -1517,7 +1517,10 @@
     line-height: 1.35;
   }
 
-  .detail-calendar-card,
+  .detail-calendar-card {
+    padding: 18px 14px 14px;
+  }
+
   .detail-form-card {
     padding: 0;
     background: transparent;
@@ -1531,14 +1534,16 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    margin-bottom: 18px;
+    margin-bottom: 14px;
+    padding: 0 4px;
   }
 
   .detail-calendar-month {
-    font-size: 1.9rem;
+    font-size: 0.9rem;
     font-weight: 800;
     color: #191c1c;
-    letter-spacing: -0.04em;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
   }
 
   .detail-calendar-nav {
@@ -1548,20 +1553,20 @@
   }
 
   .detail-calendar-nav button {
-    width: 34px;
-    height: 34px;
+    width: 28px;
+    height: 28px;
     border: none;
     background: transparent;
     color: #191c1c;
-    font-size: 1.4rem;
+    font-size: 1.1rem;
     cursor: pointer;
   }
 
   .detail-calendar-grid {
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.82);
-    padding: 18px 14px 14px;
-    box-shadow: inset 0 0 0 1px rgba(52, 93, 76, 0.05);
+    border-radius: 0;
+    background: transparent;
+    padding: 0;
+    box-shadow: none;
   }
 
   .detail-form-card {
@@ -2736,7 +2741,7 @@
   .space-card,
   .profile-card,
   .space-editor-card,
-  .detail-calendar-grid,
+  .detail-calendar-card,
   .identified-plant-card,
   .manual-plant-card,
   .auth-panel,
