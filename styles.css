@@ -2769,6 +2769,95 @@
   }
 
 /* ============================================================
+   FOTO PRINCIPAL DE PLANTA (en detalle)
+   ============================================================ */
+
+.plant-main-photo-card {
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 14px 34px rgba(52, 93, 76, 0.07);
+  border: 1px solid rgba(52, 93, 76, 0.06);
+}
+
+.plant-main-photo-label {
+  display: block;
+  position: relative;
+  cursor: pointer;
+  aspect-ratio: 4 / 3;
+  background: #e8ede9;
+  overflow: hidden;
+}
+
+.plant-main-photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: filter 0.2s;
+}
+
+.plant-main-photo-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  background: #e8ede9;
+}
+
+.plant-main-photo-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: background 0.2s;
+}
+
+.plant-main-photo-label:hover .plant-main-photo-overlay,
+.plant-main-photo-label:focus-within .plant-main-photo-overlay {
+  background: rgba(0, 0, 0, 0.38);
+}
+
+.plant-main-photo-overlay-icon {
+  font-size: 1.6rem;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.plant-main-photo-overlay-label {
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.plant-main-photo-label:hover .plant-main-photo-overlay-icon,
+.plant-main-photo-label:hover .plant-main-photo-overlay-label,
+.plant-main-photo-label:focus-within .plant-main-photo-overlay-icon,
+.plant-main-photo-label:focus-within .plant-main-photo-overlay-label {
+  opacity: 1;
+}
+
+/* En mobile siempre mostrar el hint sutil en el borde inferior */
+@media (hover: none) {
+  .plant-main-photo-overlay {
+    background: linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 50%);
+    justify-content: flex-end;
+    padding-bottom: 14px;
+  }
+  .plant-main-photo-overlay-icon,
+  .plant-main-photo-overlay-label {
+    opacity: 1;
+  }
+}
+
+/* ============================================================
    PHOTO TIMELINE — SECCIÓN DE EVOLUCIÓN
    ============================================================ */
 
