@@ -764,7 +764,6 @@
     align-items: stretch;
     min-height: 130px;
     border: 1px solid rgba(52, 93, 76, 0.06);
-    border-left: 3px solid #4aa870;
   }
 
   .plant-tile-visual {
@@ -796,19 +795,10 @@
   .plant-tile-body {
     flex: 1;
     min-width: 0;
-    padding: 14px 14px 12px 16px;
+    padding: 14px 14px 14px 16px;
     display: flex;
     flex-direction: column;
-    gap: 4px;
-  }
-
-  .plant-tile-footer {
-    margin-top: auto;
-    padding-top: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
+    gap: 5px;
   }
 
   .plant-tile-name {
@@ -840,27 +830,28 @@
   }
 
   .plant-tile-water-button {
-    flex-shrink: 0;
-    height: 30px;
-    padding: 0 12px;
-    border: 1.5px solid rgba(52, 93, 76, 0.25);
+    margin-top: auto;
+    padding-top: 8px;
+    min-height: 36px;
+    width: 100%;
+    border: none;
     border-radius: 999px;
-    background: transparent;
+    background: #F3F4F3;
     color: #345D4C;
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    font-size: 0.78rem;
+    justify-content: center;
+    gap: 6px;
+    font-size: 0.85rem;
     font-weight: 700;
     cursor: pointer;
     font-family: inherit;
-    white-space: nowrap;
   }
 
   .plant-tile-water-button::before {
     content: '';
-    width: 12px;
-    height: 12px;
+    width: 14px;
+    height: 14px;
     background-image: url('./resources/green drop.svg');
     background-size: contain;
     background-repeat: no-repeat;
@@ -2733,8 +2724,8 @@
     }
 
     .plant-tile-water-button {
-      height: 32px;
-      font-size: 0.82rem;
+      min-height: 38px;
+      font-size: 0.86rem;
     }
   }
 
