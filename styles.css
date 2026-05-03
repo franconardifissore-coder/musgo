@@ -1705,9 +1705,14 @@
   }
 
   .identified-plant-visual {
-    width: 100%;
+    /* Bleed top/left/right hasta el borde de la card cancelando el padding
+       interno (14px) con margin negativo, y el border-radius del card en las
+       esquinas superiores. El bottom queda con corte recto y el siguiente
+       contenido respeta el padding original. */
+    width: calc(100% + 28px);
+    margin: -14px -14px 0;
     aspect-ratio: 1 / 1.12;
-    border-radius: 18px;
+    border-radius: 10px 10px 0 0;
     overflow: hidden;
     background:
       radial-gradient(circle at top right, rgba(52, 93, 76, 0.06), transparent 34%),
@@ -1749,11 +1754,33 @@
     border-radius: 4px;
   }
 
-  .identified-plant-family {
-    margin-top: 3px;
-    font-size: 0.78rem;
+  /* === Bloque de nombres con label + value (Nombre / Nombre científico) === */
+  .identified-plant-names {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .identified-plant-names-row {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    align-items: baseline;
+    gap: 10px;
+    font-size: 0.92rem;
+    line-height: 1.3;
+  }
+
+  .identified-plant-names-label {
     color: var(--muted);
-    font-style: italic;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+  }
+
+  .identified-plant-names-value {
+    color: #2a3a31;
+    font-weight: 600;
   }
 
   .identified-plant-visual img {
@@ -1779,22 +1806,6 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-  }
-
-  .identified-plant-name {
-    font-size: 1.1rem;
-    line-height: 1.15;
-    font-weight: 800;
-    color: #191c1c;
-    letter-spacing: -0.04em;
-  }
-
-  .identified-plant-species {
-    margin-top: 4px;
-    color: #5d6c60;
-    font-size: 0.98rem;
-    line-height: 1.45;
-    font-style: italic;
   }
 
   .identified-plant-form {
