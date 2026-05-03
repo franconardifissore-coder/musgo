@@ -1,0 +1,262 @@
+# Seed list de plantas para pre-popular plant_metadata.
+# Una especie por línea, formato: scientific_name
+# Líneas vacías y las que empiezan con # se ignoran.
+#
+# ~200 plantas más comunes en interior, jardín de balcón y huerta hogareña.
+# Editá libremente antes de correr scripts/populate-plant-metadata.mjs
+
+# === Aroides (las estrellas del interior moderno) ===
+Monstera deliciosa
+Monstera adansonii
+Monstera obliqua
+Epipremnum aureum
+Epipremnum pinnatum
+Philodendron hederaceum
+Philodendron erubescens
+Philodendron bipinnatifidum
+Philodendron xanadu
+Philodendron gloriosum
+Philodendron melanochrysum
+Anthurium andraeanum
+Anthurium clarinervium
+Anthurium crystallinum
+Alocasia macrorrhiza
+Alocasia amazonica
+Alocasia zebrina
+Alocasia polly
+Colocasia esculenta
+Caladium bicolor
+Spathiphyllum wallisii
+Zamioculcas zamiifolia
+Syngonium podophyllum
+Aglaonema commutatum
+Aglaonema modestum
+Dieffenbachia seguine
+Dieffenbachia maculata
+Scindapsus pictus
+Rhaphidophora tetrasperma
+
+# === Calatheas y marantas ===
+Calathea orbifolia
+Calathea lancifolia
+Calathea ornata
+Calathea makoyana
+Calathea zebrina
+Calathea roseopicta
+Calathea medallion
+Maranta leuconeura
+Stromanthe sanguinea
+Ctenanthe burle-marxii
+Goeppertia rufibarba
+
+# === Ficus ===
+Ficus lyrata
+Ficus elastica
+Ficus benjamina
+Ficus microcarpa
+Ficus pumila
+Ficus benghalensis
+Ficus religiosa
+Ficus carica
+
+# === Suculentas ===
+Echeveria elegans
+Echeveria gibbiflora
+Echeveria pulvinata
+Dracaena trifasciata
+Sansevieria cylindrica
+Haworthia fasciata
+Haworthia attenuata
+Haworthia cooperi
+Aloe vera
+Aloe arborescens
+Aloe aristata
+Crassula ovata
+Crassula perforata
+Crassula muscosa
+Sedum morganianum
+Sedum rubrotinctum
+Graptopetalum paraguayense
+Pachyphytum oviferum
+Kalanchoe blossfeldiana
+Kalanchoe daigremontiana
+Kalanchoe tomentosa
+Senecio rowleyanus
+Senecio mandraliscae
+Lithops aucampiae
+Conophytum bilobum
+Portulacaria afra
+Aeonium arboreum
+Agave attenuata
+
+# === Cactus ===
+Mammillaria elongata
+Mammillaria spinosissima
+Opuntia microdasys
+Opuntia ficus-indica
+Schlumbergera truncata
+Schlumbergera buckleyi
+Echinocactus grusonii
+Echinopsis chamaecereus
+Cereus peruvianus
+Astrophytum myriostigma
+Ferocactus latispinus
+Gymnocalycium mihanovichii
+Rebutia minuscula
+Cleistocactus strausii
+
+# === Helechos ===
+Nephrolepis exaltata
+Nephrolepis cordifolia
+Adiantum raddianum
+Adiantum capillus-veneris
+Asplenium nidus
+Polypodium aureum
+Pteris cretica
+Davallia fejeensis
+Platycerium bifurcatum
+
+# === Palmeras ===
+Chamaedorea elegans
+Chamaedorea seifrizii
+Howea forsteriana
+Dypsis lutescens
+Phoenix roebelenii
+Rhapis excelsa
+Caryota mitis
+
+# === Dracaenas, cordilines y yucas ===
+Dracaena marginata
+Dracaena fragrans
+Dracaena reflexa
+Dracaena sanderiana
+Dracaena deremensis
+Cordyline fruticosa
+Cordyline australis
+Yucca elephantipes
+Yucca aloifolia
+
+# === Hoyas y trepadoras ===
+Hoya carnosa
+Hoya kerrii
+Hoya pubicalyx
+Hoya bella
+Hoya linearis
+Tradescantia zebrina
+Tradescantia fluminensis
+Tradescantia spathacea
+Cissus discolor
+Cissus rhombifolia
+Senecio macroglossus
+Plectranthus verticillatus
+
+# === Pileas y peperomias ===
+Pilea peperomioides
+Pilea cadierei
+Pilea involucrata
+Pilea microphylla
+Peperomia obtusifolia
+Peperomia argyreia
+Peperomia caperata
+Peperomia rotundifolia
+Peperomia polybotrya
+Peperomia prostrata
+Peperomia clusiifolia
+Peperomia ferreyrae
+
+# === Begonias ===
+Begonia rex
+Begonia maculata
+Begonia masoniana
+Begonia coccinea
+Begonia semperflorens
+Begonia luxurians
+
+# === Orquídeas y bromelias ===
+Phalaenopsis amabilis
+Cattleya labiata
+Dendrobium nobile
+Oncidium altissimum
+Cymbidium hookerianum
+Vanda coerulea
+Aechmea fasciata
+Guzmania lingulata
+Vriesea splendens
+Tillandsia ionantha
+Tillandsia usneoides
+
+# === Strelitzias y exóticas grandes ===
+Strelitzia reginae
+Strelitzia nicolai
+Heliconia rostrata
+Musa basjoo
+Musa acuminata
+Pachira aquatica
+Beaucarnea recurvata
+Schefflera arboricola
+Schefflera actinophylla
+
+# === Cítricos y frutales de maceta ===
+Citrus limon
+Citrus sinensis
+Citrus reticulata
+Citrus paradisi
+Olea europaea
+Punica granatum
+Coffea arabica
+
+# === Hierbas aromáticas y comestibles ===
+Ocimum basilicum
+Mentha spicata
+Mentha piperita
+Rosmarinus officinalis
+Lavandula angustifolia
+Thymus vulgaris
+Origanum vulgare
+Salvia officinalis
+Petroselinum crispum
+Coriandrum sativum
+Anethum graveolens
+Allium schoenoprasum
+Melissa officinalis
+Aloysia citrodora
+Stevia rebaudiana
+Laurus nobilis
+
+# === Florales de balcón y maceta ===
+Cyclamen persicum
+Saintpaulia ionantha
+Streptocarpus saxorum
+Hibiscus rosa-sinensis
+Bougainvillea glabra
+Plumeria rubra
+Gardenia jasminoides
+Jasminum officinale
+Jasminum polyanthum
+Stephanotis floribunda
+Mandevilla sanderi
+Pelargonium peltatum
+Pelargonium x hortorum
+Petunia hybrida
+Impatiens walleriana
+Viola tricolor
+Tagetes erecta
+Calendula officinalis
+Dianthus caryophyllus
+Rosa chinensis
+
+# === Otras populares ===
+Chlorophytum comosum
+Aspidistra elatior
+Tolmiea menziesii
+Codiaeum variegatum
+Capsicum annuum
+Solanum lycopersicum
+Fragaria x ananassa
+Aglaonema rotundum
+Cycas revoluta
+Asparagus setaceus
+Asparagus densiflorus
+Soleirolia soleirolii
+Saxifraga stolonifera
+Fittonia albivenis

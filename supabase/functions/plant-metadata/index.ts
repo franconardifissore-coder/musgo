@@ -7,113 +7,144 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-const PERENUAL_BASE = "https://perenual.com/api/v2";
+const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
+const MODEL = "claude-haiku-4-5-20251001";
 
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: {
-      "Content-Type": "application/json",
-      ...corsHeaders,
-    },
+    headers: { "Content-Type": "application/json", ...corsHeaders },
   });
 }
 
-// Normaliza el nombre científico para usarlo como primary key.
-// Lower + collapse de espacios + trim.
 function normalizeScientificName(name: string): string {
   return name.trim().toLowerCase().replace(/\s+/g, " ");
 }
 
-type PerenualSearchHit = {
-  id: number;
-  common_name?: string | null;
-  scientific_name?: string[] | null;
+// Tool schema que fuerza al modelo a devolver exactamente los
+// campos que necesitamos, en los valores que la app entiende.
+const TOOL = {
+  name: "save_plant_metadata",
+  description:
+    "Guarda la metadata estructurada de cuidados de una especie de planta.",
+  input_schema: {
+    type: "object",
+    properties: {
+      common_name: {
+        type: "string",
+        description:
+          "Nombre común en español más usado para la especie (ej. 'Costilla de Adán', 'Potos'). Si no hay un nombre común en español, usar el nombre común en inglés.",
+      },
+      origin: {
+        type: "string",
+        description:
+          "Región geográfica de origen, en español, lo más concisa posible. Ejemplos: 'Sudeste asiático', 'Centroamérica', 'México', 'África tropical', 'Sur de Brasil'.",
+      },
+      light: {
+        type: "string",
+        enum: ["directa", "indirecta"],
+        description:
+          "Tipo de luz que prefiere la planta. 'directa' si necesita sol directo varias horas al día (cactus, suculentas, cítricos). 'indirecta' si prefiere luz brillante pero sin sol directo (la mayoría de plantas de interior).",
+      },
+      watering_level: {
+        type: "string",
+        enum: ["alto", "medio", "bajo"],
+        description:
+          "Necesidad general de agua. 'alto' = sustrato siempre húmedo (helechos, calatheas). 'medio' = regar cuando los primeros 2-3cm del sustrato están secos (la mayoría de aroides). 'bajo' = dejar secar completamente entre riegos (suculentas, cactus, sansevierias).",
+      },
+      watering_freq_days: {
+        type: "integer",
+        minimum: 1,
+        maximum: 30,
+        description:
+          "Cada cuántos días regar en condiciones promedio de interior (luz brillante indirecta, ~22°C, humedad media). Valor típico: 1-3 para alto, 5-7 para medio, 14-21 para bajo. Debe ser uno de: 1, 2, 3, 5, 7, 14, 21, 30.",
+      },
+    },
+    required: [
+      "common_name",
+      "origin",
+      "light",
+      "watering_level",
+      "watering_freq_days",
+    ],
+  },
 };
 
-type PerenualDetails = {
-  id: number;
-  common_name?: string | null;
-  scientific_name?: string[] | null;
-  family?: string | null;
-  type?: string | null;
-  cycle?: string | null;
-  watering?: string | null;
-  watering_general_benchmark?: { value?: string | null; unit?: string | null } | null;
-  sunlight?: string[] | null;
-  origin?: string[] | null;
-  [k: string]: unknown;
+const SYSTEM_PROMPT =
+  "Sos una experta en botánica y horticultura especializada en plantas de interior. " +
+  "Te van a pasar el nombre científico de una planta y tenés que devolver su metadata de cuidados " +
+  "usando la tool save_plant_metadata. Respondé en español neutro, sin emojis, con valores concisos. " +
+  "Si la especie no existe o el nombre tiene un error de tipeo evidente, usá tu mejor juicio para " +
+  "interpretar a qué planta se refiere y devolvé la metadata para esa.";
+
+type LlmMetadata = {
+  common_name: string;
+  origin: string;
+  light: "directa" | "indirecta";
+  watering_level: "alto" | "medio" | "bajo";
+  watering_freq_days: number;
 };
 
-async function fetchWithTimeout(url: string, ms = 15000): Promise<Response> {
+async function callHaiku(
+  apiKey: string,
+  scientificName: string,
+): Promise<{ metadata: LlmMetadata; raw: unknown }> {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), ms);
+  const timeout = setTimeout(() => controller.abort(), 25000);
+
+  let res: Response;
   try {
-    return await fetch(url, { signal: controller.signal });
+    res = await fetch(ANTHROPIC_API_URL, {
+      method: "POST",
+      signal: controller.signal,
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+      },
+      body: JSON.stringify({
+        model: MODEL,
+        max_tokens: 512,
+        system: SYSTEM_PROMPT,
+        tools: [TOOL],
+        tool_choice: { type: "tool", name: "save_plant_metadata" },
+        messages: [
+          {
+            role: "user",
+            content: `Generá la metadata de cuidados para: ${scientificName}`,
+          },
+        ],
+      }),
+    });
   } finally {
     clearTimeout(timeout);
   }
-}
 
-async function searchPerenual(
-  apiKey: string,
-  scientificName: string,
-): Promise<PerenualSearchHit | null> {
-  const q = encodeURIComponent(scientificName);
-  const url = `${PERENUAL_BASE}/species-list?key=${apiKey}&q=${q}`;
-  const res = await fetchWithTimeout(url);
   if (!res.ok) {
-    throw new Error(`perenual_search_failed_${res.status}`);
+    const text = await res.text();
+    throw new Error(`anthropic_${res.status}:${text.slice(0, 200)}`);
   }
+
   const json = await res.json();
-  const hits: PerenualSearchHit[] = Array.isArray(json?.data) ? json.data : [];
-  if (hits.length === 0) return null;
-
-  // Match exact por nombre científico si es posible, si no devolver el primero.
-  const target = scientificName.toLowerCase();
-  const exact = hits.find((h) =>
-    Array.isArray(h?.scientific_name) &&
-    h.scientific_name.some((s) => String(s).toLowerCase() === target)
-  );
-  return exact ?? hits[0];
-}
-
-async function fetchPerenualDetails(
-  apiKey: string,
-  id: number,
-): Promise<PerenualDetails> {
-  const url = `${PERENUAL_BASE}/species/details/${id}?key=${apiKey}`;
-  const res = await fetchWithTimeout(url);
-  if (!res.ok) {
-    throw new Error(`perenual_details_failed_${res.status}`);
+  const toolUse = Array.isArray(json?.content)
+    ? json.content.find((b: any) => b?.type === "tool_use")
+    : null;
+  if (!toolUse?.input) {
+    throw new Error("anthropic_no_tool_use");
   }
-  return await res.json();
-}
 
-function shapeRow(scientificName: string, details: PerenualDetails) {
-  const benchmark = details.watering_general_benchmark ?? null;
-  const sunlight = Array.isArray(details.sunlight)
-    ? details.sunlight.filter((s) => typeof s === "string")
-    : null;
-  const origin = Array.isArray(details.origin)
-    ? details.origin.filter((s) => typeof s === "string")
-    : null;
+  const m = toolUse.input as LlmMetadata;
+  if (
+    !m.common_name ||
+    !m.origin ||
+    !["directa", "indirecta"].includes(m.light) ||
+    !["alto", "medio", "bajo"].includes(m.watering_level) ||
+    !Number.isInteger(m.watering_freq_days)
+  ) {
+    throw new Error("anthropic_invalid_metadata");
+  }
 
-  return {
-    scientific_name: scientificName,
-    perenual_id: details.id ?? null,
-    common_name: details.common_name ?? null,
-    family: details.family ?? null,
-    type: details.type ?? null,
-    cycle: details.cycle ?? null,
-    watering: details.watering ?? null,
-    watering_benchmark_value: benchmark?.value ?? null,
-    watering_benchmark_unit: benchmark?.unit ?? null,
-    sunlight,
-    origin,
-    raw: details,
-    source: "perenual",
-  };
+  return { metadata: m, raw: json };
 }
 
 serve(async (req) => {
@@ -133,6 +164,7 @@ serve(async (req) => {
     if (!scientificName) {
       return jsonResponse({ error: "missing_scientific_name" }, 400);
     }
+    const force = Boolean(body?.force);
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
@@ -145,60 +177,52 @@ serve(async (req) => {
     });
 
     // 1. Cache hit?
-    const { data: cached, error: cacheError } = await supabase
-      .from("plant_metadata")
-      .select("*")
-      .eq("scientific_name", scientificName)
-      .maybeSingle();
+    if (!force) {
+      const { data: cached, error: cacheError } = await supabase
+        .from("plant_metadata")
+        .select("*")
+        .eq("scientific_name", scientificName)
+        .maybeSingle();
 
-    if (cacheError) {
-      return jsonResponse(
-        { error: "cache_read_failed", details: cacheError.message },
-        500,
-      );
+      if (cacheError) {
+        return jsonResponse(
+          { error: "cache_read_failed", details: cacheError.message },
+          500,
+        );
+      }
+      if (cached) {
+        return jsonResponse({ source: "cache", metadata: cached });
+      }
     }
 
-    if (cached) {
-      return jsonResponse({ source: "cache", metadata: cached });
+    // 2. Cache miss → llamar a Claude Haiku.
+    const anthropicKey = Deno.env.get("ANTHROPIC_API_KEY");
+    if (!anthropicKey) {
+      return jsonResponse({ error: "missing_anthropic_api_key" }, 503);
     }
 
-    // 2. Cache miss → llamar Perenual.
-    const perenualKey = Deno.env.get("PERENUAL_API_KEY");
-    if (!perenualKey) {
-      return jsonResponse({ error: "missing_perenual_api_key" }, 503);
-    }
-
-    let hit: PerenualSearchHit | null;
+    let llm: { metadata: LlmMetadata; raw: unknown };
     try {
-      hit = await searchPerenual(perenualKey, scientificName);
+      llm = await callHaiku(anthropicKey, scientificName);
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       return jsonResponse(
-        { error: "perenual_search_error", details: message },
+        { error: "anthropic_call_failed", details: message },
         502,
       );
     }
 
-    if (!hit) {
-      return jsonResponse({
-        source: "perenual",
-        metadata: null,
-        notFound: true,
-      });
-    }
-
-    let details: PerenualDetails;
-    try {
-      details = await fetchPerenualDetails(perenualKey, hit.id);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      return jsonResponse(
-        { error: "perenual_details_error", details: message },
-        502,
-      );
-    }
-
-    const row = shapeRow(scientificName, details);
+    const row = {
+      scientific_name: scientificName,
+      common_name: llm.metadata.common_name,
+      origin: llm.metadata.origin,
+      light: llm.metadata.light,
+      watering_level: llm.metadata.watering_level,
+      watering_freq_days: llm.metadata.watering_freq_days,
+      raw: llm.raw,
+      source: "haiku",
+      model: MODEL,
+    };
 
     const { data: upserted, error: upsertError } = await supabase
       .from("plant_metadata")
@@ -207,15 +231,14 @@ serve(async (req) => {
       .single();
 
     if (upsertError) {
-      // Aún si falla la cache podemos devolver lo que trajimos.
       return jsonResponse({
-        source: "perenual",
+        source: "haiku",
         metadata: row,
         warning: `cache_write_failed: ${upsertError.message}`,
       });
     }
 
-    return jsonResponse({ source: "perenual", metadata: upserted });
+    return jsonResponse({ source: "haiku", metadata: upserted });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return jsonResponse({ error: message }, 500);
