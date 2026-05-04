@@ -2820,6 +2820,127 @@
   }
 
 /* ============================================================
+   TABS EN PANTALLA "TU PLANTA" (Riegos / Detalles / Evolución)
+   ============================================================ */
+
+/* Contenedor de los 3 tabs full-width. Heredan el ancho del
+   .plant-detail-layout (560px máx en desktop, 100% en mobile),
+   y el contenedor mismo crece para llenar todo ese ancho. */
+.plant-detail-tabs {
+  display: flex;
+  width: 100%;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 14px 34px rgba(52, 93, 76, 0.07);
+  border: 1px solid rgba(52, 93, 76, 0.06);
+}
+
+.plant-detail-tab {
+  flex: 1 1 0;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  color: #708172;
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  padding: 14px 8px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.18s, border-color 0.18s, background 0.18s;
+  /* Evita que un texto largo (ej. "Evolución") rompa el reparto en flex */
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.plant-detail-tab:hover,
+.plant-detail-tab:focus-visible {
+  color: #1a2420;
+}
+
+.plant-detail-tab.active {
+  color: #1a2420;
+  border-bottom-color: #345d4c;
+}
+
+.plant-detail-tab-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ============================================================
+   FOTO PRINCIPAL EDITABLE DENTRO DE LA CARD DE DETALLE
+   ============================================================ */
+
+/* La card editable usa la misma estructura que la card de
+   identificación, pero el visual se transforma en un <label> que
+   abre un file picker para cambiar la foto principal. La feature
+   solo está habilitada en la pantalla "Tu planta", no durante la
+   identificación. */
+.identified-plant-visual--editable {
+  cursor: pointer;
+  /* Conserva el bleed/border-radius de la card y agrega hint visual */
+}
+
+.identified-plant-visual-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0);
+  transition: background 0.2s;
+  pointer-events: none;
+}
+
+.identified-plant-visual-overlay-icon {
+  width: 28px;
+  height: 28px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.identified-plant-visual-overlay-label {
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.2s;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+.identified-plant-visual--editable:hover .identified-plant-visual-overlay,
+.identified-plant-visual--editable:focus-within .identified-plant-visual-overlay {
+  background: rgba(0, 0, 0, 0.38);
+}
+
+.identified-plant-visual--editable:hover .identified-plant-visual-overlay-icon,
+.identified-plant-visual--editable:hover .identified-plant-visual-overlay-label,
+.identified-plant-visual--editable:focus-within .identified-plant-visual-overlay-icon,
+.identified-plant-visual--editable:focus-within .identified-plant-visual-overlay-label {
+  opacity: 1;
+}
+
+/* En mobile (sin :hover real) mostramos siempre un hint sutil para
+   que el affordance de "tocá para cambiar" sea descubrible. */
+@media (hover: none) {
+  .identified-plant-visual--editable .identified-plant-visual-overlay {
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.45) 0%, transparent 50%);
+    justify-content: flex-end;
+    padding-bottom: 14px;
+  }
+  .identified-plant-visual--editable .identified-plant-visual-overlay-icon,
+  .identified-plant-visual--editable .identified-plant-visual-overlay-label {
+    opacity: 1;
+  }
+}
+
+/* ============================================================
    FOTO PRINCIPAL DE PLANTA (en detalle)
    ============================================================ */
 
