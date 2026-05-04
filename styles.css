@@ -79,7 +79,12 @@
     background: #ffffff;
     border: none;
     box-shadow: none;
-    overflow: visible;
+    /* `overflow-x: clip` contiene el breakout del tab strip
+       (margins negativos) sin crear contexto de scroll. Si usáramos
+       `overflow: hidden`, romperíamos el scroll vertical de la
+       página. Mantengo `overflow-y: visible` explícito por claridad. */
+    overflow-x: clip;
+    overflow-y: visible;
     backdrop-filter: none;
   }
 
