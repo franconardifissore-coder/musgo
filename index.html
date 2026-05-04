@@ -650,8 +650,26 @@ function renderProfileScreen() {
 // Tracker del último view renderizado, para distinguir "navegación a otro
 // view" (donde scrollPageToTop ya hace lo suyo) vs "re-render del mismo
 // view por una carga async" (donde reemplazar innerHTML desincroniza el
-// scroll y nos tira al top). Si el view es el mismo, preservamos scroll.
+// scroll y dispara la animación screen-enter). Si el view es el mismo
+// preservamos scroll y suprimimos la animación.
 let __musgoLastRenderedView = null;
+
+function getCurrentScrollY() {
+  // En distintos browsers el scroll vive en window / documentElement /
+  // body. Tomamos el primer valor no-cero — los demás devuelven 0.
+  return window.scrollY
+    || (document.scrollingElement && document.scrollingElement.scrollTop)
+    || document.documentElement.scrollTop
+    || document.body.scrollTop
+    || 0;
+}
+
+function applyScrollY(y) {
+  window.scrollTo(0, y);
+  if (document.scrollingElement) document.scrollingElement.scrollTop = y;
+  document.documentElement.scrollTop = y;
+  document.body.scrollTop = y;
+}
 
 function renderCurrentView() {
   const appMain = document.getElementById('appMain');
@@ -660,7 +678,7 @@ function renderCurrentView() {
   const previousView = __musgoLastRenderedView;
   const nextView = state.splashVisible ? '__splash__' : state.currentView;
   const isSameView = previousView !== null && previousView === nextView;
-  const savedScrollY = isSameView ? window.scrollY : 0;
+  const savedScrollY = isSameView ? getCurrentScrollY() : 0;
 
   if (state.splashVisible) {
     appMain.innerHTML = renderSplashScreen();
@@ -674,13 +692,23 @@ function renderCurrentView() {
 
   __musgoLastRenderedView = nextView;
 
-  if (isSameView && savedScrollY > 0) {
-    // Restauramos en el siguiente frame para esperar el reflow del
-    // innerHTML reemplazado; setearlo sincrónicamente a veces queda
-    // pisado por el browser cuando recalcula la altura del documento.
-    const restore = () => window.scrollTo(0, savedScrollY);
-    restore();
-    window.requestAnimationFrame(restore);
+  if (isSameView) {
+    // Suprimimos la animación screen-enter: si el view es el mismo,
+    // un fade-in + translateY se ve como un "saltito" y desincroniza
+    // la posición percibida durante el scroll.
+    const screen = appMain.querySelector('.screen');
+    if (screen) {
+      screen.style.animation = 'none';
+      screen.style.opacity = '1';
+      screen.style.transform = 'none';
+    }
+
+    if (savedScrollY > 0) {
+      // Doble restauración: sincrónica + en el próximo rAF para
+      // sobrevivir al reflow del innerHTML reemplazado.
+      applyScrollY(savedScrollY);
+      window.requestAnimationFrame(() => applyScrollY(savedScrollY));
+    }
   }
 }
 
