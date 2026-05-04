@@ -2823,17 +2823,34 @@
    TABS EN PANTALLA "TU PLANTA" (Riegos / Detalles / Evolución)
    ============================================================ */
 
-/* Contenedor de los 3 tabs full-width. Heredan el ancho del
-   .plant-detail-layout (560px máx en desktop, 100% en mobile),
-   y el contenedor mismo crece para llenar todo ese ancho. */
+/* Strip horizontal full-width. Para "romper" el padding horizontal
+   de .app-main (28/32/40px según breakpoint) usamos margins
+   negativos. Resultado: la línea inferior y los tabs llegan al borde
+   visible del shell. */
 .plant-detail-tabs {
   display: flex;
-  width: 100%;
-  background: #fff;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 14px 34px rgba(52, 93, 76, 0.07);
-  border: 1px solid rgba(52, 93, 76, 0.06);
+  width: auto;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  border-bottom: 1px solid rgba(52, 93, 76, 0.12);
+  margin-left: -28px;
+  margin-right: -28px;
+}
+
+@media (min-width: 760px) {
+  .plant-detail-tabs {
+    margin-left: -32px;
+    margin-right: -32px;
+  }
+}
+
+@media (min-width: 1100px) {
+  .plant-detail-tabs {
+    margin-left: -40px;
+    margin-right: -40px;
+  }
 }
 
 .plant-detail-tab {
@@ -2843,12 +2860,14 @@
   background: transparent;
   color: #708172;
   font-family: inherit;
-  font-size: 0.92rem;
+  font-size: 0.95rem;
   font-weight: 600;
   padding: 14px 8px;
   cursor: pointer;
   border-bottom: 2px solid transparent;
+  margin-bottom: -1px; /* Solapa el border-bottom del contenedor */
   transition: color 0.18s, border-color 0.18s, background 0.18s;
+  text-align: center;
   /* Evita que un texto largo (ej. "Evolución") rompa el reparto en flex */
   white-space: nowrap;
   text-overflow: ellipsis;
