@@ -647,22 +647,41 @@ function renderProfileScreen() {
   return overviewScreens.renderProfileScreen();
 }
 
+// Tracker del último view renderizado, para distinguir "navegación a otro
+// view" (donde scrollPageToTop ya hace lo suyo) vs "re-render del mismo
+// view por una carga async" (donde reemplazar innerHTML desincroniza el
+// scroll y nos tira al top). Si el view es el mismo, preservamos scroll.
+let __musgoLastRenderedView = null;
+
 function renderCurrentView() {
   const appMain = document.getElementById('appMain');
   if (!appMain) return;
+
+  const previousView = __musgoLastRenderedView;
+  const nextView = state.splashVisible ? '__splash__' : state.currentView;
+  const isSameView = previousView !== null && previousView === nextView;
+  const savedScrollY = isSameView ? window.scrollY : 0;
+
   if (state.splashVisible) {
     appMain.innerHTML = renderSplashScreen();
-    return;
-  }
-  if (shouldShowPublicExperience()) {
+  } else if (shouldShowPublicExperience()) {
     appMain.innerHTML = renderPublicExperience();
-    return;
-  }
-  if (shouldShowAuthenticatedExperience()) {
+  } else if (shouldShowAuthenticatedExperience()) {
     appMain.innerHTML = renderAuthenticatedExperience();
-    return;
+  } else {
+    appMain.innerHTML = renderAuthenticatedExperience();
   }
-  appMain.innerHTML = renderAuthenticatedExperience();
+
+  __musgoLastRenderedView = nextView;
+
+  if (isSameView && savedScrollY > 0) {
+    // Restauramos en el siguiente frame para esperar el reflow del
+    // innerHTML reemplazado; setearlo sincrónicamente a veces queda
+    // pisado por el browser cuando recalcula la altura del documento.
+    const restore = () => window.scrollTo(0, savedScrollY);
+    restore();
+    window.requestAnimationFrame(restore);
+  }
 }
 
 function renderPublicExperience() {
