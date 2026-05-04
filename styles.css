@@ -2898,9 +2898,12 @@
   pointer-events: none;
 }
 
-.identified-plant-visual-overlay-icon {
+/* Especificidad más alta que `.identified-plant-visual img` (0,1,1)
+   para evitar que el icono de cámara se estire al 100% del card. */
+.identified-plant-visual .identified-plant-visual-overlay-icon {
   width: 28px;
   height: 28px;
+  object-fit: contain;
   opacity: 0;
   transition: opacity 0.2s;
 }
