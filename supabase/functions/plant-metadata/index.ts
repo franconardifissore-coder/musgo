@@ -59,6 +59,11 @@ const TOOL = {
         description:
           "Cada cuántos días regar en condiciones promedio de interior (luz brillante indirecta, ~22°C, humedad media). Valor típico: 1-3 para alto, 5-7 para medio, 14-21 para bajo. Debe ser uno de: 1, 2, 3, 5, 7, 14, 21, 30.",
       },
+      fun_fact: {
+        type: "string",
+        description:
+          "Un dato curioso, sorprendente o poco conocido sobre esta especie. Máximo 2 oraciones en español neutro, sin emojis. Algo que sorprenda a alguien que la tiene en casa: puede ser sobre su historia, comportamiento, nombre, toxicidad, records botánicos, usos culturales, o cualquier curiosidad genuinamente interesante.",
+      },
     },
     required: [
       "common_name",
@@ -66,6 +71,7 @@ const TOOL = {
       "light",
       "watering_level",
       "watering_freq_days",
+      "fun_fact",
     ],
   },
 };
@@ -83,6 +89,7 @@ type LlmMetadata = {
   light: "directa" | "indirecta";
   watering_level: "alto" | "medio" | "bajo";
   watering_freq_days: number;
+  fun_fact: string;
 };
 
 async function callHaiku(
@@ -139,7 +146,8 @@ async function callHaiku(
     !m.origin ||
     !["directa", "indirecta"].includes(m.light) ||
     !["alto", "medio", "bajo"].includes(m.watering_level) ||
-    !Number.isInteger(m.watering_freq_days)
+    !Number.isInteger(m.watering_freq_days) ||
+    !m.fun_fact
   ) {
     throw new Error("anthropic_invalid_metadata");
   }
@@ -219,6 +227,7 @@ serve(async (req) => {
       light: llm.metadata.light,
       watering_level: llm.metadata.watering_level,
       watering_freq_days: llm.metadata.watering_freq_days,
+      fun_fact: llm.metadata.fun_fact,
       raw: llm.raw,
       source: "haiku",
       model: MODEL,
