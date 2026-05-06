@@ -627,14 +627,15 @@
       margin-right: auto;
     }
 
-    /* Navbar: ocupa el ancho completo del frame.
-       El truco anterior (width:100vw + márgenes negativos) rompía con
-       overflow-x:clip en .app-frame — el topbar quedaba clipeado y
-       desaparecía. Con width:100% el topbar siempre es visible. */
+    /* Navbar full-bleed: el topbar vive dentro del .app-frame (max 1344px)
+       pero queremos que ocupe el ancho completo del viewport para que el
+       logo y el CTA queden anclados a los bordes de la ventana.
+       Funciona porque .app-frame.public-experience NO tiene overflow-x:clip
+       (ese clip está scoped a .authenticated-experience). */
     .app-frame.public-experience .mobile-topbar {
-      width: 100%;
-      margin-left: 0;
-      margin-right: 0;
+      width: 100vw;
+      margin-left: calc(50% - 50vw);
+      margin-right: calc(50% - 50vw);
     }
   }
 

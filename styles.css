@@ -79,13 +79,17 @@
     background: #ffffff;
     border: none;
     box-shadow: none;
-    /* `overflow-x: clip` contiene el breakout del tab strip
-       (margins negativos) sin crear contexto de scroll. Si usáramos
-       `overflow: hidden`, romperíamos el scroll vertical de la
-       página. Mantengo `overflow-y: visible` explícito por claridad. */
+    overflow: visible;
+    backdrop-filter: none;
+  }
+
+  /* `overflow-x: clip` contiene el breakout del tab strip (margins negativos)
+     sin crear contexto de scroll. Se aplica SÓLO a la experiencia autenticada
+     para no romper los elementos full-bleed de la landing (topbar, fondos
+     grises) que también usan márgenes negativos para salir del frame. */
+  .app-frame.authenticated-experience {
     overflow-x: clip;
     overflow-y: visible;
-    backdrop-filter: none;
   }
 
   .mobile-topbar {
