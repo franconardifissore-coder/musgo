@@ -2833,14 +2833,19 @@
     .plant-tile {
       min-width: 0;
       width: 190px;
+      flex-direction: column;
+      height: auto;
     }
 
     .plant-tile-visual {
-      height: 168px;
+      width: 100%;
+      height: 140px;
+      aspect-ratio: unset;
     }
 
     .plant-tile-body {
-      padding: 16px 14px 18px;
+      padding: 14px 14px 16px;
+      flex: 1;
     }
 
     .plant-tile-name {
