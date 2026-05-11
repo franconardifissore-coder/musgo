@@ -8,6 +8,15 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css">
 <link rel="stylesheet" href="/landing.css">
+
+<!-- PWA -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#365E4C">
+<!-- iOS -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Musgo">
+<link rel="apple-touch-icon" href="/resources/icon-192.png">
 </head>
 <body>
 
@@ -790,6 +799,17 @@ applyRouteFromLocation({
 initSplash();
 render();
 initAuth();
+</script>
+
+<!-- Registro del Service Worker (PWA) -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then((reg) => console.log('[SW] Registrado:', reg.scope))
+      .catch((err) => console.warn('[SW] Error al registrar:', err));
+  });
+}
 </script>
 </body>
 </html>

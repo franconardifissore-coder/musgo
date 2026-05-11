@@ -1,0 +1,25 @@
+{
+  "name": "Musgo",
+  "short_name": "Musgo",
+  "description": "Tu jardín digital — gestioná tus plantas y recordatorios de riego",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#365E4C",
+  "theme_color": "#365E4C",
+  "orientation": "portrait",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "/resources/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/resources/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
