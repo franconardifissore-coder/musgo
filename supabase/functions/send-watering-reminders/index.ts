@@ -95,8 +95,8 @@ Deno.serve(async (req) => {
 
     for (const sub of subs ?? []) {
       const count = thirstyByUser[sub.user_id] ?? 0;
-      const title = count === 1 ? "🌱 Una planta necesita agua" : `🌱 ${count} plantas necesitan agua`;
-      const body  = "Abrí Musgo para ver cuáles están con sed hoy.";
+      const title = count === 1 ? "🌱 1 planta necesita riego hoy" : `🌱 ${count} plantas necesitan riego hoy`;
+      const body  = "Abre Musgo para ver cuales tienen sed.";
 
       const pushSubscription = {
         endpoint: sub.endpoint,
