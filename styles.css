@@ -2834,10 +2834,30 @@
     transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
     white-space: nowrap;
     pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
   }
 
   .toast.show {
     transform: translateX(-50%) translateY(0);
+  }
+
+  /* Spinner del toast "en progreso" (ej. regando): mismo look que
+     .splash-spinner pero chico y en blanco, para una pill oscura. */
+  .toast-spinner {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    border-radius: 999px;
+    border: 2px solid rgba(255, 255, 255, 0.32);
+    border-top-color: #ffffff;
+    animation: splash-spin 0.8s linear infinite;
+  }
+
+  .toast-msg {
+    line-height: 1.2;
   }
 
   .empty-state {

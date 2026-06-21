@@ -810,12 +810,29 @@ window.addEventListener('popstate', () => {
 
 // ===== TOAST =====
 let toastTimer;
-function showToast(msg) {
+// `loading: true` deja el toast pegado en pantalla con un spinner (sin
+// auto-cerrarse) para acciones con espera de red (ej. "Regar todo").
+// El siguiente showToast(mensajeFinal) — sin loading — reemplaza el
+// spinner por el mensaje de confirmación y retoma el auto-cierre normal.
+function showToast(msg, { loading = false } = {}) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
+  t.innerHTML = '';
+  if (loading) {
+    const spinner = document.createElement('span');
+    spinner.className = 'toast-spinner';
+    spinner.setAttribute('aria-hidden', 'true');
+    t.appendChild(spinner);
+  }
+  const msgEl = document.createElement('span');
+  msgEl.className = 'toast-msg';
+  msgEl.textContent = msg;
+  t.appendChild(msgEl);
   t.classList.add('show');
+  t.classList.toggle('loading', loading);
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+  if (!loading) {
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+  }
 }
 
 // ===== INIT =====
