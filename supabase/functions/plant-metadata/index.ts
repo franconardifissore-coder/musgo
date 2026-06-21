@@ -62,7 +62,7 @@ const TOOL = {
       fun_fact: {
         type: "string",
         description:
-          "Un dato curioso, sorprendente o poco conocido sobre esta especie. Máximo 2 oraciones en español neutro, sin emojis. Algo que sorprenda a alguien que la tiene en casa: puede ser sobre su historia, comportamiento, nombre, toxicidad, records botánicos, usos culturales, o cualquier curiosidad genuinamente interesante.",
+          "Un dato curioso, sorprendente o poco conocido sobre esta especie. Máximo 2 oraciones en español de España (tuteo, no voseo), sin emojis. Algo que sorprenda a alguien que la tiene en casa: puede ser sobre su historia, comportamiento, nombre, toxicidad, récords botánicos, usos culturales, o cualquier curiosidad genuinamente interesante.",
       },
     },
     required: [
@@ -77,11 +77,11 @@ const TOOL = {
 };
 
 const SYSTEM_PROMPT =
-  "Sos una experta en botánica y horticultura especializada en plantas de interior. " +
-  "Te van a pasar el nombre científico de una planta y tenés que devolver su metadata de cuidados " +
-  "usando la tool save_plant_metadata. Respondé en español neutro, sin emojis, con valores concisos. " +
-  "Si la especie no existe o el nombre tiene un error de tipeo evidente, usá tu mejor juicio para " +
-  "interpretar a qué planta se refiere y devolvé la metadata para esa.";
+  "Eres una experta en botánica y horticultura especializada en plantas de interior. " +
+  "Te van a pasar el nombre científico de una planta y tienes que devolver su metadata de cuidados " +
+  "usando la tool save_plant_metadata. Responde en español de España, sin emojis, con valores concisos. " +
+  "Si la especie no existe o el nombre tiene un error de tipografía evidente, usa tu mejor juicio para " +
+  "interpretar a qué planta se refiere y devuelve la metadata para esa.";
 
 type LlmMetadata = {
   common_name: string;

@@ -37,6 +37,7 @@
     </header>
     <div class="menu-overlay" id="menuOverlay" onclick="handleMenuOverlayClick(event)"></div>
     <main class="app-main" id="appMain"></main>
+    <nav class="bottom-navbar" id="bottomNavbar"></nav>
   </div>
 </div>
 
@@ -117,6 +118,7 @@ const getCurrentExperience = (...args) => musgoRouter.getCurrentExperience(...ar
 const shouldShowPublicExperience = (...args) => musgoRouter.shouldShowPublicExperience(...args);
 const shouldShowAuthenticatedExperience = (...args) => musgoRouter.shouldShowAuthenticatedExperience(...args);
 const shouldShowTopbar = (...args) => musgoRouter.shouldShowTopbar(...args);
+const shouldShowBottomNav = (...args) => musgoRouter.shouldShowBottomNav(...args);
 const shouldUseDesktopSidebarLayout = (...args) => musgoRouter.shouldUseDesktopSidebarLayout(...args);
 const getNormalizedPathname = (...args) => musgoRouter.getNormalizedPathname(...args);
 const getPathForView = (...args) => musgoRouter.getPathForView(...args);
@@ -450,25 +452,28 @@ function handleTopbarBrandKeydown(event) {
   }
 }
 
+// Compartido entre el sidebar desktop (≥1100px, menu-overlay) y la bottom
+// navbar mobile/tablet (<1100px): mismos 5 accesos a las screens principales.
+const NAV_ITEMS = [
+  { id: 'dashboard', icon: '/resources/Navbar/Home.svg', label: 'Inicio' },
+  { id: 'plants', icon: '/resources/Navbar/plants icon.svg', label: 'Jardín' },
+  { id: 'scan', icon: '/resources/Navbar/Scanner icon.svg', label: 'Agregar planta' },
+  { id: 'spaces', icon: '/resources/Navbar/Spaces icon.svg', label: 'Espacios' },
+  { id: 'profile', icon: '/resources/Navbar/Profile icon.svg', label: 'Perfil' },
+];
+
 function renderMenu() {
   const overlay = document.getElementById('menuOverlay');
   if (!overlay) return;
   const isPublicExperience = shouldShowPublicExperience();
   const forceDesktopSidebar = shouldUseDesktopSidebarLayout();
 
-  if (state.splashVisible || isPublicExperience) {
+  if (state.splashVisible || isPublicExperience || !forceDesktopSidebar) {
     overlay.classList.remove('open');
     overlay.innerHTML = '';
     return;
   }
 
-  const items = [
-    { id: 'dashboard', icon: '/resources/Navbar/Home.svg', label: 'Inicio' },
-    { id: 'plants', icon: '/resources/Navbar/plants icon.svg', label: 'Jardín' },
-    { id: 'scan', icon: '/resources/Navbar/Scanner icon.svg', label: 'Agregar planta' },
-    { id: 'spaces', icon: '/resources/Navbar/Spaces icon.svg', label: 'Espacios' },
-    { id: 'profile', icon: '/resources/Navbar/Profile icon.svg', label: 'Perfil' },
-  ];
   const activeView = isAuthenticatedMainView()
     ? state.currentView
     : getPreviousMainView();
@@ -476,7 +481,7 @@ function renderMenu() {
   overlay.innerHTML = `
     <div class="menu-drawer">
       <div class="menu-list">
-        ${items.map(item => `
+        ${NAV_ITEMS.map(item => `
           <button class="menu-item ${activeView === item.id ? 'active' : ''}" type="button" onclick="navigateFromMenu('${item.id}')">
             <span class="menu-item-icon"><img src="${item.icon}" alt="${item.label}"></span>
             <span class="menu-item-copy">
@@ -487,7 +492,28 @@ function renderMenu() {
       </div>
     </div>
   `;
-  overlay.classList.toggle('open', forceDesktopSidebar || Boolean(state.menuOpen));
+  overlay.classList.add('open');
+}
+
+function renderBottomNav() {
+  const nav = document.getElementById('bottomNavbar');
+  if (!nav) return;
+
+  if (!shouldShowBottomNav()) {
+    nav.style.display = 'none';
+    nav.innerHTML = '';
+    return;
+  }
+
+  const activeView = state.currentView;
+
+  nav.innerHTML = NAV_ITEMS.map(item => `
+    <button class="bottom-nav-item ${activeView === item.id ? 'active' : ''}" type="button" onclick="navigateToView('${item.id}')" aria-label="${item.label}" aria-current="${activeView === item.id ? 'page' : 'false'}">
+      <span class="bottom-nav-icon"><img src="${item.icon}" alt=""></span>
+      <span class="bottom-nav-label">${item.label}</span>
+    </button>
+  `).join('');
+  nav.style.display = 'grid';
 }
 
 function toggleMenu() {
@@ -753,6 +779,7 @@ function render() {
   renderTopbar();
   renderCurrentView();
   renderMenu();
+  renderBottomNav();
 }
 
 // ===== ACTIONS =====

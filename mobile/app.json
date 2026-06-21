@@ -1,0 +1,75 @@
+{
+  "expo": {
+    "name": "Musgo",
+    "slug": "musgo",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "musgo",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#16291f"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.musgo.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Musgo usa la cámara para identificar plantas a partir de una foto.",
+        "NSPhotoLibraryUsageDescription": "Musgo accede a tu galería para identificar plantas a partir de una imagen existente.",
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "com.musgo.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#16291f"
+      },
+      "permissions": [
+        "CAMERA",
+        "READ_MEDIA_IMAGES"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Musgo accede a tu galería para identificar plantas.",
+          "cameraPermission": "Musgo usa la cámara para identificar plantas."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#16291f"
+        }
+      ],
+      "expo-secure-store",
+      "expo-font"
+    ],
+    "assets": [
+      "./assets/fonts/TikTok_Sans/static/TikTokSans-Regular.ttf",
+      "./assets/fonts/TikTok_Sans/static/TikTokSans-Medium.ttf",
+      "./assets/fonts/TikTok_Sans/static/TikTokSans-SemiBold.ttf",
+      "./assets/fonts/TikTok_Sans/static/TikTokSans-Bold.ttf",
+      "./assets/fonts/TikTok_Sans/static/TikTokSans-ExtraBold.ttf"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "supabaseUrl": {},
+      "supabaseAnonKey": {},
+      "eas": {
+        "projectId": "e0b53be8-1ec7-412d-9637-20322f52541c"
+      }
+    },
+    "owner": "fnardi"
+  }
+}

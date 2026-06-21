@@ -232,6 +232,86 @@
     padding: 24px 28px 40px;
   }
 
+  /* Bottom navbar — reemplaza el topbar (logo + hamburguesa) en mobile/tablet
+     (<1100px) para las 5 screens principales (dashboard, plants, scan,
+     spaces, profile). Sticky al fondo del viewport; queda pegada gracias a
+     `margin-top: auto` dentro de .app-frame (flex column). Screens internas
+     (plant detail, thirsty plants, edit space, etc.) y la experiencia
+     pública (landing/auth) no la muestran — se controla por JS con
+     `display: none/grid`, por defecto oculta. */
+  .bottom-navbar {
+    display: none;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 2px;
+    margin-top: auto;
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 6;
+    background: #ffffff;
+    border-top: 1px solid rgba(25, 28, 28, 0.12);
+    padding: 8px 6px calc(8px + env(safe-area-inset-bottom));
+  }
+
+  .bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    min-height: 56px;
+    border: none;
+    border-radius: 14px;
+    background: transparent;
+    cursor: pointer;
+    padding: 6px 2px;
+    transition: background 0.18s ease;
+  }
+
+  .bottom-nav-item:hover {
+    background: rgba(52, 93, 76, 0.06);
+  }
+
+  .bottom-nav-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .bottom-nav-icon img {
+    width: 22px;
+    height: 22px;
+    display: block;
+    opacity: 0.4;
+    transition: opacity 0.18s ease;
+  }
+
+  .bottom-nav-item.active .bottom-nav-icon img {
+    opacity: 1;
+  }
+
+  .bottom-nav-label {
+    font-size: 0.66rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.01em;
+    color: var(--muted);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  .bottom-nav-item.active .bottom-nav-label {
+    color: #345d4c;
+  }
+
   .app-frame.public-experience {
     background: #ffffff;
   }
@@ -455,6 +535,15 @@
 
     .topbar-menu-button {
       display: none;
+    }
+
+    /* Salvaguarda: el sidebar desktop ya cubre los 5 accesos, la bottom
+       navbar es exclusiva de mobile/tablet (<1100px). Como
+       shouldUseDesktopSidebarLayout() se calcula en JS sin listener de
+       resize, este media query evita que quede visible tras un resize sin
+       re-render. */
+    .bottom-navbar {
+      display: none !important;
     }
 
     .app-main {
