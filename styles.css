@@ -369,6 +369,20 @@
     background: #ffffff;
   }
 
+  /* Mismo fix usado para la landing (ver landing.css "LANDING — pure white
+     background"): el shell global usa #FAFAF8 en body/.app-shell, y ese
+     tinte se notaba como un corte gris en la franja de arriba (status bar)
+     ahora que el topbar mobile ya no cubre esa zona en las 5 screens
+     principales. Forzamos blanco puro detrás de la experiencia autenticada
+     para que no se note el corte contra el resto, blanco, de la pantalla. */
+  body:has(.app-frame.authenticated-experience) {
+    background: #ffffff;
+  }
+
+  .app-shell:has(.app-frame.authenticated-experience) {
+    background: #ffffff;
+  }
+
   .authenticated-app-shell {
     display: flex;
     flex-direction: column;
