@@ -276,16 +276,22 @@
     outline: none;
   }
 
-  /* `:focus` queda transparente a propósito: en mobile Safari/Chrome el
-     botón recién tocado se queda "focused" y, sin esto, el navegador le
-     deja un fill gris permanente — que es justamente lo que reemplazamos
-     por la barrita verde de arriba. `:active` sí conserva un feedback
-     breve al tocar. */
   .bottom-nav-item:focus {
     background: transparent;
   }
 
-  .bottom-nav-item:hover,
+  /* El fill gris que se veía en el tab seleccionado no era un estilo
+     nuestro: en touch (iOS/Android) no existe "mouse leave", así que el
+     :hover queda "pegado" en el último botón tocado — que normalmente es
+     justo el tab activo. Por eso el hover/press feedback se limita a
+     dispositivos con puntero real (mouse/trackpad); en touch no se aplica
+     ningún fill, y la única señal de "seleccionado" es la barrita verde. */
+  @media (hover: hover) and (pointer: fine) {
+    .bottom-nav-item:hover {
+      background: rgba(52, 93, 76, 0.06);
+    }
+  }
+
   .bottom-nav-item:active {
     background: rgba(52, 93, 76, 0.06);
   }
@@ -294,12 +300,14 @@
     box-shadow: 0 0 0 2px rgba(52, 93, 76, 0.35);
   }
 
-  /* Indicador de tab activo: barrita verde arriba del ícono, al estilo
-     LinkedIn, en lugar de un fill gris de fondo. */
+  /* Indicador de tab activo: barrita verde sobre el borde superior de la
+     navbar (no sobre el ícono), al estilo LinkedIn. -9px = padding-top de
+     .bottom-navbar (8px) + border-top (1px), para que quede pegada a esa
+     línea en vez de flotar arriba del ícono. */
   .bottom-nav-item.active::before {
     content: '';
     position: absolute;
-    top: 0;
+    top: -9px;
     left: 50%;
     width: 28px;
     height: 3px;
