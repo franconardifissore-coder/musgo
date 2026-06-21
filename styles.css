@@ -252,7 +252,7 @@
     z-index: 6;
     background: #ffffff;
     border-top: 1px solid rgba(25, 28, 28, 0.12);
-    padding: 8px 6px calc(8px + env(safe-area-inset-bottom));
+    padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
   }
 
   .bottom-nav-item {
@@ -260,13 +260,13 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 4px;
-    min-height: 56px;
+    gap: 3px;
+    min-height: 46px;
     border: none;
     border-radius: 14px;
     background: transparent;
     cursor: pointer;
-    padding: 6px 2px;
+    padding: 4px 2px;
     transition: background 0.18s ease;
   }
 
@@ -275,8 +275,8 @@
   }
 
   .bottom-nav-icon {
-    width: 24px;
-    height: 24px;
+    width: 30px;
+    height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -284,10 +284,10 @@
   }
 
   .bottom-nav-icon img {
-    width: 22px;
-    height: 22px;
+    width: 28px;
+    height: 28px;
     display: block;
-    opacity: 0.4;
+    opacity: 0.55;
     transition: opacity 0.18s ease;
   }
 
