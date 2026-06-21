@@ -259,6 +259,7 @@
   }
 
   .bottom-nav-item {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -271,10 +272,40 @@
     cursor: pointer;
     padding: 4px 2px;
     transition: background 0.18s ease;
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
   }
 
-  .bottom-nav-item:hover {
+  /* `:focus` queda transparente a propósito: en mobile Safari/Chrome el
+     botón recién tocado se queda "focused" y, sin esto, el navegador le
+     deja un fill gris permanente — que es justamente lo que reemplazamos
+     por la barrita verde de arriba. `:active` sí conserva un feedback
+     breve al tocar. */
+  .bottom-nav-item:focus {
+    background: transparent;
+  }
+
+  .bottom-nav-item:hover,
+  .bottom-nav-item:active {
     background: rgba(52, 93, 76, 0.06);
+  }
+
+  .bottom-nav-item:focus-visible {
+    box-shadow: 0 0 0 2px rgba(52, 93, 76, 0.35);
+  }
+
+  /* Indicador de tab activo: barrita verde arriba del ícono, al estilo
+     LinkedIn, en lugar de un fill gris de fondo. */
+  .bottom-nav-item.active::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 28px;
+    height: 3px;
+    border-radius: 999px;
+    background: #345d4c;
+    transform: translateX(-50%);
   }
 
   /* Los SVG de /resources/Navbar/ traen el glifo centrado pero ocupando
