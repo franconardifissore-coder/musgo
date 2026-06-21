@@ -252,7 +252,10 @@
     z-index: 6;
     background: #ffffff;
     border-top: 1px solid rgba(25, 28, 28, 0.12);
-    padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+    /* 14px base bottom padding (no solo env(safe-area-inset-bottom)) para
+       que la barra no quede pegada al borde en navegadores/dispositivos
+       sin home indicator. */
+    padding: 8px 4px calc(14px + env(safe-area-inset-bottom));
   }
 
   .bottom-nav-item {
@@ -260,8 +263,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 3px;
-    min-height: 46px;
+    gap: 4px;
+    min-height: 50px;
     border: none;
     border-radius: 14px;
     background: transparent;
@@ -274,18 +277,25 @@
     background: rgba(52, 93, 76, 0.06);
   }
 
+  /* Los SVG de /resources/Navbar/ traen el glifo centrado pero ocupando
+     solo ~45% del canvas (mucho aire alrededor). En vez de agrandar la
+     imagen completa (que agranda el aire con ella), se sobre-escala la
+     imagen dentro de un contenedor con overflow:hidden para recortar ese
+     margen y que el ícono se vea grande y nítido, al estilo LinkedIn. */
   .bottom-nav-icon {
-    width: 30px;
-    height: 30px;
+    width: 26px;
+    height: 26px;
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
     flex-shrink: 0;
   }
 
   .bottom-nav-icon img {
-    width: 28px;
-    height: 28px;
+    width: 53px;
+    height: 53px;
+    max-width: none;
     display: block;
     opacity: 0.55;
     transition: opacity 0.18s ease;
@@ -296,7 +306,7 @@
   }
 
   .bottom-nav-label {
-    font-size: 0.66rem;
+    font-size: 0.7rem;
     font-weight: 700;
     line-height: 1;
     letter-spacing: -0.01em;
